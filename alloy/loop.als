@@ -7,12 +7,24 @@ fun incrementCurrent(li : loopInvariant) : loopInvariant {
 	{resultli : loopInvariant | resultli.current = li.current.add[1] and resultli.length = li.length}
 }
 
-pred loopPredicate [li, lastli  : loopInvariant] {
-	(li.current < li.length) => loopPredicate[{newli : loopInvariant | newli.current = li.current.add[1] and li.length = newli.length}, lastli] else (li.current = li.length) => li = lastli else 1 = 0
+pred loopPredicate [li, postli  : loopInvariant] {
+	incrementCurrent[li] = postli
 }
 
+fact curNeverGTlength {
+	loopInvariant.current <= loopInvariant.length
+}
+
+fact curNeverLTOne {
+	loopInvariant.current >= 1
+}
+
+//fact connectedSequentially {
+//	all v: loopInvariant | one next: loopInvariant | v.current < v.length and next.current = v.current.add[1]
+//}
+
 assert loopChecker {
-	all cur, last: loopInvariant | cur.length = last.length and cur.current <= last.current and loopPredicate[cur, last]
+	all v, next: loopInvariant | v.current < v.length and next.current = v.current.add[1] and next.length = v.length and loopPredicate[v, next]
 }
 
 check loopChecker
