@@ -1,0 +1,8 @@
+int x
+int y
+int z
+if (y < z) {
+ 	z = x * y
+} else{
+
+} if_ensure (((y<z) and (x = x_old and y=y_old and z=x_old*y_old*z_old)) or ((y>=z) and (x=x_old and y=y_old and z=z_old)))

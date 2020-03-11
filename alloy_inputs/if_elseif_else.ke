@@ -1,0 +1,9 @@
+int x
+int y
+if (x>y){
+	x=x+1
+} else if (x=y){
+	y=y+1
+} else {
+	//do nothing
+} if_ensure ( ((x>y) and  (x = x_old+1 and y=y_old)) or ((x=y) and  (x = x_old and y = y_old+1)))

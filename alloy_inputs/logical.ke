@@ -1,0 +1,6 @@
+bool x
+bool y
+bool z
+x && y
+x || y
+x ^ y
