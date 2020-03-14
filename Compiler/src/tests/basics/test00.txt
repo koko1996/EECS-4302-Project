@@ -3,11 +3,26 @@ x
 x=-1
 x=x-1
 if(x>t){
-    x=-1
+    if(true){
+        x%y
+    } else {
+        z-3
+    }
 } else if(x>r) {
-    x=x*y
+    if(true){
+        x%y
+    } else if (false){
+        z-3
+    } else {
+        a=q+a
+    }
 } else if(x+1>r) {
     x=x/y
+
 } else {
-    true
+    if(true){
+        x%y
+    } else if (false){
+        z-3
+    } 
 }

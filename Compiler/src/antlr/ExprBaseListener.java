@@ -54,37 +54,13 @@ public class ExprBaseListener implements ExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVariableInitializationID(ExprParser.VariableInitializationIDContext ctx) { }
+	@Override public void enterVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitVariableInitializationID(ExprParser.VariableInitializationIDContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterConditionalStatement(ExprParser.ConditionalStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConditionalStatement(ExprParser.ConditionalStatementContext ctx) { }
+	@Override public void exitVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -102,61 +78,49 @@ public class ExprBaseListener implements ExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIfElseIfConditional(ExprParser.IfElseIfConditionalContext ctx) { }
+	@Override public void enterConditionalStatement(ExprParser.ConditionalStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIfElseIfConditional(ExprParser.IfElseIfConditionalContext ctx) { }
+	@Override public void exitConditionalStatement(ExprParser.ConditionalStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIfElseIfElseConditional(ExprParser.IfElseIfElseConditionalContext ctx) { }
+	@Override public void enterAssertedConditionalStatement(ExprParser.AssertedConditionalStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIfElseIfElseConditional(ExprParser.IfElseIfElseConditionalContext ctx) { }
+	@Override public void exitAssertedConditionalStatement(ExprParser.AssertedConditionalStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIfElseAssignment(ExprParser.IfElseAssignmentContext ctx) { }
+	@Override public void enterConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIfElseAssignment(ExprParser.IfElseAssignmentContext ctx) { }
+	@Override public void exitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWithElseConditional(ExprParser.WithElseConditionalContext ctx) { }
+	@Override public void enterIfConditional(ExprParser.IfConditionalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitWithElseConditional(ExprParser.WithElseConditionalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterWithElseAssignment(ExprParser.WithElseAssignmentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitWithElseAssignment(ExprParser.WithElseAssignmentContext ctx) { }
+	@Override public void exitIfConditional(ExprParser.IfConditionalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -174,6 +138,18 @@ public class ExprBaseListener implements ExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterElseConditional(ExprParser.ElseConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitElseConditional(ExprParser.ElseConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterEpsilonConditional(ExprParser.EpsilonConditionalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -181,6 +157,18 @@ public class ExprBaseListener implements ExprListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -306,13 +294,13 @@ public class ExprBaseListener implements ExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) { }
+	@Override public void enterNegationIntegerConstant(ExprParser.NegationIntegerConstantContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) { }
+	@Override public void exitNegationIntegerConstant(ExprParser.NegationIntegerConstantContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -421,18 +409,6 @@ public class ExprBaseListener implements ExprListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInequivalenceRelational(ExprParser.InequivalenceRelationalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterParenthesesLogical(ExprParser.ParenthesesLogicalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParenthesesLogical(ExprParser.ParenthesesLogicalContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

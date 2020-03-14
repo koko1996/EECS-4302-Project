@@ -8,7 +8,7 @@
             "type": "antlr-debug",
             "request": "launch",
             "name": "Debug Current Grammar",
-            "input": "src/tests/basics/test01.txt",
+            "input": "src/tests/basics/test02.txt",
             "grammar": "src/antlr/Expr.g4",
             "visualParseTree": true
         }
