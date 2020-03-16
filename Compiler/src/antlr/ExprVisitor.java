@@ -12,24 +12,36 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  * operations with no return type.
  */
 public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
-	/**
-	 * Visit a parse tree produced by the {@code Program}
-	 * labeled alternative in {@link ExprParser#prog}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProgram(ExprParser.ProgramContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code VariableDeclaration}
-	 * labeled alternative in {@link ExprParser#declaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code VariableInitializationConstant}
-	 * labeled alternative in {@link ExprParser#declaration}.
-	 * @param ctx the parse tree
+    /**
+     * Visit a parse tree produced by the {@code Program}
+     * labeled alternative in {@link ExprParser#prog}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitProgram(ExprParser.ProgramContext ctx);
+
+    /**
+     * Visit a parse tree produced by {@link ExprParser#statement}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitStatement(ExprParser.StatementContext ctx);
+
+    /**
+     * Visit a parse tree produced by the {@code VariableDeclaration}
+     * labeled alternative in {@link ExprParser#declaration}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
+
+    /**
+     * Visit a parse tree produced by the {@code VariableInitializationConstant}
+     * labeled alternative in {@link ExprParser#declaration}.
+     * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
@@ -40,27 +52,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code AssignmentStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssignmentStatement(ExprParser.AssignmentStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ConditionalStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConditionalStatement(ExprParser.ConditionalStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code AssertedConditionalStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssertedConditionalStatement(ExprParser.AssertedConditionalStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
@@ -96,13 +87,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code MultipleAssignments}
-	 * labeled alternative in {@link ExprParser#multAssig}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code AssignExpression}
 	 * labeled alternative in {@link ExprParser#assignment}.

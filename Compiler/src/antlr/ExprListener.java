@@ -12,26 +12,46 @@ public interface ExprListener extends ParseTreeListener {
 	/**
 	 * Enter a parse tree produced by the {@code Program}
 	 * labeled alternative in {@link ExprParser#prog}.
-	 * @param ctx the parse tree
-	 */
-	void enterProgram(ExprParser.ProgramContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code Program}
-	 * labeled alternative in {@link ExprParser#prog}.
-	 * @param ctx the parse tree
-	 */
-	void exitProgram(ExprParser.ProgramContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code VariableDeclaration}
-	 * labeled alternative in {@link ExprParser#declaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code VariableDeclaration}
-	 * labeled alternative in {@link ExprParser#declaration}.
-	 * @param ctx the parse tree
-	 */
+     * @param ctx the parse tree
+     */
+    void enterProgram(ExprParser.ProgramContext ctx);
+
+    /**
+     * Exit a parse tree produced by the {@code Program}
+     * labeled alternative in {@link ExprParser#prog}.
+     *
+     * @param ctx the parse tree
+     */
+    void exitProgram(ExprParser.ProgramContext ctx);
+
+    /**
+     * Enter a parse tree produced by {@link ExprParser#statement}.
+     *
+     * @param ctx the parse tree
+     */
+    void enterStatement(ExprParser.StatementContext ctx);
+
+    /**
+     * Exit a parse tree produced by {@link ExprParser#statement}.
+     *
+     * @param ctx the parse tree
+     */
+    void exitStatement(ExprParser.StatementContext ctx);
+
+    /**
+     * Enter a parse tree produced by the {@code VariableDeclaration}
+     * labeled alternative in {@link ExprParser#declaration}.
+     *
+     * @param ctx the parse tree
+     */
+    void enterVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
+
+    /**
+     * Exit a parse tree produced by the {@code VariableDeclaration}
+     * labeled alternative in {@link ExprParser#declaration}.
+     *
+     * @param ctx the parse tree
+     */
 	void exitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code VariableInitializationConstant}
@@ -57,42 +77,6 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code AssignmentStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterAssignmentStatement(ExprParser.AssignmentStatementContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code AssignmentStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitAssignmentStatement(ExprParser.AssignmentStatementContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ConditionalStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterConditionalStatement(ExprParser.ConditionalStatementContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ConditionalStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitConditionalStatement(ExprParser.ConditionalStatementContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code AssertedConditionalStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterAssertedConditionalStatement(ExprParser.AssertedConditionalStatementContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code AssertedConditionalStatement}
-	 * labeled alternative in {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitAssertedConditionalStatement(ExprParser.AssertedConditionalStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
@@ -153,18 +137,6 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code MultipleAssignments}
-	 * labeled alternative in {@link ExprParser#multAssig}.
-	 * @param ctx the parse tree
-	 */
-	void enterMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code MultipleAssignments}
-	 * labeled alternative in {@link ExprParser#multAssig}.
-	 * @param ctx the parse tree
-	 */
-	void exitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code AssignExpression}
 	 * labeled alternative in {@link ExprParser#assignment}.

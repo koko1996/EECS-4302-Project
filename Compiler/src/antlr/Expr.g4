@@ -6,39 +6,44 @@ grammar Expr;
 }
 
 // start variable
-prog: (declaration | statement)+ EOF # Program
+prog: (statement)+ EOF # Program
     ;
+
+statement: declaration
+         | assignment
+         | conditional
+         | assertedConditional
+         ;
 
 declaration: VARIABLE ID                   		# VariableDeclaration
     		| VARIABLE ID '=' ConstantValue  	# VariableInitializationConstant
     		| VARIABLE ID '=' ID 			 	# VariableInitializationCopy
     		;
 
-statement: assignment				# AssignmentStatement
-		 | conditional				# ConditionalStatement
-		 | assertedConditional   	# AssertedConditionalStatement
-		 ;
-
+//statement: (assignment)+			# AssignmentStatement
+//		 | conditional				# ConditionalStatement
+//		 | assertedConditional   	# AssertedConditionalStatement
+//		 ;
+//
 assertedConditional: 'if_require' '(' expression ')' conditional 'if_ensure' '(' expression ')' # ConditionalAssertionStatement
 		;
 
-
 // if and else statements can't have empty bodies
-conditional: 'if' '(' logicalOp ')' '{' multAssig '}'	elseIf		# IfConditional
+conditional: 'if' '(' logicalOp ')' '{' (statement)+ '}' elseIf		# IfConditional
 		   ;
 
-elseIf: 'else' 'if' '(' logicalOp ')' '{' multAssig '}'	elseIf		# ElseIfConditional
-	  | 'else' '{' multAssig '}'									# ElseConditional
+elseIf: 'else' 'if' '(' logicalOp ')' '{' (statement)+ '}'	elseIf		# ElseIfConditional
+	  | 'else' '{' (statement)+ '}'									# ElseConditional
 	  |  /* epsilon	*/												# EpsilonConditional
 	  ;
 
-multAssig: (assignment)+			# MultipleAssignments
-		;
-		
 assignment: expression				# AssignExpression
 		  | ID '=' expression  		# AssignAssignment
-		  ;		 
+		  ;
 
+//multAssig: (assignment)+			# MultipleAssignments
+//		;
+//
 expression: arithmeticOp			# ArithmeticOperation
 		  | relationalOp			# RelationalOperation
 		  | logicalOp				# LogicalOpteration
@@ -47,20 +52,20 @@ expression: arithmeticOp			# ArithmeticOperation
 
 arithmeticOp: arithmeticOp '*' arithmeticOp		# MultiplicationArithmetic
 			| arithmeticOp '/' arithmeticOp		# DivisionArithmetic
-			| arithmeticOp '%' arithmeticOp		# ModuloArithmetic 
+			| arithmeticOp '%' arithmeticOp		# ModuloArithmetic
 			| arithmeticOp '+' arithmeticOp 	# AdditionArithmetic
 			| arithmeticOp '-' arithmeticOp		# SubtractionArithmetic
 			| ID								# VariableArithmetic
 			| IntConstant						# IntegerConstant
 			| '-' IntConstant					# NegationIntegerConstant
 			;
-			
+
 relationalOp: arithmeticOp '<' arithmeticOp			# LessRelational
 			| arithmeticOp '<=' arithmeticOp		# LessEqualRelational
-			| arithmeticOp '>' arithmeticOp			# GreaterRelational 
-			| arithmeticOp '>=' arithmeticOp		# GreaterEqualRelational 
+			| arithmeticOp '>' arithmeticOp			# GreaterRelational
+			| arithmeticOp '>=' arithmeticOp		# GreaterEqualRelational
 			| arithmeticOp '==' arithmeticOp		# EqualityRelational
-			| arithmeticOp '!=' arithmeticOp		# InequivalenceRelational 
+			| arithmeticOp '!=' arithmeticOp		# InequivalenceRelational
 			;
 
 logicalOp: '!' logicalOp						# NegationLogical
@@ -74,10 +79,11 @@ logicalOp: '!' logicalOp						# NegationLogical
 		 ;
 
 /* Tokens */
-IntID: 'int';
-BoolID: 'bool';
-VARIABLE: IntID | BoolID;
-IntConstant: [0-9]+;
+//IntID: 'int';
+//BoolID: 'bool';
+//VARIABLE: IntID | BoolID;
+VARIABLE: 'int' | 'bool';
+IntConstant: [1-9][0-9]*;
 BoolConstant: 'true' | 'false';
 ConstantValue: IntConstant | BoolConstant;
 ID: [a-z][a-zA-Z0-9_]*;
