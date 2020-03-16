@@ -1,11 +1,11 @@
 package model.statement.assignment.expression.arithmetic;
 
-import model.statement.assignment.expression.Arithmetic;
+import model.Instruction;
 
-public class Division extends ArithmeticComposite{
+public class Division extends ArithmeticComposite {
 
-	public Division(Arithmetic left, Arithmetic right) {
-		super(left, right);
-	}
+    public Division(Instruction left, Instruction right) {
+        super(left, right);
+    }
 
 }

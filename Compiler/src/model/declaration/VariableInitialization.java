@@ -55,6 +55,6 @@ public class VariableInitialization extends Declaration {
 
 	@Override
 	public String toString() {
-		return this.id + " " + this.type + " " + this.value;
+		return this.id + " " + this.type + " " + this.value.getValue();
 	}
 }

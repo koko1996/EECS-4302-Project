@@ -1,0 +1,6 @@
+int x = 2
+if(true){
+x=3
+}
+int y = x
+bool a = true && false

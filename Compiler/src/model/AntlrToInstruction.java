@@ -4,6 +4,10 @@ import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
 import model.declaration.VariableDeclaration;
 import model.declaration.VariableInitialization;
+import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.logical.*;
+import model.statement.assignment.expression.relational.*;
+import model.statement.conditional.IfElseIfStatement;
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
@@ -68,6 +72,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return new VariableDeclaration(id, type);
 	}
 
+	//
 	@Override
 	public Instruction visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx) {
 		Token idToken = ctx.ID().getSymbol(); // equivalent to:
@@ -83,15 +88,17 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		}
 
 		if (type.toLowerCase().equals("int")) {
-			int value = Integer.parseInt(ctx.ConstantValue().getText());
+			int value = Integer.parseInt(ctx.expression().getText());
 			if (!values.containsKey(id)) {
+				// ADD VISIT HERE TO EVALUATE THE RHS FIRST E.G. 2 + 3 DOESNT WORK WHEREAS 5 DOES
 				values.put(id, value, type);
 				vars.add(id);
 			}
 			return new VariableInitialization(id, type, values.getValue(id));
 		} else if (type.toLowerCase().equals("bool")) {
-			boolean value = Boolean.parseBoolean(ctx.ConstantValue().getText());
+			boolean value = Boolean.parseBoolean(ctx.expression().getText());
 			if (!values.containsKey(id)) {
+				// ADD VISIT HERE TO EVALUATE THE RHS FIRST
 				values.put(id, value, type);
 				vars.add(id);
 			}
@@ -102,7 +109,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	}
 
 	@Override
-	public Instruction visitVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx) {
+	public Instruction visitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx) {
 		Token lhsIDToken = ctx.ID().get(0).getSymbol();
 		int lhsIDLine = lhsIDToken.getLine();
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
@@ -122,5 +129,205 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			values.put(lhsID, values.getValue(rhsID).value, rhsType);
 		}
 		return new VariableInitialization(lhsID, lhsType, values.getValue(lhsID));
+	}
+
+	@Override
+	public Instruction visitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx) {
+		return super.visitMultipleAssignments(ctx);
+	}
+
+	@Override
+	public Instruction visitAssignExpression(ExprParser.AssignExpressionContext ctx) {
+		return super.visitAssignExpression(ctx);
+	}
+
+	@Override
+	public Instruction visitAssignAssignment(ExprParser.AssignAssignmentContext ctx) {
+		return super.visitAssignAssignment(ctx);
+	}
+
+	@Override
+	public Instruction visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) {
+		return visit(ctx.getChild(0));
+	}
+
+	@Override
+	public Instruction visitRelationalOperation(ExprParser.RelationalOperationContext ctx) {
+		return super.visitRelationalOperation(ctx);
+	}
+
+	@Override
+	public Instruction visitLogicalOpteration(ExprParser.LogicalOpterationContext ctx) {
+		return super.visitLogicalOpteration(ctx);
+	}
+
+	@Override
+	public Instruction visitParanthesesExpression(ExprParser.ParanthesesExpressionContext ctx) {
+		return super.visitParanthesesExpression(ctx);
+	}
+
+	@Override
+	public Instruction visitDivisionArithmetic(ExprParser.DivisionArithmeticContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Division(left, right);
+	}
+
+	@Override
+	public Instruction visitVariableArithmetic(ExprParser.VariableArithmeticContext ctx) {
+		// TODO
+
+		return super.visitVariableArithmetic(ctx);
+	}
+
+	@Override
+	public Instruction visitModuloArithmetic(ExprParser.ModuloArithmeticContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Modulo(left, right);
+	}
+
+	@Override
+	public Instruction visitMultiplicationArithmetic(ExprParser.MultiplicationArithmeticContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Multiplication(left, right);
+	}
+
+	@Override
+	public Instruction visitNegationIntegerConstant(ExprParser.NegationIntegerConstantContext ctx) {
+		String numText = ctx.getChild(0).getText();
+		int num = Integer.parseInt(numText);
+		num = num * (-1);
+		return new IntegerConstant(num);
+	}
+
+	@Override
+	public Instruction visitAdditionArithmetic(ExprParser.AdditionArithmeticContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Addition(left, right);
+	}
+
+	@Override
+	public Instruction visitSubtractionArithmetic(ExprParser.SubtractionArithmeticContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Subtraction(left, right);
+	}
+
+	@Override
+	public Instruction visitIntegerConstant(ExprParser.IntegerConstantContext ctx) {
+		String numText = ctx.getChild(0).getText();
+		int num = Integer.parseInt(numText);
+		return new IntegerConstant(num);
+	}
+
+	@Override
+	public Instruction visitLessRelational(ExprParser.LessRelationalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new LessThan(left, right);
+	}
+
+	@Override
+	public Instruction visitLessEqualRelational(ExprParser.LessEqualRelationalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new LessThanOrEqual(left, right);
+	}
+
+	@Override
+	public Instruction visitGreaterRelational(ExprParser.GreaterRelationalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new GreaterThan(left, right);
+	}
+
+	@Override
+	public Instruction visitGreaterEqualRelational(ExprParser.GreaterEqualRelationalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new GreaterThanOrEqual(left, right);
+	}
+
+	@Override
+	public Instruction visitEqualityRelational(ExprParser.EqualityRelationalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Equality(left, right);
+	}
+
+	@Override
+	public Instruction visitInequivalenceRelational(ExprParser.InequivalenceRelationalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Inequality(left, right);
+	}
+
+	@Override
+	public Instruction visitDisjunctionLogical(ExprParser.DisjunctionLogicalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Disjunction(left, right);
+	}
+
+	@Override
+	public Instruction visitImplicationLogical(ExprParser.ImplicationLogicalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Implication(left, right);
+	}
+
+	@Override
+	public Instruction visitVariableLogical(ExprParser.VariableLogicalContext ctx) {
+		return super.visitVariableLogical(ctx);
+	}
+
+	@Override
+	public Instruction visitEquivalenceLogical(ExprParser.EquivalenceLogicalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Equivalence(left, right);
+	}
+
+	@Override
+	public Instruction visitNegationLogical(ExprParser.NegationLogicalContext ctx) {
+		return new Negation(visit(ctx.getChild(0)));
+	}
+
+	@Override
+	public Instruction visitConjunctionLogical(ExprParser.ConjunctionLogicalContext ctx) {
+		Instruction left = visit(ctx.getChild(0));
+		Instruction right = visit(ctx.getChild(2));
+		return new Conjunction(left, right);
+	}
+
+	@Override
+	public Instruction visitBooleanConstant(ExprParser.BooleanConstantContext ctx) {
+		String valText = ctx.getChild(0).getText();
+		boolean value = Boolean.parseBoolean(valText);
+		return new BooleanConstant(value);
+	}
+
+	@Override
+	public Instruction visitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) {
+		// TODO
+		return super.visitConditionalAssertionStatement(ctx);
+	}
+
+	@Override
+	public Instruction visitIfConditional(ExprParser.IfConditionalContext ctx) {
+		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)), new ArrayList<>());
+	}
+
+	@Override
+	public Instruction visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
+		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)), new ArrayList<>());
+	}
+
+	@Override
+	public Instruction visitElseConditional(ExprParser.ElseConditionalContext ctx) {
+		return super.visitElseConditional(ctx);
 	}
 }

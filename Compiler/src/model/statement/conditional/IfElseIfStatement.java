@@ -1,35 +1,34 @@
 package model.statement.conditional;
 
+import model.Instruction;
+import model.Statement;
+
 import java.util.List;
 
-import model.Statement;
-import model.statement.MultiAssignment;
-import model.statement.assignment.expression.Logical;
-
-public class IfElseIfStatement extends Statement{
-	private Logical logicalCondition;
-	private MultiAssignment assignments;
+public class IfElseIfStatement extends Statement {
+	private Instruction logicalCondition;
+	private Instruction assignments;
 	private List<IfElseIfStatement> elseIfStatments;
-	private IfElseIfStatement elseStatment;	
+	private IfElseIfStatement elseStatment;
 
 
-	public IfElseIfStatement(Logical condition, MultiAssignment assignments, List<IfElseIfStatement> elseIfStatments) {
+	public IfElseIfStatement(Instruction condition, Instruction assignments, List<IfElseIfStatement> elseIfStatments) {
 		this.logicalCondition = condition;
-		this.assignments=assignments;
+		this.assignments = assignments;
 		this.elseIfStatments = elseIfStatments;
 	}
 
 	/**
 	 * @return the logicalCondition
 	 */
-	public Logical getCondition() {
+	public Instruction getCondition() {
 		return logicalCondition;
 	}
 
 	/**
 	 * @return the assignments
 	 */
-	public MultiAssignment getAssignments() {
+	public Instruction getAssignments() {
 		return assignments;
 	}
 
@@ -47,6 +46,6 @@ public class IfElseIfStatement extends Statement{
 	public IfElseIfStatement getElseStatment() {
 		return elseStatment;
 	}
-	
-	
+
+
 }

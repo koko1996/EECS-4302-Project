@@ -14,8 +14,8 @@ public class Values {
     private Values() {
         this.values = new HashMap<>();
         this.supportedTypes = new ArrayList<>();
-        this.supportedTypes.add("Integer");
-        this.supportedTypes.add("Boolean");
+        this.supportedTypes.add("int");
+        this.supportedTypes.add("bool");
     }
 
     public static Values getInstance() {
@@ -29,10 +29,10 @@ public class Values {
         // Var type is only required so that the cast can be done implicitly here. varType will be discarded.
         Value value = this.getValue(id);
 
-        if (value.getType().equals("Integer")) {
+        if (value.getType().equals("int")) {
             return (Integer) value.getValue();
         } else {
-            throw new IllegalStateException(String.format("Variable %s is not an %s", id, "Integer"));
+            throw new IllegalStateException(String.format("Variable %s is not an %s", id, "int"));
         }
     }
 
@@ -40,10 +40,10 @@ public class Values {
         // Var type is only required so that the cast can be done implicitly here. varType will be discarded.
         Value value = this.getValue(id);
 
-        if (value.getType().equals("Boolean")) {
+        if (value.getType().equals("bool")) {
             return (Boolean) value.getValue();
         } else {
-            throw new IllegalStateException(String.format("Variable %s is not a %s", id, "Boolean"));
+            throw new IllegalStateException(String.format("Variable %s is not a %s", id, "bool"));
         }
     }
 
@@ -60,13 +60,13 @@ public class Values {
     }
 
     public void put(String id, Object value, String type) {
-        if (type.equals("int")) {
-            type = "Integer";
-        }
+//        if (type.equals("int")) {
+//            type = "Integer";
+//        }
 
-        if (type.equals("bool")) {
-            type = "Boolean";
-        }
+//        if (type.equals("bool")) {
+//            type = "Boolean";
+//        }
 
         if (supportedTypes.contains(type)) {
             this.values.put(id, new Value(value, type));

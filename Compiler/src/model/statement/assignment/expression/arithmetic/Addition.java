@@ -1,10 +1,10 @@
 package model.statement.assignment.expression.arithmetic;
 
-import model.statement.assignment.expression.Arithmetic;
+import model.Instruction;
 
-public class Addition extends ArithmeticComposite{
+public class Addition extends ArithmeticComposite {
 
-	public Addition(Arithmetic left, Arithmetic right) {
+	public Addition(Instruction left, Instruction right) {
 		super(left, right);
 	}
 

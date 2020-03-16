@@ -5,9 +5,15 @@ grammar Expr;
         package antlr;
 }
 
+
 // start variable
 prog: (statement)+ EOF # Program
     ;
+
+declaration: VARIABLE ID                   	# VariableDeclaration
+            | VARIABLE ID '=' ID            # VariableInitializationConstantCopy
+    		| VARIABLE ID '=' expression  	# VariableInitializationConstant
+    		;
 
 statement: declaration
          | assignment
@@ -15,35 +21,24 @@ statement: declaration
          | assertedConditional
          ;
 
-declaration: VARIABLE ID                   		# VariableDeclaration
-    		| VARIABLE ID '=' ConstantValue  	# VariableInitializationConstant
-    		| VARIABLE ID '=' ID 			 	# VariableInitializationCopy
-    		;
-
-//statement: (assignment)+			# AssignmentStatement
-//		 | conditional				# ConditionalStatement
-//		 | assertedConditional   	# AssertedConditionalStatement
-//		 ;
-//
 assertedConditional: 'if_require' '(' expression ')' conditional 'if_ensure' '(' expression ')' # ConditionalAssertionStatement
 		;
 
 // if and else statements can't have empty bodies
-conditional: 'if' '(' logicalOp ')' '{' (statement)+ '}' elseIf		# IfConditional
+conditional: 'if' '(' logicalOp ')' '{' (assignment)+ '}'	elseIf		# IfConditional
 		   ;
 
-elseIf: 'else' 'if' '(' logicalOp ')' '{' (statement)+ '}'	elseIf		# ElseIfConditional
-	  | 'else' '{' (statement)+ '}'									# ElseConditional
+elseIf: 'else' 'if' '(' logicalOp ')' '{' (assignment)+ '}'	elseIf		# ElseIfConditional
+	  | 'else' '{' (assignment)+ '}'									# ElseConditional
 	  |  /* epsilon	*/												# EpsilonConditional
 	  ;
+multAssig: (assignment)+			# MultipleAssignments
+		;
 
 assignment: expression				# AssignExpression
 		  | ID '=' expression  		# AssignAssignment
 		  ;
 
-//multAssig: (assignment)+			# MultipleAssignments
-//		;
-//
 expression: arithmeticOp			# ArithmeticOperation
 		  | relationalOp			# RelationalOperation
 		  | logicalOp				# LogicalOpteration
@@ -78,14 +73,16 @@ logicalOp: '!' logicalOp						# NegationLogical
 		 | BoolConstant							# BooleanConstant
 		 ;
 
-/* Tokens */
-//IntID: 'int';
-//BoolID: 'bool';
-//VARIABLE: IntID | BoolID;
-VARIABLE: 'int' | 'bool';
-IntConstant: [1-9][0-9]*;
-BoolConstant: 'true' | 'false';
-ConstantValue: IntConstant | BoolConstant;
-ID: [a-z][a-zA-Z0-9_]*;
-COMMENT: '//' ~[\r\n]* -> skip;
-WS : [ \t\n\r]+ -> skip ;
+
+//VARIABLE: 'int' | 'bool';
+//ID: [a-z][a-zA-Z0-9_]*;
+//IntConstant : [0-9][1-9]*;
+//WS : [ \t\n\r]+ -> skip;
+	/* Tokens */
+    VARIABLE: 'int' | 'bool';
+	IntConstant : [0-9][1-9]*;
+	BoolConstant: 'true' | 'false';
+	ConstantValue: IntConstant | BoolConstant;
+	ID: [a-z][a-zA-Z0-9_]*;
+	COMMENT: '//' ~[\r\n]* -> skip;
+	WS : [ \t\n\r]+ -> skip ;

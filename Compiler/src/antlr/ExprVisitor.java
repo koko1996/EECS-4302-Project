@@ -9,49 +9,48 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  * by {@link ExprParser}.
  *
  * @param <T> The return type of the visit operation. Use {@link Void} for
- * operations with no return type.
+ *            operations with no return type.
  */
 public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
-    /**
-     * Visit a parse tree produced by the {@code Program}
-     * labeled alternative in {@link ExprParser#prog}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    T visitProgram(ExprParser.ProgramContext ctx);
-
-    /**
-     * Visit a parse tree produced by {@link ExprParser#statement}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    T visitStatement(ExprParser.StatementContext ctx);
-
-    /**
-     * Visit a parse tree produced by the {@code VariableDeclaration}
-     * labeled alternative in {@link ExprParser#declaration}.
-     *
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    T visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
-
-    /**
-     * Visit a parse tree produced by the {@code VariableInitializationConstant}
-     * labeled alternative in {@link ExprParser#declaration}.
-     * @param ctx the parse tree
+	/**
+	 * Visit a parse tree produced by the {@code Program}
+	 * labeled alternative in {@link ExprParser#prog}.
+	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
+	T visitProgram(ExprParser.ProgramContext ctx);
+
 	/**
-	 * Visit a parse tree produced by the {@code VariableInitializationCopy}
+	 * Visit a parse tree produced by the {@code VariableDeclaration}
 	 * labeled alternative in {@link ExprParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx);
+	T visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
+
+	/**
+	 * Visit a parse tree produced by the {@code VariableInitializationConstantCopy}
+	 * labeled alternative in {@link ExprParser#declaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx);
+
+	/**
+	 * Visit a parse tree produced by the {@code VariableInitializationConstant}
+	 * labeled alternative in {@link ExprParser#declaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatement(ExprParser.StatementContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
@@ -80,20 +79,34 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitElseConditional(ExprParser.ElseConditionalContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code EpsilonConditional}
 	 * labeled alternative in {@link ExprParser#elseIf}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
+
+	/**
+	 * Visit a parse tree produced by the {@code MultipleAssignments}
+	 * labeled alternative in {@link ExprParser#multAssig}.
+	 *
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code AssignExpression}
 	 * labeled alternative in {@link ExprParser#assignment}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssignExpression(ExprParser.AssignExpressionContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code AssignAssignment}
 	 * labeled alternative in {@link ExprParser#assignment}.
