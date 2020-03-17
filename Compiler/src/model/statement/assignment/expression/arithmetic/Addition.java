@@ -1,16 +1,11 @@
 package model.statement.assignment.expression.arithmetic;
 
-import model.Instruction;
-import model.Visitor;
+import model.statement.assignment.expression.Arithmetic;
 
-public class Addition extends ArithmeticComposite {
+public class Addition extends ArithmeticComposite{
 
-	public Addition(Instruction left, Instruction right) {
+	public Addition(Arithmetic left, Arithmetic right) {
 		super(left, right);
 	}
 
-	@Override
-	public void accept(Visitor visitor) {
-		visitor.visitAdditionArithmetic(this);
-	}
 }

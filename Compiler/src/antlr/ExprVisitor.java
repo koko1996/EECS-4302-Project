@@ -27,13 +27,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code VariableInitializationConstantCopy}
-	 * labeled alternative in {@link ExprParser#declaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code VariableInitializationConstant}
 	 * labeled alternative in {@link ExprParser#declaration}.
 	 * @param ctx the parse tree
@@ -41,11 +34,33 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExprParser#statement}.
+	 * Visit a parse tree produced by the {@code VariableInitializationCopy}
+	 * labeled alternative in {@link ExprParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStatement(ExprParser.StatementContext ctx);
+	T visitVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code AssignmentStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignmentStatement(ExprParser.AssignmentStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ConditionalStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConditionalStatement(ExprParser.ConditionalStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code AssertedConditionalStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssertedConditionalStatement(ExprParser.AssertedConditionalStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.

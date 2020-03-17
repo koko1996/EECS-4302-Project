@@ -9,104 +9,106 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  * {@link ExprParser}.
  */
 public interface ExprListener extends ParseTreeListener {
-    /**
-     * Enter a parse tree produced by the {@code Program}
-     * labeled alternative in {@link ExprParser#prog}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterProgram(ExprParser.ProgramContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code Program}
-     * labeled alternative in {@link ExprParser#prog}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitProgram(ExprParser.ProgramContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code VariableDeclaration}
-     * labeled alternative in {@link ExprParser#declaration}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code VariableDeclaration}
-     * labeled alternative in {@link ExprParser#declaration}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code VariableInitializationConstantCopy}
-     * labeled alternative in {@link ExprParser#declaration}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code VariableInitializationConstantCopy}
-     * labeled alternative in {@link ExprParser#declaration}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code VariableInitializationConstant}
-     * labeled alternative in {@link ExprParser#declaration}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code VariableInitializationConstant}
-     * labeled alternative in {@link ExprParser#declaration}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
-
-    /**
-     * Enter a parse tree produced by {@link ExprParser#statement}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterStatement(ExprParser.StatementContext ctx);
-
-    /**
-     * Exit a parse tree produced by {@link ExprParser#statement}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitStatement(ExprParser.StatementContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code ConditionalAssertionStatement}
-     * labeled alternative in {@link ExprParser#assertedConditional}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code ConditionalAssertionStatement}
-     * labeled alternative in {@link ExprParser#assertedConditional}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code IfConditional}
-     * labeled alternative in {@link ExprParser#conditional}.
-     * @param ctx the parse tree
+	/**
+	 * Enter a parse tree produced by the {@code Program}
+	 * labeled alternative in {@link ExprParser#prog}.
+	 * @param ctx the parse tree
+	 */
+	void enterProgram(ExprParser.ProgramContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Program}
+	 * labeled alternative in {@link ExprParser#prog}.
+	 * @param ctx the parse tree
+	 */
+	void exitProgram(ExprParser.ProgramContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code VariableDeclaration}
+	 * labeled alternative in {@link ExprParser#declaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code VariableDeclaration}
+	 * labeled alternative in {@link ExprParser#declaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code VariableInitializationConstant}
+	 * labeled alternative in {@link ExprParser#declaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code VariableInitializationConstant}
+	 * labeled alternative in {@link ExprParser#declaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code VariableInitializationCopy}
+	 * labeled alternative in {@link ExprParser#declaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code VariableInitializationCopy}
+	 * labeled alternative in {@link ExprParser#declaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableInitializationCopy(ExprParser.VariableInitializationCopyContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AssignmentStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignmentStatement(ExprParser.AssignmentStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AssignmentStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignmentStatement(ExprParser.AssignmentStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ConditionalStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterConditionalStatement(ExprParser.ConditionalStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ConditionalStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitConditionalStatement(ExprParser.ConditionalStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AssertedConditionalStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssertedConditionalStatement(ExprParser.AssertedConditionalStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AssertedConditionalStatement}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssertedConditionalStatement(ExprParser.AssertedConditionalStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ConditionalAssertionStatement}
+	 * labeled alternative in {@link ExprParser#assertedConditional}.
+	 * @param ctx the parse tree
+	 */
+	void enterConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ConditionalAssertionStatement}
+	 * labeled alternative in {@link ExprParser#assertedConditional}.
+	 * @param ctx the parse tree
+	 */
+	void exitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code IfConditional}
+	 * labeled alternative in {@link ExprParser#conditional}.
+	 * @param ctx the parse tree
 	 */
 	void enterIfConditional(ExprParser.IfConditionalContext ctx);
 	/**
@@ -122,75 +124,59 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void enterElseIfConditional(ExprParser.ElseIfConditionalContext ctx);
 	/**
-     * Exit a parse tree produced by the {@code ElseIfConditional}
-     * labeled alternative in {@link ExprParser#elseIf}.
-     * @param ctx the parse tree
-     */
-    void exitElseIfConditional(ExprParser.ElseIfConditionalContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code ElseConditional}
-     * labeled alternative in {@link ExprParser#elseIf}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterElseConditional(ExprParser.ElseConditionalContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code ElseConditional}
-     * labeled alternative in {@link ExprParser#elseIf}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitElseConditional(ExprParser.ElseConditionalContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code EpsilonConditional}
-     * labeled alternative in {@link ExprParser#elseIf}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code EpsilonConditional}
-     * labeled alternative in {@link ExprParser#elseIf}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code MultipleAssignments}
-     * labeled alternative in {@link ExprParser#multAssig}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code MultipleAssignments}
-     * labeled alternative in {@link ExprParser#multAssig}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
-
-    /**
-     * Enter a parse tree produced by the {@code AssignExpression}
-     * labeled alternative in {@link ExprParser#assignment}.
-     *
-     * @param ctx the parse tree
-     */
-    void enterAssignExpression(ExprParser.AssignExpressionContext ctx);
-
-    /**
-     * Exit a parse tree produced by the {@code AssignExpression}
-     * labeled alternative in {@link ExprParser#assignment}.
-     *
-     * @param ctx the parse tree
-     */
-    void exitAssignExpression(ExprParser.AssignExpressionContext ctx);
+	 * Exit a parse tree produced by the {@code ElseIfConditional}
+	 * labeled alternative in {@link ExprParser#elseIf}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseIfConditional(ExprParser.ElseIfConditionalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ElseConditional}
+	 * labeled alternative in {@link ExprParser#elseIf}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseConditional(ExprParser.ElseConditionalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ElseConditional}
+	 * labeled alternative in {@link ExprParser#elseIf}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseConditional(ExprParser.ElseConditionalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code EpsilonConditional}
+	 * labeled alternative in {@link ExprParser#elseIf}.
+	 * @param ctx the parse tree
+	 */
+	void enterEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code EpsilonConditional}
+	 * labeled alternative in {@link ExprParser#elseIf}.
+	 * @param ctx the parse tree
+	 */
+	void exitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code MultipleAssignments}
+	 * labeled alternative in {@link ExprParser#multAssig}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MultipleAssignments}
+	 * labeled alternative in {@link ExprParser#multAssig}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AssignExpression}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignExpression(ExprParser.AssignExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AssignExpression}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignExpression(ExprParser.AssignExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code AssignAssignment}
 	 * labeled alternative in {@link ExprParser#assignment}.

@@ -1,5 +1,4 @@
 package model.statement.assignment.expression.logical;
-import model.Visitor;
 import model.statement.assignment.expression.Logical;
 
 public class BooleanConstant extends Logical{
@@ -15,17 +14,13 @@ public class BooleanConstant extends Logical{
 	}
 
 
-    /*
-     * retrieve the value of the variable expression
-     *
-     * @return retrieve the value of the variable expression
-     */
-    public boolean getValue() {
-        return this.value;
-    }
+	/*
+	 * retrieve the value of the variable expression
+	 * 
+	 * @return retrieve the value of the variable expression
+	 */
+	public boolean getValue() {
+		return this.value;
+	}
 
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitBooleanConstant(this);
-    }
 }
