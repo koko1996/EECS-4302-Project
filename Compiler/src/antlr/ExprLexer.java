@@ -166,8 +166,8 @@ public class ExprLexer extends Lexer {
 
     @Override
 
-	public Vocabulary getVocabulary() {
-		return VOCABULARY;
+    public Vocabulary getVocabulary() {
+        return VOCABULARY;
     }
 
     @Override
@@ -197,5 +197,6 @@ public class ExprLexer extends Lexer {
 
     @Override
     public ATN getATN() {
-        return _ATN; }
+        return _ATN;
+    }
 }

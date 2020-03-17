@@ -25,13 +25,14 @@ assertedConditional: 'if_require' '(' expression ')' conditional 'if_ensure' '('
 		;
 
 // if and else statements can't have empty bodies
-conditional: 'if' '(' logicalOp ')' '{' (assignment)+ '}'	elseIf		# IfConditional
+conditional: 'if' '(' logicalOp ')' '{' multAssig '}' elseIf		# IfConditional
 		   ;
 
-elseIf: 'else' 'if' '(' logicalOp ')' '{' (assignment)+ '}'	elseIf		# ElseIfConditional
-	  | 'else' '{' (assignment)+ '}'									# ElseConditional
+elseIf: 'else' 'if' '(' logicalOp ')' '{' multAssig '}'	elseIf		# ElseIfConditional
+	  | 'else' '{' multAssig '}'									# ElseConditional
 	  |  /* epsilon	*/												# EpsilonConditional
 	  ;
+
 multAssig: (assignment)+			# MultipleAssignments
 		;
 

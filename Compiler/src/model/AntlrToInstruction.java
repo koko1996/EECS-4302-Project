@@ -4,6 +4,12 @@ import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
 import model.declaration.VariableDeclaration;
 import model.declaration.VariableInitialization;
+import model.statement.MultiAssignment;
+import model.statement.assignment.ExpressionAssignment;
+import model.statement.assignment.expression.Arithmetic;
+import model.statement.assignment.expression.Logical;
+import model.statement.assignment.expression.ParanthesesExpression;
+import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
@@ -72,7 +78,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return new VariableDeclaration(id, type);
 	}
 
-	//
+
 	@Override
 	public Instruction visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx) {
 		Token idToken = ctx.ID().getSymbol(); // equivalent to:
@@ -133,7 +139,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx) {
-		return super.visitMultipleAssignments(ctx);
+		List<Instruction> assignments = new ArrayList<>();
+		ctx.children.forEach(each -> assignments.add(visit(each)));
+		return new MultiAssignment(assignments);
 	}
 
 	@Override
@@ -143,7 +151,60 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitAssignAssignment(ExprParser.AssignAssignmentContext ctx) {
-		return super.visitAssignAssignment(ctx);
+		String id = ctx.ID().getText();
+		Token idToken = ctx.ID().getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+		Value value;
+		// What should this do if variable not declared? Should it resume or break?
+		try {
+			value = this.values.getValue(id);
+		} catch (IllegalStateException e) {
+			// Add a semantic error if lhs variable is not declared.
+			semanticErrors.add(e.getMessage());
+			return null; // to be fixed
+		}
+
+		Instruction exp = visit(ctx.getChild(2));
+		if (exp instanceof Arithmetic) {
+			Arithmetic expArithmetic = (Arithmetic) exp;
+			if (!value.getType().equals("int")) {
+				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
+						id, line, column, "bool", value.getType()));
+			} else {
+				Evaluator ev = new Evaluator();
+				expArithmetic.accept(ev);
+				values.getValue(id).setValue(Evaluator.getIntVal(ev));
+				return new ExpressionAssignment(id, expArithmetic);
+			}
+		} else if (exp instanceof Relational) {
+			Relational expRelational = (Relational) exp;
+			if (!value.getType().equals("bool")) {
+				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
+						id, line, column, "int", value.getType()));
+			} else {
+				Evaluator ev = new Evaluator();
+				expRelational.accept(ev);
+				values.getValue(id).setValue(Evaluator.getIntVal(ev));
+				return new ExpressionAssignment(id, expRelational);
+			}
+		} else if (exp instanceof Logical) {
+			Logical expLogical = (Logical) exp;
+			if (!value.getType().equals("bool")) {
+				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
+						id, line, column, "int", value.getType()));
+			} else {
+				Evaluator ev = new Evaluator();
+				expLogical.accept(ev);
+				values.getValue(id).setValue(Evaluator.getIntVal(ev));
+				return new ExpressionAssignment(id, expLogical);
+			}
+		} else if (exp instanceof ParanthesesExpression) {
+			// TODO
+//			ParanthesesExpression expParantheses = (ParanthesesExpression) exp;
+
+		}
+		return null;
 	}
 
 	@Override
@@ -320,7 +381,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	public Instruction visitIfConditional(ExprParser.IfConditionalContext ctx) {
 		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)), new ArrayList<>());
 	}
-
 	@Override
 	public Instruction visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
 		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)), new ArrayList<>());

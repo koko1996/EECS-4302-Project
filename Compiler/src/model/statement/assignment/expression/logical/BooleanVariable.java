@@ -1,4 +1,5 @@
 package model.statement.assignment.expression.logical;
+import model.Visitor;
 import model.statement.assignment.expression.Logical;
 
 public class BooleanVariable extends Logical{
@@ -24,14 +25,19 @@ public class BooleanVariable extends Logical{
 	 */
 	public String getID() {
 		return this.id;
-	}
+    }
 
-	/*
-	 * retrieve the value of the variable expression
-	 * 
-	 * @return retrieve the value of the variable expression
-	 */
-	public boolean getValue() {
-		return this.value;
-	}
+    /*
+     * retrieve the value of the variable expression
+     *
+     * @return retrieve the value of the variable expression
+     */
+    public boolean getValue() {
+        return this.value;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        //TODO
+    }
 }

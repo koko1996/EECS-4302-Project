@@ -4,7 +4,7 @@ import model.Instruction;
 import model.statement.assignment.expression.Arithmetic;
 
 
-public class ArithmeticComposite extends Arithmetic {
+public abstract class ArithmeticComposite extends Arithmetic {
     protected Instruction left;
     protected Instruction right;
 

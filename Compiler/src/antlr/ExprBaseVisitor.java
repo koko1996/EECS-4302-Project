@@ -10,10 +10,10 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * of the available methods.
  *
  * @param <T> The return type of the visit operation. Use {@link Void} for
- * operations with no return type.
+ *            operations with no return type.
  */
 public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements ExprVisitor<T> {
-	/**
+    /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
@@ -89,20 +89,26 @@ public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements E
     public T visitIfConditional(ExprParser.IfConditionalContext ctx) {
         return visitChildren(ctx);
     }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitElseConditional(ExprParser.ElseConditionalContext ctx) {
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitElseConditional(ExprParser.ElseConditionalContext ctx) {
         return visitChildren(ctx);
     }
 
@@ -146,17 +152,24 @@ public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements E
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override
-    public T visitAssignAssignment(ExprParser.AssignAssignmentContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
+    public T visitAssignAssignment(ExprParser.AssignAssignmentContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */

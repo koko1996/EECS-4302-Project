@@ -2,6 +2,7 @@ package model.statement.conditional;
 
 import model.Instruction;
 import model.Statement;
+import model.statement.MultiAssignment;
 
 import java.util.List;
 
@@ -37,15 +38,22 @@ public class IfElseIfStatement extends Statement {
 	 */
 	public List<IfElseIfStatement> getElseIfStatments() {
 		return elseIfStatments;
-	}
-	
-	
-	/**
-	 * @return the elseStatment
-	 */
-	public IfElseIfStatement getElseStatment() {
-		return elseStatment;
-	}
+    }
 
 
+    /**
+     * @return the elseStatment
+     */
+    public IfElseIfStatement getElseStatment() {
+        return elseStatment;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        MultiAssignment assignments = (MultiAssignment) this.assignments;
+        assignments.getAssignments().forEach(each -> sb.append("\n\t").append(each));
+        return sb.toString();
+    }
 }

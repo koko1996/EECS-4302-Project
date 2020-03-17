@@ -1,6 +1,7 @@
 package model.statement.assignment.expression.logical;
 
 import model.Instruction;
+import model.Visitor;
 
 
 /*
@@ -19,4 +20,8 @@ public class Implication extends LogicalComposite {
         super(left, right);
     }
 
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visitImplicationLogical(this);
+    }
 }

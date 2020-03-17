@@ -1,6 +1,7 @@
 package model.statement.assignment.expression.logical;
 
 import model.Instruction;
+import model.Visitor;
 
 /*
  * Equivalence Class that represents equivalence expression
@@ -17,5 +18,8 @@ public class Equivalence extends LogicalComposite {
         super(left, right);
     }
 
-	
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visitEquivalenceLogical(this);
+    }
 }

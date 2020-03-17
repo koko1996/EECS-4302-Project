@@ -1,6 +1,7 @@
 package model.statement.assignment.expression.logical;
 
 import model.Instruction;
+import model.Visitor;
 
 /*
  * Disjunction Class that represents disjunction expression
@@ -18,5 +19,8 @@ public class Disjunction extends LogicalComposite {
         super(left, right);
     }
 
-
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visitDisjunctionLogical(this);
+    }
 }

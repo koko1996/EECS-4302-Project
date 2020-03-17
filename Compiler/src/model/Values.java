@@ -60,14 +60,6 @@ public class Values {
     }
 
     public void put(String id, Object value, String type) {
-//        if (type.equals("int")) {
-//            type = "Integer";
-//        }
-
-//        if (type.equals("bool")) {
-//            type = "Boolean";
-//        }
-
         if (supportedTypes.contains(type)) {
             this.values.put(id, new Value(value, type));
         } else {

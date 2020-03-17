@@ -1,6 +1,7 @@
 package model.statement.assignment.expression.arithmetic;
 
 import model.Instruction;
+import model.Visitor;
 
 public class Addition extends ArithmeticComposite {
 
@@ -8,4 +9,8 @@ public class Addition extends ArithmeticComposite {
 		super(left, right);
 	}
 
+	@Override
+	public void accept(Visitor visitor) {
+		visitor.visitAdditionArithmetic(this);
+	}
 }

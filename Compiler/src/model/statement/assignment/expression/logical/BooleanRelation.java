@@ -1,6 +1,7 @@
 package model.statement.assignment.expression.logical;
 
 import model.Instruction;
+import model.Visitor;
 import model.statement.assignment.expression.Logical;
 
 public class BooleanRelation extends Logical {
@@ -24,4 +25,8 @@ public class BooleanRelation extends Logical {
         return this.expr;
     }
 
+    @Override
+    public void accept(Visitor visitor) {
+        //visitor.visitAdditionArithmetic(this); //TODO
+    }
 }

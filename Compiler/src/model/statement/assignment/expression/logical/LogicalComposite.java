@@ -1,6 +1,7 @@
 package model.statement.assignment.expression.logical;
 
 import model.Instruction;
+import model.Visitor;
 import model.statement.assignment.expression.Logical;
 
 
@@ -36,6 +37,11 @@ public class LogicalComposite extends Logical {
      */
     public Instruction getRightExpr() {
         return this.right;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        //TODO
     }
 
 }

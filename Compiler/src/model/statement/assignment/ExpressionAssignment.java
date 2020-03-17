@@ -1,5 +1,6 @@
 package model.statement.assignment;
 
+import model.Visitor;
 import model.statement.Assignment;
 
 
@@ -28,4 +29,8 @@ public class ExpressionAssignment extends Assignment {
 		return this.id;
 	}
 
+	@Override
+	public void accept(Visitor visitor) {
+
+	}
 }
