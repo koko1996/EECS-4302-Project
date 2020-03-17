@@ -316,37 +316,6 @@ public class ExprParser extends Parser {
 		return _localctx;
 	}
 
-	public static class VariableDeclarationContext extends DeclarationContext {
-		public TerminalNode VARIABLE() {
-			return getToken(ExprParser.VARIABLE, 0);
-		}
-
-		public TerminalNode ID() {
-			return getToken(ExprParser.ID, 0);
-		}
-
-		public VariableDeclarationContext(DeclarationContext ctx) {
-			copyFrom(ctx);
-		}
-
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if (listener instanceof ExprListener) ((ExprListener) listener).enterVariableDeclaration(this);
-		}
-
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if (listener instanceof ExprListener) ((ExprListener) listener).exitVariableDeclaration(this);
-		}
-
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof ExprVisitor)
-				return ((ExprVisitor<? extends T>) visitor).visitVariableDeclaration(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
 	public final AssertedConditionalContext assertedConditional() throws RecognitionException {
 		AssertedConditionalContext _localctx = new AssertedConditionalContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_assertedConditional);
@@ -822,16 +791,18 @@ public class ExprParser extends Parser {
 				}
 				break;
 			}
-		}
-		catch (RecognitionException re) {
+		} catch (RecognitionException re) {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
 			_errHandler.recover(this, re);
-		}
-		finally {
+		} finally {
 			exitRule();
 		}
 		return _localctx;
+	}
+
+	public final LogicalOpContext logicalOp() throws RecognitionException {
+		return logicalOp(0);
 	}
 
 	private LogicalOpContext logicalOp(int _p) throws RecognitionException {
@@ -1045,7 +1016,6 @@ public class ExprParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitProgram(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor) return ((ExprVisitor<? extends T>) visitor).visitProgram(this);
@@ -1069,6 +1039,10 @@ public class ExprParser extends Parser {
 		public void copyFrom(DeclarationContext ctx) {
 			super.copyFrom(ctx);
 		}
+	}
+
+	public final ArithmeticOpContext arithmeticOp() throws RecognitionException {
+		return arithmeticOp(0);
 	}
 
 	public static class VariableInitializationConstantCopyContext extends DeclarationContext {
@@ -1099,6 +1073,7 @@ public class ExprParser extends Parser {
 			if (listener instanceof ExprListener)
 				((ExprListener) listener).exitVariableInitializationConstantCopy(this);
 		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor)
@@ -1223,12 +1198,10 @@ public class ExprParser extends Parser {
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).enterConditionalAssertionStatement(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitConditionalAssertionStatement(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor)
@@ -1276,12 +1249,10 @@ public class ExprParser extends Parser {
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).enterIfConditional(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitIfConditional(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor) return ((ExprVisitor<? extends T>) visitor).visitIfConditional(this);
@@ -1328,12 +1299,10 @@ public class ExprParser extends Parser {
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).enterElseIfConditional(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitElseIfConditional(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor)
@@ -1383,7 +1352,6 @@ public class ExprParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitElseConditional(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor) return ((ExprVisitor<? extends T>) visitor).visitElseConditional(this);
@@ -1426,12 +1394,10 @@ public class ExprParser extends Parser {
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).enterMultipleAssignments(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitMultipleAssignments(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor)
@@ -1458,43 +1424,33 @@ public class ExprParser extends Parser {
 		}
 	}
 
-	public static class DivisionArithmeticContext extends ArithmeticOpContext {
-		public List<ArithmeticOpContext> arithmeticOp() {
-			return getRuleContexts(ArithmeticOpContext.class);
+	public static class VariableDeclarationContext extends DeclarationContext {
+		public VariableDeclarationContext(DeclarationContext ctx) {
+			copyFrom(ctx);
 		}
 
-		public ArithmeticOpContext arithmeticOp(int i) {
-			return getRuleContext(ArithmeticOpContext.class, i);
+		public TerminalNode VARIABLE() {
+			return getToken(ExprParser.VARIABLE, 0);
 		}
-		public DivisionArithmeticContext(ArithmeticOpContext ctx) { copyFrom(ctx); }
+
+		public TerminalNode ID() {
+			return getToken(ExprParser.ID, 0);
+		}
+
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterDivisionArithmetic(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterVariableDeclaration(this);
 		}
+
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitDivisionArithmetic(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitVariableDeclaration(this);
 		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitDivisionArithmetic(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class VariableArithmeticContext extends ArithmeticOpContext {
-		public TerminalNode ID() { return getToken(ExprParser.ID, 0); }
-		public VariableArithmeticContext(ArithmeticOpContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterVariableArithmetic(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitVariableArithmetic(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitVariableArithmetic(this);
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitVariableDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1559,31 +1515,6 @@ public class ExprParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class AdditionArithmeticContext extends ArithmeticOpContext {
-		public List<ArithmeticOpContext> arithmeticOp() {
-			return getRuleContexts(ArithmeticOpContext.class);
-		}
-		public ArithmeticOpContext arithmeticOp(int i) {
-			return getRuleContext(ArithmeticOpContext.class,i);
-		}
-		public AdditionArithmeticContext(ArithmeticOpContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterAdditionArithmetic(this);
-		}
-
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if (listener instanceof ExprListener) ((ExprListener) listener).exitAdditionArithmetic(this);
-		}
-
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof ExprVisitor)
-				return ((ExprVisitor<? extends T>) visitor).visitAdditionArithmetic(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 
 	public static class AssignExpressionContext extends AssignmentContext {
 		public AssignExpressionContext(AssignmentContext ctx) {
@@ -1603,7 +1534,6 @@ public class ExprParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitAssignExpression(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor) return ((ExprVisitor<? extends T>) visitor).visitAssignExpression(this);
@@ -1640,10 +1570,6 @@ public class ExprParser extends Parser {
 		}
 	}
 
-	public final ArithmeticOpContext arithmeticOp() throws RecognitionException {
-		return arithmeticOp(0);
-	}
-
 	public static class ExpressionContext extends ParserRuleContext {
 		public ExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1659,6 +1585,33 @@ public class ExprParser extends Parser {
 
 		public void copyFrom(ExpressionContext ctx) {
 			super.copyFrom(ctx);
+		}
+	}
+
+	public static class VariableArithmeticContext extends ArithmeticOpContext {
+		public VariableArithmeticContext(ArithmeticOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		public TerminalNode ID() {
+			return getToken(ExprParser.ID, 0);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterVariableArithmetic(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitVariableArithmetic(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitVariableArithmetic(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1680,7 +1633,6 @@ public class ExprParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitRelationalOperation(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor)
@@ -1707,79 +1659,11 @@ public class ExprParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof ExprListener) ((ExprListener) listener).exitArithmeticOperation(this);
 		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor)
 				return ((ExprVisitor<? extends T>) visitor).visitArithmeticOperation(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class LessRelationalContext extends RelationalOpContext {
-		public List<ArithmeticOpContext> arithmeticOp() {
-			return getRuleContexts(ArithmeticOpContext.class);
-		}
-		public ArithmeticOpContext arithmeticOp(int i) {
-			return getRuleContext(ArithmeticOpContext.class,i);
-		}
-		public LessRelationalContext(RelationalOpContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterLessRelational(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitLessRelational(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitLessRelational(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class GreaterRelationalContext extends RelationalOpContext {
-		public List<ArithmeticOpContext> arithmeticOp() {
-			return getRuleContexts(ArithmeticOpContext.class);
-		}
-		public ArithmeticOpContext arithmeticOp(int i) {
-			return getRuleContext(ArithmeticOpContext.class,i);
-		}
-		public GreaterRelationalContext(RelationalOpContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterGreaterRelational(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitGreaterRelational(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitGreaterRelational(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class GreaterEqualRelationalContext extends RelationalOpContext {
-		public List<ArithmeticOpContext> arithmeticOp() {
-			return getRuleContexts(ArithmeticOpContext.class);
-		}
-		public ArithmeticOpContext arithmeticOp(int i) {
-			return getRuleContext(ArithmeticOpContext.class,i);
-		}
-		public GreaterEqualRelationalContext(RelationalOpContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterGreaterEqualRelational(this);
-		}
-
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if (listener instanceof ExprListener) ((ExprListener) listener).exitGreaterEqualRelational(this);
-		}
-
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof ExprVisitor)
-				return ((ExprVisitor<? extends T>) visitor).visitGreaterEqualRelational(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1807,6 +1691,64 @@ public class ExprParser extends Parser {
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof ExprVisitor)
 				return ((ExprVisitor<? extends T>) visitor).visitParanthesesExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public static class LessRelationalContext extends RelationalOpContext {
+		public List<ArithmeticOpContext> arithmeticOp() {
+			return getRuleContexts(ArithmeticOpContext.class);
+		}
+
+		public ArithmeticOpContext arithmeticOp(int i) {
+			return getRuleContext(ArithmeticOpContext.class, i);
+		}
+
+		public LessRelationalContext(RelationalOpContext ctx) {
+			copyFrom(ctx);
+		}
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterLessRelational(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitLessRelational(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitLessRelational(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public static class GreaterRelationalContext extends RelationalOpContext {
+		public List<ArithmeticOpContext> arithmeticOp() {
+			return getRuleContexts(ArithmeticOpContext.class);
+		}
+
+		public ArithmeticOpContext arithmeticOp(int i) {
+			return getRuleContext(ArithmeticOpContext.class,i);
+		}
+
+		public GreaterRelationalContext(RelationalOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterGreaterRelational(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitGreaterRelational(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitGreaterRelational(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1856,21 +1798,95 @@ public class ExprParser extends Parser {
 		}
 	}
 
-	public static class LogicalOpContext extends ParserRuleContext {
-		public LogicalOpContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
+	public static class DivisionArithmeticContext extends ArithmeticOpContext {
+		public List<ArithmeticOpContext> arithmeticOp() {
+			return getRuleContexts(ArithmeticOpContext.class);
+		}
+
+		public DivisionArithmeticContext(ArithmeticOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		public ArithmeticOpContext arithmeticOp(int i) {
+			return getRuleContext(ArithmeticOpContext.class, i);
 		}
 
 		@Override
-		public int getRuleIndex() {
-			return RULE_logicalOp;
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterDivisionArithmetic(this);
 		}
 
-		public LogicalOpContext() {
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitDivisionArithmetic(this);
 		}
 
-		public void copyFrom(LogicalOpContext ctx) {
-			super.copyFrom(ctx);
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitDivisionArithmetic(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public static class AdditionArithmeticContext extends ArithmeticOpContext {
+		public AdditionArithmeticContext(ArithmeticOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		public List<ArithmeticOpContext> arithmeticOp() {
+			return getRuleContexts(ArithmeticOpContext.class);
+		}
+
+		public ArithmeticOpContext arithmeticOp(int i) {
+			return getRuleContext(ArithmeticOpContext.class, i);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterAdditionArithmetic(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitAdditionArithmetic(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitAdditionArithmetic(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public static class SubtractionArithmeticContext extends ArithmeticOpContext {
+		public SubtractionArithmeticContext(ArithmeticOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		public List<ArithmeticOpContext> arithmeticOp() {
+			return getRuleContexts(ArithmeticOpContext.class);
+		}
+
+		public ArithmeticOpContext arithmeticOp(int i) {
+			return getRuleContext(ArithmeticOpContext.class, i);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterSubtractionArithmetic(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitSubtractionArithmetic(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitSubtractionArithmetic(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class DisjunctionLogicalContext extends LogicalOpContext {
@@ -1975,62 +1991,6 @@ public class ExprParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class ConjunctionLogicalContext extends LogicalOpContext {
-		public List<LogicalOpContext> logicalOp() {
-			return getRuleContexts(LogicalOpContext.class);
-		}
-		public LogicalOpContext logicalOp(int i) {
-			return getRuleContext(LogicalOpContext.class,i);
-		}
-		public ConjunctionLogicalContext(LogicalOpContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterConjunctionLogical(this);
-		}
-
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if (listener instanceof ExprListener) ((ExprListener) listener).exitConjunctionLogical(this);
-		}
-
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof ExprVisitor)
-				return ((ExprVisitor<? extends T>) visitor).visitConjunctionLogical(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public static class SubtractionArithmeticContext extends ArithmeticOpContext {
-		public List<ArithmeticOpContext> arithmeticOp() {
-			return getRuleContexts(ArithmeticOpContext.class);
-		}
-
-		public ArithmeticOpContext arithmeticOp(int i) {
-			return getRuleContext(ArithmeticOpContext.class, i);
-		}
-
-		public SubtractionArithmeticContext(ArithmeticOpContext ctx) {
-			copyFrom(ctx);
-		}
-
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if (listener instanceof ExprListener) ((ExprListener) listener).enterSubtractionArithmetic(this);
-		}
-
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if (listener instanceof ExprListener) ((ExprListener) listener).exitSubtractionArithmetic(this);
-		}
-
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof ExprVisitor)
-				return ((ExprVisitor<? extends T>) visitor).visitSubtractionArithmetic(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 
 	public static class IntegerConstantContext extends ArithmeticOpContext {
 		public IntegerConstantContext(ArithmeticOpContext ctx) {
@@ -2058,10 +2018,6 @@ public class ExprParser extends Parser {
 		}
 	}
 
-	public final LogicalOpContext logicalOp() throws RecognitionException {
-		return logicalOp(0);
-	}
-
 	public static class RelationalOpContext extends ParserRuleContext {
 		public RelationalOpContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2081,12 +2037,12 @@ public class ExprParser extends Parser {
 	}
 
 	public static class EqualityRelationalContext extends RelationalOpContext {
-		public List<ArithmeticOpContext> arithmeticOp() {
-			return getRuleContexts(ArithmeticOpContext.class);
-		}
-
 		public EqualityRelationalContext(RelationalOpContext ctx) {
 			copyFrom(ctx);
+		}
+
+		public List<ArithmeticOpContext> arithmeticOp() {
+			return getRuleContexts(ArithmeticOpContext.class);
 		}
 
 		public ArithmeticOpContext arithmeticOp(int i) {
@@ -2111,7 +2067,7 @@ public class ExprParser extends Parser {
 		}
 	}
 
-	public static class InequivalenceRelationalContext extends RelationalOpContext {
+	public static class GreaterEqualRelationalContext extends RelationalOpContext {
 		public List<ArithmeticOpContext> arithmeticOp() {
 			return getRuleContexts(ArithmeticOpContext.class);
 		}
@@ -2120,8 +2076,39 @@ public class ExprParser extends Parser {
 			return getRuleContext(ArithmeticOpContext.class, i);
 		}
 
+		public GreaterEqualRelationalContext(RelationalOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterGreaterEqualRelational(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitGreaterEqualRelational(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitGreaterEqualRelational(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public static class InequivalenceRelationalContext extends RelationalOpContext {
 		public InequivalenceRelationalContext(RelationalOpContext ctx) {
 			copyFrom(ctx);
+		}
+
+		public List<ArithmeticOpContext> arithmeticOp() {
+			return getRuleContexts(ArithmeticOpContext.class);
+		}
+
+		public ArithmeticOpContext arithmeticOp(int i) {
+			return getRuleContext(ArithmeticOpContext.class, i);
 		}
 
 		@Override
@@ -2173,13 +2160,62 @@ public class ExprParser extends Parser {
 		}
 	}
 
-	public static class BooleanConstantContext extends LogicalOpContext {
-		public TerminalNode BoolConstant() {
-			return getToken(ExprParser.BoolConstant, 0);
+	public static class LogicalOpContext extends ParserRuleContext {
+		public LogicalOpContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
 		}
 
+		public LogicalOpContext() {
+		}
+
+		@Override
+		public int getRuleIndex() {
+			return RULE_logicalOp;
+		}
+
+		public void copyFrom(LogicalOpContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+
+	public static class ConjunctionLogicalContext extends LogicalOpContext {
+		public ConjunctionLogicalContext(LogicalOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		public List<LogicalOpContext> logicalOp() {
+			return getRuleContexts(LogicalOpContext.class);
+		}
+
+		public LogicalOpContext logicalOp(int i) {
+			return getRuleContext(LogicalOpContext.class, i);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterConjunctionLogical(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitConjunctionLogical(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitConjunctionLogical(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public static class BooleanConstantContext extends LogicalOpContext {
 		public BooleanConstantContext(LogicalOpContext ctx) {
 			copyFrom(ctx);
+		}
+
+		public TerminalNode BoolConstant() {
+			return getToken(ExprParser.BoolConstant, 0);
 		}
 
 		@Override

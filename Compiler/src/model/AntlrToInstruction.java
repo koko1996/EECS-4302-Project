@@ -93,25 +93,30 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
 		}
 
-		if (type.toLowerCase().equals("int")) {
-			int value = Integer.parseInt(ctx.expression().getText());
-			if (!values.containsKey(id)) {
-				// ADD VISIT HERE TO EVALUATE THE RHS FIRST E.G. 2 + 3 DOESNT WORK WHEREAS 5 DOES
-				values.put(id, value, type);
-				vars.add(id);
+		Evaluator evaluator = new Evaluator();
+		Instruction inst = visit(ctx.expression());
+		inst.accept(evaluator);
+
+		try {
+			if (type.toLowerCase().equals("int")) {
+				int value = Evaluator.getIntVal(evaluator);
+				if (!values.containsKey(id)) {
+					values.put(id, value, type);
+					vars.add(id);
+				}
+				return new VariableInitialization(id, type, values.getValue(id));
+			} else if (type.toLowerCase().equals("bool")) {
+				boolean value = Evaluator.getBoolVal(evaluator);
+				if (!values.containsKey(id)) {
+					values.put(id, value, type);
+					vars.add(id);
+				}
+				return new VariableInitialization(id, type, values.getValue(id));
 			}
-			return new VariableInitialization(id, type, values.getValue(id));
-		} else if (type.toLowerCase().equals("bool")) {
-			boolean value = Boolean.parseBoolean(ctx.expression().getText());
-			if (!values.containsKey(id)) {
-				// ADD VISIT HERE TO EVALUATE THE RHS FIRST
-				values.put(id, value, type);
-				vars.add(id);
-			}
-			return new VariableInitialization(id, type, values.getValue(id));
-		} else {
-			throw new IllegalArgumentException("How did you even get here?");
+		} catch (ClassCastException e) {
+			semanticErrors.add("Error: Type error at " + "line " + line);
 		}
+		return null;
 	}
 
 	@Override
@@ -166,6 +171,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		}
 
 		Instruction exp = visit(ctx.getChild(2));
+		if (exp instanceof ParanthesesExpression) {
+			exp = ((ParanthesesExpression) exp).getExpression();
+		}
+
 		if (exp instanceof Arithmetic) {
 			Arithmetic expArithmetic = (Arithmetic) exp;
 			if (!value.getType().equals("int")) {
@@ -199,10 +208,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				values.getValue(id).setValue(Evaluator.getIntVal(ev));
 				return new ExpressionAssignment(id, expLogical);
 			}
-		} else if (exp instanceof ParanthesesExpression) {
-			// TODO
-//			ParanthesesExpression expParantheses = (ParanthesesExpression) exp;
-
 		}
 		return null;
 	}

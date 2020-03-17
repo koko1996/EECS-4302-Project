@@ -1,5 +1,6 @@
 package model;
 
+import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
@@ -51,8 +52,26 @@ public class Evaluator implements Visitor {
     }
 
     @Override
-    public void visitAssignExpression(Instruction exp) {
-        //TODO
+    public void visitAssignExpression(ExpressionAssignment exp) {
+        Values values = Values.getInstance();
+        String lhsID = exp.getID();
+
+        Evaluator ev = new Evaluator();
+        exp.getExpr().accept(ev);
+
+        if (!values.containsKey(lhsID)) {
+            // Value doesnt exist semantic errors
+        }
+
+        String lhsType = values.getType(lhsID);
+        if (ev.result instanceof IntegerConstant) {
+            int value = ((IntegerConstant) ev.result).getValue();
+            // type check
+        } else if (ev.result instanceof BooleanConstant) {
+            boolean value = ((BooleanConstant) ev.result).getValue();
+            // type check
+        }
+
     }
 
     @Override

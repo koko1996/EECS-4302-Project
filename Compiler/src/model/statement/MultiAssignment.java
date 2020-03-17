@@ -2,6 +2,7 @@ package model.statement;
 
 import model.Instruction;
 import model.Statement;
+import model.Visitor;
 
 import java.util.List;
 
@@ -14,6 +15,11 @@ public class MultiAssignment extends Statement {
 
     public List<Instruction> getAssignments() {
         return this.assignments;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+
     }
 
 //	@Override

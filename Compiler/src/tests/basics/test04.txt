@@ -1,6 +1,9 @@
 int x = 2
 if(true){
 x=3
+x=5
+} else {
+x=4
 }
 int y = x
 bool a = true && false
