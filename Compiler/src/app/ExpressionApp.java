@@ -1,16 +1,15 @@
 package app;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import antlr.ExprLexer;
 import antlr.ExprParser;
 import model.AntlrToProgram;
 import model.InstructionProcessor;
-import model.errorHandler.MyErrorListener;
 import model.Program;
+import model.errorHandler.MyErrorListener;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 
 public class ExpressionApp {

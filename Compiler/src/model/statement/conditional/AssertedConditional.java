@@ -1,6 +1,7 @@
 package model.statement.conditional;
 
 import model.Statement;
+import model.Visitor;
 import model.statement.assignment.Expression;
 
 public class AssertedConditional extends Statement {
@@ -43,7 +44,10 @@ public class AssertedConditional extends Statement {
 	public IfElseIfStatement getIfStatment() {
 		return ifStatment;
 	}
-	
-	
-	
+
+
+	@Override
+	public void accept(Visitor visitor) {
+
+	}
 }
