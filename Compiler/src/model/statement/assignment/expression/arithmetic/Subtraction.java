@@ -1,11 +1,16 @@
 package model.statement.assignment.expression.arithmetic;
 
-import model.statement.assignment.expression.Arithmetic;
+import model.Instruction;
+import model.Visitor;
 
-public class Subtraction extends ArithmeticComposite{
+public class Subtraction extends ArithmeticComposite {
 
-	public Subtraction(Arithmetic left, Arithmetic right) {
-		super(left, right);
-	}
+    public Subtraction(Instruction left, Instruction right) {
+        super(left, right);
+    }
 
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visitSubtractionArithmetic(this);
+    }
 }

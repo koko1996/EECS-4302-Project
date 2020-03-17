@@ -20,7 +20,6 @@ public class InstructionProcessor {
 	public InstructionProcessor(List<Instruction> instructions, List<String> vars) {
 		this.instructions = instructions;
 		this.vars = vars;
-
 	}
 
 
@@ -29,7 +28,9 @@ public class InstructionProcessor {
 	 */
 	public List<String> getEvaluationResults() {
 		List<String> evaluations = new ArrayList<String>();
-
+		for (Instruction inst : instructions) {
+			evaluations.add(inst.toString());
+		}
 		return evaluations;
 	}
 
