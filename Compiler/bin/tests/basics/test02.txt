@@ -1,0 +1,17 @@
+x-1
+x
+x=-1
+x=x-1
+if(x>t){
+        x%y
+        z-3
+} else if(x>r) {
+        x%y
+        z-3
+        a=q+a
+} else if(x+1>r) {
+    x=x/y
+} else {
+        x%y
+        z-3
+}
