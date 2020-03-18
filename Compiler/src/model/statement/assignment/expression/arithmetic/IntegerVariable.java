@@ -39,6 +39,6 @@ public class IntegerVariable extends Arithmetic {
 
     @Override
     public void accept(Visitor visitor) {
-        //visitor.visitAdditionArithmetic(this); //TODO
-    }
+		visitor.visitIntegerVariable(this);
+	}
 }

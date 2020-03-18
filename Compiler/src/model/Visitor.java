@@ -1,6 +1,8 @@
 package model;
 
+import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Logical;
+import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
@@ -23,7 +25,7 @@ public interface Visitor {
 
     void visitMultipleAssignments(Instruction exp); //TODO
 
-    void visitAssignExpression(Instruction exp); //TODO
+    void visitAssignExpression(ExpressionAssignment exp); //TODO
 
     void visitAssignAssignment(Instruction exp); //TODO
 
@@ -33,7 +35,7 @@ public interface Visitor {
 
     void visitLogicalOpteration(Logical exp);
 
-    void visitParanthesesExpression(Instruction exp);
+    void visitParanthesesExpression(ParanthesesExpression exp);
 
     void visitDivisionArithmetic(Division exp);
 
@@ -43,13 +45,15 @@ public interface Visitor {
 
     void visitMultiplicationArithmetic(Multiplication exp);
 
-    void visitNegationIntegerConstant(Instruction exp); // SHOULDNT EXIST
+    void visitNegationIntegerConstant(IntegerConstant exp); // SHOULDNT EXIST
 
     void visitAdditionArithmetic(Addition exp);
 
     void visitSubtractionArithmetic(Subtraction exp);
 
     void visitIntegerConstant(IntegerConstant exp);
+
+    void visitIntegerVariable(IntegerVariable exp);
 
     void visitLessRelational(LessThan exp);
 

@@ -1,13 +1,17 @@
 package model.statement.assignment.expression;
 
+import model.Value;
+import model.Visitor;
 import model.statement.assignment.Expression;
 
-public abstract class ParanthesesExpression extends Expression{
+import java.util.Map;
+
+public class ParanthesesExpression extends Expression {
 	private Expression expr;
 
 	/*
 	 * Constructor
-	 * 
+	 *
 	 * @param expr the underlying expression
 	 */
 	public ParanthesesExpression(Expression expr) {
@@ -16,7 +20,7 @@ public abstract class ParanthesesExpression extends Expression{
 
 	/*
 	 * retrieve the underlying expression
-	 * 
+	 *
 	 * @return the underlying expression (without the negation)
 	 */
 	public Expression getExpression() {
@@ -24,4 +28,13 @@ public abstract class ParanthesesExpression extends Expression{
 	}
 
 
+	@Override
+	public void accept(Visitor visitor) {
+		visitor.visitParanthesesExpression(this);
+	}
+
+	@Override
+	public Map<String, Value> getVariables() {
+		return null;
+	}
 }
