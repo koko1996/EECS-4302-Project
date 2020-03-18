@@ -5,4 +5,4 @@ if (x>y){
     x=x+1
 } else {
     y=y+1
-} if_ensure ( ((x>y) and  (x = x_old+1 and y=y_old)) or ((x<=y) and  (x = x_old and y = y_old+1)))
+} if_ensure ( ((x>y) and  (x = x_old+2+3+1 and y=y_old)) or ((x<=y) and  (x = x_old and y = y_old+1)))

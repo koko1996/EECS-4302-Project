@@ -19,6 +19,8 @@ public class Translator implements Visitor {
     public int statementsTranslated = 0;
 
     public List<String> result;
+    
+    public Map<String,String> varsMap;
 
     @Override
     public void visitConditionalAssertionStatement(AssertedConditional exp) {
@@ -65,6 +67,7 @@ public class Translator implements Visitor {
         String precondTranslatedString = precondSB.toString();
 
         Translator postcondTranslator = new Translator();
+        postcondTranslator.varsMap = varsMap;
         exp.getPreCond().accept(postcondTranslator);
         List<String> postcondTranslated = postcondTranslator.result;
         StringBuilder postcondSB = new StringBuilder();
@@ -100,11 +103,13 @@ public class Translator implements Visitor {
         sb.append("\tall n: (").append(stateName).append(") => ")
 
         statementsTranslated++;
+        
+        
     }
 
     @Override
     public void visitIfConditional(Instruction exp) {
-
+    	
     }
 
     @Override
@@ -129,7 +134,7 @@ public class Translator implements Visitor {
 
     @Override
     public void visitAssignExpression(Instruction exp) {
-
+    	
     }
 
     @Override
@@ -149,6 +154,7 @@ public class Translator implements Visitor {
 
     @Override
     public void visitLogicalOpteration(Logical exp) {
+    	
 
     }
 

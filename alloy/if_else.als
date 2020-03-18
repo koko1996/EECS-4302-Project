@@ -15,7 +15,9 @@ pred addOneConditionalEnsure [x_pre,y_pre : Int , x_post, y_post : Int] {
 }
 
 assert conditional {
-	all n: num | (n.arg1 > 0) => (n.arg1 > n.arg2 => addOneConditionalEnsure[n.arg1,n.arg2,n.arg1.add[1],n.arg2]  else addOneConditionalEnsure[n.arg1,n.arg2,n.arg1,n.arg2.add[1]])
+	NAME = NAME_old * NAME2
+	if_ensure ( ((x>y) and  (x = x_old+1 and y=y_old)) or ((x<=y) and  (x = x_old and y = y_old+1)))
+	all n: num | (n.arg1 > 0) => ((n.arg1 > n.arg2 and addOneConditionalEnsure[n.arg1,n.arg2,n.arg1.add[1],n.arg2])  or (n.arg1 <= n.arg2 and addOneConditionalEnsure[n.arg1,n.arg2,n.arg1,n.arg2.add[1]]))
 }
 
 check conditional
