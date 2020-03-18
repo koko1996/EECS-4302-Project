@@ -1,8 +1,11 @@
 package model.statement.conditional;
 
 import model.Statement;
+import model.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
+
+import java.util.Map;
 
 public class AssertedConditional extends Statement {
 	private	Expression preCond;
@@ -48,6 +51,15 @@ public class AssertedConditional extends Statement {
 
 	@Override
 	public void accept(Visitor visitor) {
-
+		visitor.visitConditionalAssertionStatement(this);
 	}
+
+	@Override
+	public Map<String, Value> getVariables() {
+		Map<String, Value> preCondVars = preCond.getVariables();
+		Map<String, Value> pastCondVars = postCond.getVariables();
+		Map<String, Value> ifElseIfVars = ifStatment.getVariables();
+		return this.combineVariables(preCondVars, pastCondVars, ifElseIfVars);
+	}
+
 }

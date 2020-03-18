@@ -5,10 +5,13 @@ import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
+import model.statement.conditional.AssertedConditional;
+import model.statement.conditional.PostcondStatement;
+import model.statement.conditional.PrecondStatement;
 
 public interface Visitor {
 
-    void visitConditionalAssertionStatement(Instruction exp); //TODO
+    void visitConditionalAssertionStatement(AssertedConditional exp); //TODO
 
     void visitIfConditional(Instruction exp); //TODO
 
@@ -75,4 +78,8 @@ public interface Visitor {
     void visitBooleanConstant(BooleanConstant exp);
 
     void visitRelationalOpLogical(Instruction exp); //TODO
+
+    void visitPrecondStatement(PrecondStatement exp);
+
+    void visitPostcondStatement(PostcondStatement exp);
 }

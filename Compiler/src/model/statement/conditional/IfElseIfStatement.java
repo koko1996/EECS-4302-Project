@@ -1,12 +1,14 @@
 package model.statement.conditional;
 
-import model.Evaluator;
 import model.Instruction;
 import model.Statement;
+import model.Value;
 import model.Visitor;
 import model.statement.MultiAssignment;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class IfElseIfStatement extends Statement {
 	private Instruction logicalCondition;
@@ -63,11 +65,22 @@ public class IfElseIfStatement extends Statement {
 
 	@Override
 	public void accept(Visitor visitor) {
-		Evaluator ev = new Evaluator();
-		this.logicalCondition.accept(ev);
-		boolean ifConditionMeets = Evaluator.getBoolVal(ev);
-		if (ifConditionMeets) {
-			ev = new Evaluator();
-		}
+//		Evaluator ev = new Evaluator();
+//		this.logicalCondition.accept(ev);
+//		boolean ifConditionMeets = Evaluator.getBoolVal(ev);
+//		if (ifConditionMeets) {
+//			ev = new Evaluator();
+//		}
 	}
+
+	@Override
+	public Map<String, Value> getVariables() {
+		Map<String, Value> logicalConditionVars = logicalCondition.getVariables();
+		Map<String, Value> assignmentsVars = assignments.getVariables();
+		Map<String, Value> ifElseIfVars = new HashMap<>();
+		elseIfStatments.forEach(each -> ifElseIfVars.putAll(each.getVariables()));
+		Map<String, Value> elseVars = elseStatment.getVariables();
+		return this.combineVariables(logicalConditionVars, assignmentsVars, ifElseIfVars, elseVars);
+	}
+
 }
