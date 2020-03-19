@@ -22,7 +22,7 @@ public class AntlrToProgram extends ExprBaseVisitor<Program> {
 	public Program visitProgram(ProgramContext ctx) {
 		Program prog = new Program();
 		this.semanticErrors = new ArrayList<>();
-		// a helper visitor for transforming each subtree into an Expression
+		// a helper visitor for transforming each subtree into an Instruction
 		// Object
 		AntlrToInstruction exprVisitor = new AntlrToInstruction(semanticErrors);
 		prog.setVariables(exprVisitor.getVars());

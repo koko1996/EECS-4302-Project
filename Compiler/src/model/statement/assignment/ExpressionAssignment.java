@@ -1,8 +1,10 @@
 package model.statement.assignment;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import model.Value;
+import model.Values;
 import model.Visitor;
 import model.statement.Assignment;
 
@@ -40,7 +42,12 @@ public class ExpressionAssignment extends Assignment {
 
 	@Override
 	public Map<String, Value> getVariables() {
-		return expr.getVariables();
+		Map<String, Value> result = new HashMap<>();
+		// TODO
+		Value temp= new Value(0,Values.getInstance().getType(id)); 
+		result.put(id, temp);
+		result.putAll(expr.getVariables());
+		return result;
 	}
 	
 	

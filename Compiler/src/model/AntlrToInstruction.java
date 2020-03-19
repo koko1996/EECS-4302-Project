@@ -2,7 +2,6 @@ package model;
 
 import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
-import model.declaration.VariableDeclaration;
 import model.declaration.VariableInitialization;
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
@@ -59,11 +58,14 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitStatement(ExprParser.StatementContext ctx) {
-		return super.visitStatement(ctx);
+		Instruction exp = visit(ctx.getChild(0));
+		return exp;
 	}
 
 	@Override
 	public Instruction visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx) {
+		// If values are not given by the user then we make default value
+		
 		Token idToken = ctx.ID().getSymbol();
 
 		int line = idToken.getLine();
@@ -71,14 +73,14 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String type = ctx.VARIABLE().getText();
 		String id = ctx.ID().getText();
 
-		if (values.containsKey(id)) {
+		if (Values.getInstance().containsKey(id)) {
 			semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
 		} else {
 			vars.add(id);
-			values.put(id, null, type);
+			Values.getInstance().put(id, null, type);
 		}
 
-		return new VariableDeclaration(id, type);
+		return new VariableInitialization(id, type);
 	}
 
 
@@ -156,17 +158,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	public Instruction visitAssignExpression(ExprParser.AssignExpressionContext ctx) {
 		Instruction exp = visit(ctx.getChild(0));
 		return exp;
-//		if (exp instanceof Arithmetic){
-//				
-//		} else if (exp instanceof Relational) {
-//			
-//		} else if (exp instanceof Logical) {
-//			
-//		}  else if (exp instanceof  ParanthesesExpression) {
-//			
-//		} else {
-//			throw new IllegalStateException("Incorrect instance in visitAssignExpression");
-//		}
 	}
 
 	@Override
@@ -176,6 +167,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
 		Value value;
+
 		// What should this do if variable not declared? Should it resume or break?
 		try {
 			value = this.values.getValue(id);
@@ -185,7 +177,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			return null; // to be fixed
 		}
 
-		Instruction exp = visit(ctx.getChild(2));
+		Instruction exp = visit(ctx.expression());
 		if (exp instanceof ParanthesesExpression) {
 			exp = ((ParanthesesExpression) exp).getExpression();
 		}
@@ -229,9 +221,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) {
-		String valText = ctx.getChild(0).getText();
-		int value = Integer.parseInt(valText);
-		return new IntegerConstant(value);
+		Instruction exp = visit(ctx.getChild(0));
+		return exp;
 	}
 
 	@Override

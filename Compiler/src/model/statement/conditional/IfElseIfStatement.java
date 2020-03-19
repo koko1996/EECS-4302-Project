@@ -71,8 +71,14 @@ public class IfElseIfStatement extends Statement {
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String, Value> logicalConditionVars = logicalCondition.getVariables();
+        System.out.println("logicalConditionVars "+logicalConditionVars.size());
+        System.out.println("logicalConditionVars "+logicalConditionVars.toString());
 		Map<String, Value> assignmentsVars = assignments.getVariables();
+        System.out.println("assignmentsVars "+assignmentsVars.size());
+        System.out.println("assignmentsVars "+assignmentsVars.toString());
 		Map<String, Value> ifElseIfVars = new HashMap<>();
+        System.out.println("ifElseIfVars "+ifElseIfVars.size());
+        System.out.println("ifElseIfVars "+ifElseIfVars.toString());
 		elseIfStatments.forEach(each -> ifElseIfVars.putAll(each.getVariables()));
 		Map<String, Value> elseVars =new HashMap<>();
 		if (elseStatment != null){

@@ -18,9 +18,4 @@ public class GreaterThan extends Relational {
         visitor.visitGreaterRelational(this);
     }
 
-	@Override
-	public Map<String, Value> getVariables() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
