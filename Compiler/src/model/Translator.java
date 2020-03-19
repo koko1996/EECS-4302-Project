@@ -31,7 +31,9 @@ public class Translator implements Visitor {
     
     public Map<String, String> originalToAlloy;
 
-    private final String fieldName = "field"; 
+    private final String fieldName = "field";
+    
+    public String finalResult ;
     
     private String postOldSyntax="";
     
@@ -113,6 +115,8 @@ public class Translator implements Visitor {
         sb.append("check ").append(assertName).append(statementsTranslated);
 
         statementsTranslated++;
+        
+        this.finalResult = sb.toString();
         
     }
 

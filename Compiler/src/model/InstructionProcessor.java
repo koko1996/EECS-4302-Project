@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.statement.conditional.AssertedConditional;
+
 /*
  * ExpressionProcessor class to process given expression
  */
@@ -29,7 +31,11 @@ public class InstructionProcessor {
 	public List<String> getEvaluationResults() {
 		List<String> evaluations = new ArrayList<String>();
 		for (Instruction inst : instructions) {
-			evaluations.add(inst.toString());
+			if(inst instanceof AssertedConditional){
+				Translator tr = new Translator();
+				inst.accept(tr);
+				evaluations.add(tr.result.toString());				
+			}
 		}
 		return evaluations;
 	}

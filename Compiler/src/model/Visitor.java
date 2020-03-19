@@ -18,10 +18,6 @@ public interface Visitor {
     void visitConditionalAssertionStatement(AssertedConditional exp); //TODO
 
     void visitIfConditional(IfElseIfStatement exp);
-    
-    void visitElseIfConditional(Instruction exp); //TODO
-
-    void visitElseConditional(Instruction exp); //TODO
 
     void visitEpsilonConditional(Instruction exp); //TODO
 

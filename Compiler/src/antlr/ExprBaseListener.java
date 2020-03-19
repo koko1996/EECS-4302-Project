@@ -13,249 +13,168 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class ExprBaseListener implements ExprListener {
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterProgram(ExprParser.ProgramContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitProgram(ExprParser.ProgramContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterVariableDeclaration(ExprParser.VariableDeclarationContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitVariableDeclaration(ExprParser.VariableDeclarationContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterStatement(ExprParser.StatementContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitStatement(ExprParser.StatementContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void exitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) {
-	}
-
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override
-	public void enterIfConditional(ExprParser.IfConditionalContext ctx) {
-	}
-
+	@Override public void enterProgram(ExprParser.ProgramContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override
-	public void exitIfConditional(ExprParser.IfConditionalContext ctx) {
-	}
-
+	@Override public void exitProgram(ExprParser.ProgramContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override
-	public void enterElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
-	}
-
+	@Override public void enterVariableDeclaration(ExprParser.VariableDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override
-	public void exitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
-	}
-
+	@Override public void exitVariableDeclaration(ExprParser.VariableDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override
-	public void enterElseConditional(ExprParser.ElseConditionalContext ctx) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitElseConditional(ExprParser.ElseConditionalContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterEpsilonConditional(ExprParser.EpsilonConditionalContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterAssignExpression(ExprParser.AssignExpressionContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void exitAssignExpression(ExprParser.AssignExpressionContext ctx) {
-	}
-
+	@Override public void enterVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override
-	public void enterAssignAssignment(ExprParser.AssignAssignmentContext ctx) {
-	}
-
+	@Override public void exitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override
-	public void exitAssignAssignment(ExprParser.AssignAssignmentContext ctx) {
-	}
-
+	@Override public void enterVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override
-	public void enterArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) {
-	}
-
+	@Override public void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStatement(ExprParser.StatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStatement(ExprParser.StatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIfConditional(ExprParser.IfConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIfConditional(ExprParser.IfConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterElseIfConditional(ExprParser.ElseIfConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterElseConditional(ExprParser.ElseConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitElseConditional(ExprParser.ElseConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEpsilonConditional(ExprParser.EpsilonConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssignExpression(ExprParser.AssignExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssignExpression(ExprParser.AssignExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssignAssignment(ExprParser.AssignAssignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssignAssignment(ExprParser.AssignAssignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

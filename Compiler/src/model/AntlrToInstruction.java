@@ -135,7 +135,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		if (!rhsType.equals(lhsType)) {
 			semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
 					rhsID, rhsIDLine, rhsColumnLine, rhsType, lhsType));
-			return new VariableInitialization(lhsID, lhsType, null);
+			return new VariableInitialization(lhsID, lhsType);
 		} else {
 			values.put(lhsID, values.getValue(rhsID).value, rhsType);
 		}
