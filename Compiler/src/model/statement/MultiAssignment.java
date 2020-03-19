@@ -28,7 +28,9 @@ public class MultiAssignment extends Statement {
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String,Value> result = new HashMap<>();
-		assignments.forEach(each -> result.putAll(each.getVariables()));
+		for(Instruction assign: this.assignments ){
+			result.putAll(assign.getVariables());
+		}
 		return result;
 	}
 

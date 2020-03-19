@@ -13,7 +13,12 @@ public abstract class Instruction {
     @SafeVarargs
     protected final Map<String, Value> combineVariables(Map<String, Value>... vars) {
         Map<String, Value> result = new HashMap<>();
-        Arrays.asList(vars).forEach(result::putAll);
+        for(Map<String, Value> mp:vars){
+        	if(mp!=null){
+        		result.putAll(mp);	
+        	}
+        	
+        }
         return result;
     }
 }

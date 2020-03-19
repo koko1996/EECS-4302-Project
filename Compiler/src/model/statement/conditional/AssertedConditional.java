@@ -1,5 +1,6 @@
 package model.statement.conditional;
 
+import model.Instruction;
 import model.Statement;
 import model.Value;
 import model.Visitor;
@@ -8,9 +9,9 @@ import model.statement.assignment.Expression;
 import java.util.Map;
 
 public class AssertedConditional extends Statement {
-	private	Expression preCond;
-	private	Expression postCond;
-	private IfElseIfStatement ifStatment;
+	private	Instruction preCond;
+	private	Instruction postCond;
+	private Instruction ifStatment;
 	
 	
 	/*
@@ -18,7 +19,7 @@ public class AssertedConditional extends Statement {
 	 * @param postCond
 	 * @param ifStatment
 	 */
-	public AssertedConditional(Expression preCond, Expression postCond, IfElseIfStatement ifStatment) {
+	public AssertedConditional(Instruction preCond, Instruction postCond, Instruction ifStatment) {
 		this.preCond = preCond;
 		this.postCond = postCond;
 		this.ifStatment = ifStatment;
@@ -28,7 +29,7 @@ public class AssertedConditional extends Statement {
 	/**
 	 * @return the preCond
 	 */
-	public Expression getPreCond() {
+	public Instruction getPreCond() {
 		return preCond;
 	}
 
@@ -36,7 +37,7 @@ public class AssertedConditional extends Statement {
 	/**
 	 * @return the postCond
 	 */
-	public Expression getPostCond() {
+	public Instruction getPostCond() {
 		return postCond;
 	}
 
@@ -44,7 +45,7 @@ public class AssertedConditional extends Statement {
 	/**
 	 * @return the ifStatment
 	 */
-	public IfElseIfStatement getIfStatment() {
+	public Instruction getIfStatment() {
 		return ifStatment;
 	}
 

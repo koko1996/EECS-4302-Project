@@ -5,6 +5,7 @@ import antlr.ExprParser;
 import model.declaration.VariableDeclaration;
 import model.declaration.VariableInitialization;
 import model.statement.MultiAssignment;
+import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Arithmetic;
 import model.statement.assignment.expression.Logical;
@@ -13,8 +14,10 @@ import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
+import model.statement.conditional.AssertedConditional;
 import model.statement.conditional.IfElseIfStatement;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.IntSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +154,19 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitAssignExpression(ExprParser.AssignExpressionContext ctx) {
-		return super.visitAssignExpression(ctx);
+		Instruction exp = visit(ctx.getChild(0));
+		return exp;
+//		if (exp instanceof Arithmetic){
+//				
+//		} else if (exp instanceof Relational) {
+//			
+//		} else if (exp instanceof Logical) {
+//			
+//		}  else if (exp instanceof  ParanthesesExpression) {
+//			
+//		} else {
+//			throw new IllegalStateException("Incorrect instance in visitAssignExpression");
+//		}
 	}
 
 	@Override
@@ -214,22 +229,27 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) {
-		return visit(ctx.getChild(0));
+		String valText = ctx.getChild(0).getText();
+		int value = Integer.parseInt(valText);
+		return new IntegerConstant(value);
 	}
 
 	@Override
 	public Instruction visitRelationalOperation(ExprParser.RelationalOperationContext ctx) {
-		return super.visitRelationalOperation(ctx);
+		Instruction exp = visit(ctx.getChild(0));
+		return exp;
 	}
 
 	@Override
 	public Instruction visitLogicalOpteration(ExprParser.LogicalOpterationContext ctx) {
-		return super.visitLogicalOpteration(ctx);
+		Instruction exp = visit(ctx.getChild(0));
+		return exp;
 	}
 
 	@Override
 	public Instruction visitParanthesesExpression(ExprParser.ParanthesesExpressionContext ctx) {
-		return super.visitParanthesesExpression(ctx);
+		Instruction exp = visit(ctx.getChild(1));
+		return exp;
 	}
 
 	@Override
@@ -241,9 +261,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableArithmetic(ExprParser.VariableArithmeticContext ctx) {
-		// TODO
-
-		return super.visitVariableArithmetic(ctx);
+		// TODO check that the ID is defined previously
+		return new IntegerVariable(ctx.ID().getText(),values.getValue(ctx.ID().getText(), 1));
 	}
 
 	@Override
@@ -347,7 +366,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableLogical(ExprParser.VariableLogicalContext ctx) {
-		return super.visitVariableLogical(ctx);
+		return new BooleanVariable(ctx.ID().getText(),values.getValue(ctx.ID().getText(),true));
 	}
 
 	@Override
@@ -378,8 +397,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) {
-		// TODO
-		return super.visitConditionalAssertionStatement(ctx);
+		return new AssertedConditional(visit(ctx.getChild(2)),visit(ctx.getChild(7)), visit(ctx.getChild(4)));	
 	}
 
 	@Override

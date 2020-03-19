@@ -65,12 +65,7 @@ public class IfElseIfStatement extends Statement {
 
 	@Override
 	public void accept(Visitor visitor) {
-//		Evaluator ev = new Evaluator();
-//		this.logicalCondition.accept(ev);
-//		boolean ifConditionMeets = Evaluator.getBoolVal(ev);
-//		if (ifConditionMeets) {
-//			ev = new Evaluator();
-//		}
+        visitor.visitIfConditional(this);
 	}
 
 	@Override
@@ -79,7 +74,11 @@ public class IfElseIfStatement extends Statement {
 		Map<String, Value> assignmentsVars = assignments.getVariables();
 		Map<String, Value> ifElseIfVars = new HashMap<>();
 		elseIfStatments.forEach(each -> ifElseIfVars.putAll(each.getVariables()));
-		Map<String, Value> elseVars = elseStatment.getVariables();
+		Map<String, Value> elseVars =new HashMap<>();
+		if (elseStatment != null){
+			elseVars = elseStatment.getVariables();	
+		}
+		
 		return this.combineVariables(logicalConditionVars, assignmentsVars, ifElseIfVars, elseVars);
 	}
 

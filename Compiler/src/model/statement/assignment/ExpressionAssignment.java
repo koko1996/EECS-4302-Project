@@ -40,8 +40,7 @@ public class ExpressionAssignment extends Assignment {
 
 	@Override
 	public Map<String, Value> getVariables() {
-		// TODO Auto-generated method stub
-		return null;
+		return expr.getVariables();
 	}
 	
 	
