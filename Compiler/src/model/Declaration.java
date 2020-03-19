@@ -1,9 +1,5 @@
 package model;
 
-public class Declaration extends Instruction {
+public abstract class Declaration extends Instruction {
 
-    @Override
-    public void accept(Visitor visitor) {
-        //TODO
-    }
 }

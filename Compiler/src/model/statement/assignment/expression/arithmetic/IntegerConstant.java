@@ -1,5 +1,9 @@
 package model.statement.assignment.expression.arithmetic;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import model.Value;
 import model.Visitor;
 import model.statement.assignment.expression.Arithmetic;
 
@@ -29,5 +33,14 @@ public class IntegerConstant extends Arithmetic {
     public void accept(Visitor visitor) {
         visitor.visitIntegerConstant(this);
     }
+
+
+	@Override
+	public Map<String, Value> getVariables() {
+		Map<String,Value> result = new HashMap<>();
+		Value val = new Value(value,"int");
+		result.put("",val);
+		return result;
+	}
 }
 

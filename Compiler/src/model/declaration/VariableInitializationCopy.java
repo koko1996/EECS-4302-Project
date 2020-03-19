@@ -1,9 +1,14 @@
 package model.declaration;
 
+import java.util.Map;
+
 import model.Declaration;
+import model.Value;
+import model.Visitor;
 
 /*
  * VariableInitialization Class that represents initialization of a variable
+ * REMOVE THIS CLASS
  */
 public class VariableInitializationCopy extends Declaration {
     private String id;
@@ -51,4 +56,16 @@ public class VariableInitializationCopy extends Declaration {
     public boolean getValue() {
         return this.value;
     }
+
+	@Override
+	public void accept(Visitor visitor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Map<String, Value> getVariables() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

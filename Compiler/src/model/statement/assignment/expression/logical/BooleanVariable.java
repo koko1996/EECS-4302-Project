@@ -1,4 +1,8 @@
 package model.statement.assignment.expression.logical;
+import java.util.HashMap;
+import java.util.Map;
+
+import model.Value;
 import model.Visitor;
 import model.statement.assignment.expression.Logical;
 
@@ -40,4 +44,12 @@ public class BooleanVariable extends Logical{
     public void accept(Visitor visitor) {
         //TODO
     }
+
+	@Override
+	public Map<String, Value> getVariables() {
+		Map<String,Value> result = new HashMap<>();
+		Value val = new Value(value,"bool");
+		result.put(id,val);
+		return result;
+	}
 }

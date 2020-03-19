@@ -1,10 +1,15 @@
 package model.declaration;
 
+import java.util.Map;
+
 import model.Declaration;
+import model.Value;
+import model.Visitor;
 
 
 /*
  * VariableDeclaration Class that represents declaration of a variable
+ * REMOVE THIS CLASS
  */
 public class VariableDeclaration extends Declaration {
 	private String id;
@@ -38,6 +43,18 @@ public class VariableDeclaration extends Declaration {
 	 */
 	public String getType() {
 		return this.type;
+	}
+
+	@Override
+	public void accept(Visitor visitor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Map<String, Value> getVariables() {
+		// TODO
+		return null;
 	}
 
 }

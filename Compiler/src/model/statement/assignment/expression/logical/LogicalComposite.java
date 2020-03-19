@@ -1,11 +1,15 @@
 package model.statement.assignment.expression.logical;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import model.Instruction;
+import model.Value;
 import model.Visitor;
 import model.statement.assignment.expression.Logical;
 
 
-public class LogicalComposite extends Logical {
+public abstract class LogicalComposite extends Logical {
     protected Instruction left;
     protected Instruction right;
 
@@ -44,5 +48,11 @@ public class LogicalComposite extends Logical {
         //TODO
     }
 
-
+	@Override
+	public Map<String, Value> getVariables() {
+		Map<String,Value> result = new HashMap<>();
+		result.putAll(this.left.getVariables());
+		result.putAll(this.right.getVariables());
+		return result;
+	}
 }

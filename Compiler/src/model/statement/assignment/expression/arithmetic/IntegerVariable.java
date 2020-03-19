@@ -1,5 +1,6 @@
 package model.statement.assignment.expression.arithmetic;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import model.Value;
@@ -47,7 +48,9 @@ public class IntegerVariable extends Arithmetic {
 
 	@Override
 	public Map<String, Value> getVariables() {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String,Value> result = new HashMap<>();
+		Value val = new Value(value,"int");
+		result.put(id,val);
+		return result;
 	}
 }

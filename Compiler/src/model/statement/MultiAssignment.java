@@ -1,10 +1,13 @@
 package model.statement;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import model.Instruction;
 import model.Statement;
+import model.Value;
 import model.Visitor;
-
-import java.util.List;
 
 public class MultiAssignment extends Statement {
     private List<Instruction> assignments;
@@ -22,10 +25,11 @@ public class MultiAssignment extends Statement {
 
     }
 
-//	@Override
-//	public String toString() {
-//		StringBuilder sb = new StringBuilder();
-//		assignments.forEach(each -> sb.append(each.toString()).append("\n"));
-//		return sb.toString();
-//	}
+	@Override
+	public Map<String, Value> getVariables() {
+		Map<String,Value> result = new HashMap<>();
+		assignments.forEach(each -> result.putAll(each.getVariables()));
+		return result;
+	}
+
 }

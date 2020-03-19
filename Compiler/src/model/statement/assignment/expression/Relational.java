@@ -1,6 +1,10 @@
 package model.statement.assignment.expression;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import model.Instruction;
+import model.Value;
 import model.statement.assignment.Expression;
 
 public abstract class Relational extends Expression {
@@ -36,5 +40,13 @@ public abstract class Relational extends Expression {
     public Instruction getRightExpr() {
         return this.right;
     }
+	
+    @Override
+	public Map<String, Value> getVariables() {
+		Map<String,Value> result = new HashMap<>();
+		result.putAll(this.left.getVariables());
+		result.putAll(this.right.getVariables());
+		return result;
+	}
 
 }

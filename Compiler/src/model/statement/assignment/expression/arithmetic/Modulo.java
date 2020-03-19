@@ -1,6 +1,9 @@
 package model.statement.assignment.expression.arithmetic;
 
+import java.util.Map;
+
 import model.Instruction;
+import model.Value;
 import model.Visitor;
 
 public class Modulo extends ArithmeticComposite {

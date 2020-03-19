@@ -1,5 +1,6 @@
 package model;
 
+import model.statement.MultiAssignment;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
@@ -17,12 +18,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.misc.IntSet;
+
 
 public class Translator implements Visitor {
 
     public int statementsTranslated = 0;
 
     public List<String> result;
+    
+    public Map<String,String> resultMap;
     
     public Map<String, String> originalToAlloy;
 
@@ -84,6 +89,7 @@ public class Translator implements Visitor {
         
         sb.append("fun ").append(funName).append(statementsTranslated).
                 append(" (").append("param : ").append(stateName).append(") : ").append(stateName).append("{\n");
+        sb.append(functionTranslatedString).append(" \n}");
 
 
 
@@ -114,30 +120,31 @@ public class Translator implements Visitor {
     public void visitIfConditional(IfElseIfStatement exp) {
         result = new ArrayList<>();
         
+        Translator conditionTranslator = new Translator();
+        conditionTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getCondition().accept(conditionTranslator);        
+        
         Translator assigTranslator = new Translator();
         assigTranslator.originalToAlloy = this.originalToAlloy;
         exp.getAssignments().accept(assigTranslator);
         
+        
         Translator elseIfTranslator = new Translator();
         elseIfTranslator .originalToAlloy = this.originalToAlloy;
-        exp.getElseStatment().accept(elseIfTranslator);
+        exp.getElseStatment().getAssignments().accept(elseIfTranslator);
         
         for(String key : this.originalToAlloy.keySet()){
-        	
+        	result.add(key);
+        	result.add(" = (");
+        	result.addAll(conditionTranslator.result);
+        	result.add(" => ");
+        	result.add(assigTranslator.resultMap.get(key));
+        	result.add(" else ");
+        	result.add(elseIfTranslator.resultMap.get(key));
+        	result.add(" )");
+        	result.add("and");
         }
-        
-
-        result.addAll();
-    }
-
-    @Override
-    public void visitElseIfConditional(Instruction exp) {
-
-    }
-
-    @Override
-    public void visitElseConditional(Instruction exp) {
-
+        result.remove(result.size()-1);
     }
 
     @Override
@@ -146,12 +153,18 @@ public class Translator implements Visitor {
     }
 
     @Override
-    public void visitMultipleAssignments(Instruction exp) {
-
+    public void visitMultipleAssignments(MultiAssignment exp) {
+    	resultMap = new HashMap<>();
+    	for (Instruction inst: exp.getAssignments()){
+            Translator instTranslator = new Translator();
+            instTranslator.originalToAlloy = this.originalToAlloy;
+            inst.accept(instTranslator);
+            resultMap.put(instTranslator.result.get(0), instTranslator.result.get(2));
+    	}
     }
 
     public void visitAssignExpression(ExpressionAssignment exp) {
-        result = new ArrayList<>();
+        result=new ArrayList<>();
         result.add(exp.getID());
 
         Translator rhsTranslator = new Translator();

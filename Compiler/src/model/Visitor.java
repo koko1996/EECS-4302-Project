@@ -1,5 +1,6 @@
 package model;
 
+import model.statement.MultiAssignment;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
@@ -23,8 +24,6 @@ public interface Visitor {
     void visitElseConditional(Instruction exp); //TODO
 
     void visitEpsilonConditional(Instruction exp); //TODO
-
-    void visitMultipleAssignments(Instruction exp); //TODO
 
     void visitAssignExpression(ExpressionAssignment exp); //TODO
 
@@ -87,4 +86,6 @@ public interface Visitor {
     void visitPrecondStatement(PrecondStatement exp);
 
     void visitPostcondStatement(PostcondStatement exp);
+
+	void visitMultipleAssignments(MultiAssignment exp);
 }

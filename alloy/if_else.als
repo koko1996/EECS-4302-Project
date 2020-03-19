@@ -5,19 +5,18 @@ sig num{
 
 
 //y=2
-//if (x>y){
-//x=y+ 1
-//y = 3
-//    
-//} else {
-//    y=y+1
-//}
+//if (x>y){	
+	y=y+3  
+	x=x+1
+} else {
+   	y=y+1
+}
 
 
 fun addOneConditional (x,y : Int) : num{
 	{ v : num | 
-        v.arg1 = ((x> y) => field.arg1_1 else x)
-        and v.arg2= ((x > y) => field.arg2_1 else y)
+        v.arg1 = ((x> y) => x.add[1] else x)
+        and v.arg2= ((x > y) => y.add[3] else y)
 	}
 }
 

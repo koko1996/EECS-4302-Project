@@ -4,6 +4,7 @@ import model.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ParanthesesExpression extends Expression {
@@ -35,6 +36,8 @@ public class ParanthesesExpression extends Expression {
 
 	@Override
 	public Map<String, Value> getVariables() {
-		return null;
+		Map<String,Value> result = new HashMap<>();
+		result.putAll(this.expr.getVariables());
+		return result;
 	}
 }
