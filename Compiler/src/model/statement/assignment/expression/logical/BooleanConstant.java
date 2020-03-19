@@ -37,8 +37,8 @@ public class BooleanConstant extends Logical{
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String,Value> result = new HashMap<>();
-		Value val = new Value(value,"bool");
-		result.put("",val);
+//		Value val = new Value(value,"bool");
+//		result.put("",val);
 		return result;
 	}
 }

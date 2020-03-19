@@ -132,10 +132,12 @@ public class Translator implements Visitor {
         String funName = "funStatement";
         String assertName = "assertStatement";
         Map<String, Value> vars = exp.getVariables();
+        
+
         StringBuilder sb = new StringBuilder();
         StringBuilder postOldSyntaxSB= new StringBuilder();
    
-        sb.append("sig").append(stateName).append("{");
+        sb.append("sig ").append(stateName).append("{");
         postOldSyntaxSB.append("all field: "+funName+this.getStatementsTranslated()+" [");
         
         
@@ -145,7 +147,7 @@ public class Translator implements Visitor {
 
         int counter = 1;
         for (String each : vars.keySet()) {
-            String alloyVar = "arg" + (counter + 1);
+            String alloyVar = "arg" + (counter);
             String originalVar = each;
             String varType = vars.get(originalVar).getType();
             preOriginalToAlloy.put(originalVar,alloyVar);
@@ -154,16 +156,17 @@ public class Translator implements Visitor {
             postOriginalToAlloy.put(originalVar + "_old", "n."+alloyVar);
             sb.append("\n\t");
             sb.append(alloyVar).append(":").append(varType).append(",");
-            postOldSyntaxSB.append(each).append(",");
+            postOldSyntaxSB.append("n.").append(alloyVar).append(",");
+            counter++;
         }
-
-        sb.deleteCharAt(sb.lastIndexOf(","));        
-        sb.append("\n}\n");
         
-        postOldSyntaxSB.deleteCharAt(sb.lastIndexOf(","));
+        sb.deleteCharAt(sb.lastIndexOf(","));        
+        sb.append("\n}\n\n");
+        
+        postOldSyntaxSB.deleteCharAt(postOldSyntaxSB.lastIndexOf(","));
         postOldSyntaxSB.append("] | { ");
         postOldSyntax = postOldSyntaxSB.toString();
-
+        
 
         Translator functionTranslator = new Translator(preOriginalToAlloy);
         exp.getIfStatment().accept(functionTranslator);
@@ -173,9 +176,8 @@ public class Translator implements Visitor {
         String functionTranslatedString = functionSB.toString();
         
         sb.append("fun ").append(funName).append(this.getStatementsTranslated()).
-                append(" (").append("param : ").append(stateName).append(") : ").append(stateName).append("{\n");
-        sb.append(functionTranslatedString).append(" \n}");
-
+                append(" (").append("param : ").append(stateName).append(") : ").append(stateName).append(" {\n");
+        sb.append(functionTranslatedString).append(" \n}\n\n");
 
 
         Translator precondTranslator = new Translator(preOriginalToAlloy);
@@ -193,7 +195,8 @@ public class Translator implements Visitor {
         String postcondTranslatedString = postcondSB.toString();
 
         sb.append("assert ").append(assertName).append(this.getStatementsTranslated()).append(" {\n");
-        sb.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString).append(") => (").append(postcondTranslatedString);
+        sb.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString).append(") => (").append(postcondTranslatedString).append(" \n}\n\n");
+        
         sb.append("check ").append(assertName).append(this.getStatementsTranslated());
 
         this.incrementStatementsTranslated();
@@ -216,7 +219,7 @@ public class Translator implements Visitor {
 
         
         for(String key : this.getOriginalToAlloy().keySet()){
-        	this.result.add(key);
+        	this.result.add(this.getOriginalToAlloy().get(key));
         	this.result.add(" = (");
         	this.result.addAll(conditionTranslator.result);
         	this.result.add(" => ");
@@ -242,7 +245,9 @@ public class Translator implements Visitor {
     	for (Instruction inst: exp.getAssignments()){
             Translator instTranslator = new Translator(originalToAlloy);
             inst.accept(instTranslator);
-            this.resultMap.put(instTranslator.result.get(0), instTranslator.result.get(2));
+            assert(instTranslator.getResult().size()==2);
+            this.resultMap.put(instTranslator.getResult().get(0), instTranslator.getResult().get(1));
+            
     	}
     }
 

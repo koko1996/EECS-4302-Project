@@ -31,11 +31,11 @@ public class InstructionProcessor {
 	public List<String> getEvaluationResults() {
 		List<String> evaluations = new ArrayList<String>();
 		for (Instruction inst : instructions) {
-//			if(inst instanceof AssertedConditional){
+			if(inst instanceof AssertedConditional){
 				Translator tr = new Translator();
 				inst.accept(tr);
 				evaluations.add(tr.getFinalResult());				
-//			}
+			}
 		}
 		return evaluations;
 	}

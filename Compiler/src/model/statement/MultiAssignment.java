@@ -22,7 +22,7 @@ public class MultiAssignment extends Statement {
 
     @Override
     public void accept(Visitor visitor) {
-
+    	visitor.visitMultipleAssignments(this);
     }
 
 	@Override

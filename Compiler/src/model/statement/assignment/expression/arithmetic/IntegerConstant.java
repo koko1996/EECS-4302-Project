@@ -38,8 +38,8 @@ public class IntegerConstant extends Arithmetic {
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String,Value> result = new HashMap<>();
-		Value val = new Value(value,"int");
-		result.put("",val);
+//		Value val = new Value(value,"int");
+//		result.put("",val);
 		return result;
 	}
 }

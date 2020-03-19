@@ -58,9 +58,9 @@ public class AssertedConditional extends Statement {
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String, Value> preCondVars = preCond.getVariables();
-		Map<String, Value> pastCondVars = postCond.getVariables();
+		Map<String, Value> postCondVars = postCond.getVariables();
 		Map<String, Value> ifElseIfVars = ifStatment.getVariables();
-		return this.combineVariables(preCondVars, pastCondVars, ifElseIfVars);
+		return this.combineVariables(preCondVars, postCondVars, ifElseIfVars);
 	}
 
 }
