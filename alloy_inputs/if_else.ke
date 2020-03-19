@@ -1,8 +1,27 @@
 int x
 int y
-if_require(x > 0) 
+
+if_require(y=2) 
 if (x>y){
-    x=x+1
+	x=y+ 1
+	y = 3
+ 	x= 3
 } else {
     y=y+1
-} if_ensure ( ((x>y) and  (x = x_old+2+3+1 and y=y_old)) or ((x<=y) and  (x = x_old and y = y_old+1)))
+} if_ensure ( (x>y && x=3 && y=6))
+
+if_require(x > 0 && y=2) 
+if (x>y){
+    y=6
+    x=y+1
+    y=x+10
+} else {
+    y=y+1
+} if_ensure ( (x>y && x=7 && y=6))
+
+
+
+} if_ensure ( ((x_old > x) and  (x == x_old+2+3+1 and y==y_old)) or ((x_old<=y_old) and  (x == x_old and y == y_old+1)))
+} if_ensure ( ((x_new > x) and  (x_new == x+2+3+1 and y_new==y)) or ((x_old<=y_old) and  (x == x_old and y == y_old+1)))
+
+

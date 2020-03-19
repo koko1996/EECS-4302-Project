@@ -1,5 +1,8 @@
 package model.statement.assignment.expression.arithmetic;
 
+import java.util.Map;
+
+import model.Value;
 import model.Visitor;
 import model.statement.assignment.expression.Arithmetic;
 
@@ -39,6 +42,12 @@ public class IntegerVariable extends Arithmetic {
 
     @Override
     public void accept(Visitor visitor) {
-        //visitor.visitAdditionArithmetic(this); //TODO
-    }
+		visitor.visitIntegerVariable(this);
+	}
+
+	@Override
+	public Map<String, Value> getVariables() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

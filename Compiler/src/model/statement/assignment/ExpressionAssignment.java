@@ -1,5 +1,8 @@
 package model.statement.assignment;
 
+import java.util.Map;
+
+import model.Value;
 import model.Visitor;
 import model.statement.Assignment;
 
@@ -32,6 +35,13 @@ public class ExpressionAssignment extends Assignment {
 	@Override
 	public void accept(Visitor visitor) {
 		visitor.visitAssignExpression(this);
+	}
+
+
+	@Override
+	public Map<String, Value> getVariables() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

@@ -1,14 +1,18 @@
 package model;
 
+import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Logical;
+import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
+import model.statement.conditional.IfElseIfStatement;
 import model.statement.conditional.PostcondStatement;
 import model.statement.conditional.PrecondStatement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,43 +24,67 @@ public class Translator implements Visitor {
 
     public List<String> result;
     
-    public Map<String,String> varsMap;
+    public Map<String, String> originalToAlloy;
+
+    private final String fieldName = "field"; 
+    
+    private String postOldSyntax="";
+    
+    
+//  no re-assignment in ensure
+//  ((x>y) and  (x_new == x+2+3+1 and y_new==y) and (z = z_old)) or ((x<=y) and  (x = x_old and y = y_old+1)))
+//  (not(x==x_old) or  (x == x_old+2+3+1 and y==y_old)) or ((x<=y) and  (x = x_old and y = y_old+1)))
+//  ((n.arg1 > n.arg2 and addOneConditionalEnsure[n.arg1,n.arg2,n.arg1.add[1],n.arg2])  or (n.arg1 <= n.arg2 and addOneConditionalEnsure[n.arg1,n.arg2,n.arg1,n.arg2.add[1]]))
 
     @Override
     public void visitConditionalAssertionStatement(AssertedConditional exp) {
         String stateName = "state";
         String funName = "funStatement";
-        String predName = "predStatement";
         String assertName = "assertStatement";
         Map<String, Value> vars = exp.getVariables();
         StringBuilder sb = new StringBuilder();
+        StringBuilder postOldSyntaxSB= new StringBuilder();
+   
         sb.append("sig").append(stateName).append("{");
-
-        Map<String, String> alloyToOriginalVars = new HashMap<>();
+        postOldSyntaxSB.append("all field: "+funName+statementsTranslated+" [");
+        
+        
+        Map<String, String> postOriginalToAlloy= new HashMap<>();
+        postOriginalToAlloy = new HashMap<>();
+        
+        this.originalToAlloy = new HashMap<>();
 
         int counter = 1;
         for (String each : vars.keySet()) {
             String alloyVar = "arg" + (counter + 1);
             String originalVar = each;
             String varType = vars.get(originalVar).getType();
-            alloyToOriginalVars.put(alloyVar, originalVar);
+            postOriginalToAlloy.put(originalVar, fieldName+"."+alloyVar);
+            postOriginalToAlloy.put(originalVar + "_old", "n."+alloyVar);
             sb.append("\n\t");
             sb.append(alloyVar).append(":").append(varType).append(",");
+            postOldSyntaxSB.append(each).append(",");
         }
 
-        sb.deleteCharAt(sb.lastIndexOf(","));
-        sb.append("\n}");
+        sb.deleteCharAt(sb.lastIndexOf(","));        
+        sb.append("\n}\n");
+        
+        postOldSyntaxSB.deleteCharAt(sb.lastIndexOf(","));
+        postOldSyntaxSB.append("] | { ");
+        postOldSyntax = postOldSyntaxSB.toString();
 
-        String sigResult = sb.toString();
 
-        sb = new StringBuilder();
 
+        Translator functionTranslator = new Translator();
+        exp.getIfStatment().accept(functionTranslator);
+        List<String> functionTranslated = functionTranslator.result;
+        StringBuilder functionSB = new StringBuilder();
+        functionTranslated.forEach(functionSB::append);
+        String functionTranslatedString = functionSB.toString();
+        
         sb.append("fun ").append(funName).append(statementsTranslated).
                 append(" (").append("param : ").append(stateName).append(") : ").append(stateName).append("{\n");
 
-        Translator tr = new Translator();
-        exp.getIfStatment().getAssignments().accept(tr);
-        List<String> assignments = tr.result;
 
 
         Translator precondTranslator = new Translator();
@@ -67,49 +95,39 @@ public class Translator implements Visitor {
         String precondTranslatedString = precondSB.toString();
 
         Translator postcondTranslator = new Translator();
-        postcondTranslator.varsMap = varsMap;
+        postcondTranslator.originalToAlloy = postOriginalToAlloy;
         exp.getPreCond().accept(postcondTranslator);
         List<String> postcondTranslated = postcondTranslator.result;
         StringBuilder postcondSB = new StringBuilder();
         postcondTranslated.forEach(postcondSB::append);
         String postcondTranslatedString = postcondSB.toString();
 
-        sb.append("pred ").append(predName).append(statementsTranslated).append(" [");
-
-        for (String alloyVar : alloyToOriginalVars.keySet()) {
-            String type = vars.get(alloyVar).getType();
-//            sb.append(alloyVar).append("_pre : ").append(type);
-            sb.append(alloyVar).append("_pre,").append(alloyVar).append("_post : ").append(type);
-        }
-        sb.append("] {\n");
-
-        sb.append("{v:").append(stateName).append(" | ");
-
-        for (String alloyVar : alloyToOriginalVars.keySet()) {
-            sb.append("v.").append(alloyVar).append(" = ").append(alloyVar).append("_post").append(" and ");
-        }
-
-        sb.delete(sb.lastIndexOf(" and "), sb.length());
-        sb.append("} = ").append(funName).append(statementsTranslated).append("[");
-
-        for (String alloyVar : alloyToOriginalVars.keySet()) {
-            String type = vars.get(alloyVar).getType();
-            sb.append(alloyVar).append("_pre,");
-        }
-        sb.deleteCharAt(sb.lastIndexOf(","));
-        sb.append("]\n}\n");
-
         sb.append("assert ").append(assertName).append(statementsTranslated).append(" {\n");
-        sb.append("\tall n: (").append(stateName).append(") => ")
+        sb.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString).append(") => (").append(postcondTranslatedString);
+        sb.append("check ").append(assertName).append(statementsTranslated);
 
         statementsTranslated++;
-        
         
     }
 
     @Override
-    public void visitIfConditional(Instruction exp) {
-    	
+    public void visitIfConditional(IfElseIfStatement exp) {
+        result = new ArrayList<>();
+        
+        Translator assigTranslator = new Translator();
+        assigTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getAssignments().accept(assigTranslator);
+        
+        Translator elseIfTranslator = new Translator();
+        elseIfTranslator .originalToAlloy = this.originalToAlloy;
+        exp.getElseStatment().accept(elseIfTranslator);
+        
+        for(String key : this.originalToAlloy.keySet()){
+        	
+        }
+        
+
+        result.addAll();
     }
 
     @Override
@@ -132,9 +150,15 @@ public class Translator implements Visitor {
 
     }
 
-    @Override
-    public void visitAssignExpression(Instruction exp) {
-    	
+    public void visitAssignExpression(ExpressionAssignment exp) {
+        result = new ArrayList<>();
+        result.add(exp.getID());
+
+        Translator rhsTranslator = new Translator();
+        rhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getExpr().accept(rhsTranslator);
+
+        result.addAll(rhsTranslator.result);
     }
 
     @Override
@@ -159,13 +183,27 @@ public class Translator implements Visitor {
     }
 
     @Override
-    public void visitParanthesesExpression(Instruction exp) {
-
+    public void visitParanthesesExpression(ParanthesesExpression exp) {
+        Translator innerTranslator = new Translator();
+        innerTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getExpression().accept(innerTranslator);
+        result = innerTranslator.result;
     }
 
     @Override
     public void visitDivisionArithmetic(Division exp) {
+        Translator lhsTranslator = new Translator();
+        lhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTranslator);
 
+        Translator rhsTranslator = new Translator();
+        rhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTranslator);
+
+        result.addAll(lhsTranslator.result);
+        result.add(".div[");
+        result.addAll(rhsTranslator.result);
+        result.add("]");
     }
 
     @Override
@@ -175,67 +213,265 @@ public class Translator implements Visitor {
 
     @Override
     public void visitModuloArithmetic(Modulo exp) {
+        Translator lhsTranslator = new Translator();
+        lhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTranslator);
 
+        Translator rhsTranslator = new Translator();
+        rhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTranslator);
+
+        result.addAll(lhsTranslator.result);
+        result.add(".rem[");
+        result.addAll(rhsTranslator.result);
+        result.add("]");
     }
 
     @Override
     public void visitMultiplicationArithmetic(Multiplication exp) {
+        Translator lhsTranslator = new Translator();
+        lhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTranslator);
 
+        Translator rhsTranslator = new Translator();
+        rhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTranslator);
+
+        result.addAll(lhsTranslator.result);
+        result.add(".mul[");
+        result.addAll(rhsTranslator.result);
+        result.add("]");
     }
 
     @Override
-    public void visitNegationIntegerConstant(Instruction exp) {
-
+    public void visitNegationIntegerConstant(IntegerConstant exp) {
+        String value = String.valueOf(exp.getValue());
+        result = new ArrayList<>();
+        result.add(value);
     }
 
     @Override
     public void visitAdditionArithmetic(Addition exp) {
+        Translator lhsTranslator = new Translator();
+        lhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTranslator);
 
+        Translator rhsTranslator = new Translator();
+        rhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTranslator);
+
+        result.addAll(lhsTranslator.result);
+        result.add(".add[");
+        result.addAll(rhsTranslator.result);
+        result.add("]");
     }
 
     @Override
     public void visitSubtractionArithmetic(Subtraction exp) {
+        Translator lhsTranslator = new Translator();
+        lhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTranslator);
 
+        Translator rhsTranslator = new Translator();
+        rhsTranslator.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTranslator);
+
+        result.addAll(lhsTranslator.result);
+        result.add(".sub[");
+        result.addAll(rhsTranslator.result);
+        result.add("]");
     }
 
     @Override
     public void visitIntegerConstant(IntegerConstant exp) {
+        String value = String.valueOf(exp.getValue());
+        result = new ArrayList<>();
+        result.add(value);
+    }
 
+    @Override
+    public void visitIntegerVariable(IntegerVariable exp) {
+        result = new ArrayList<>();
+        String alloyVarName = this.originalToAlloy.get(exp.getID());
+        result.add(alloyVarName);
     }
 
     @Override
     public void visitLessRelational(LessThan exp) {
-
+        Translator lhsTrans = new Translator();
+        lhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTrans);
+        Translator rhsTrans = new Translator();
+        rhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTrans);
+        this.result.addAll(lhsTrans.result);
+        this.result.add(" < ");
+        this.result.addAll(rhsTrans.result);
     }
 
     @Override
     public void visitLessEqualRelational(LessThanOrEqual exp) {
-
+        Translator lhsTrans = new Translator();
+        lhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTrans);
+        Translator rhsTrans = new Translator();
+        rhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTrans);
+        boolean refersToOLD=false ;
+        for (String res:lhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        for (String res:rhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        if(refersToOLD){
+        	this.result.add(this.postOldSyntax);
+        }
+        this.result.addAll(lhsTrans.result);
+        this.result.add(" <= ");
+        this.result.addAll(rhsTrans.result);
+        if(refersToOLD){
+        	this.result.add("} ");
+        }
     }
 
     @Override
     public void visitGreaterRelational(GreaterThan exp) {
-
+        Translator lhsTrans = new Translator();
+        lhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTrans);
+        Translator rhsTrans = new Translator();
+        rhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTrans);
+        boolean refersToOLD=false ;
+        for (String res:lhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        for (String res:rhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        if(refersToOLD){
+        	this.result.add(this.postOldSyntax);
+        }
+        this.result.addAll(lhsTrans.result);
+        this.result.add(" > ");
+        this.result.addAll(rhsTrans.result);
+        if(refersToOLD){
+        	this.result.add("} ");
+        }
     }
 
     @Override
     public void visitGreaterEqualRelational(GreaterThanOrEqual exp) {
+        Translator lhsTrans = new Translator();
+        lhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTrans);
+        Translator rhsTrans = new Translator();
+        rhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTrans);
+        boolean refersToOLD=false ;
+        for (String res:lhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        for (String res:rhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        if(refersToOLD){
+        	this.result.add(this.postOldSyntax);
+        }
+        this.result.addAll(lhsTrans.result);
+        this.result.add(" >= ");
+        this.result.addAll(rhsTrans.result);
 
+        if(refersToOLD){
+        	this.result.add("} ");
+        }
     }
 
     @Override
     public void visitEqualityRelational(Equality exp) {
-
+        Translator lhsTrans = new Translator();
+        lhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTrans);
+        Translator rhsTrans = new Translator();
+        rhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTrans);
+        boolean refersToOLD=false ;
+        for (String res:lhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        for (String res:rhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        if(refersToOLD){
+        	this.result.add(this.postOldSyntax);
+        }
+        this.result.addAll(lhsTrans.result);
+        this.result.add(" = ");
+        this.result.addAll(rhsTrans.result);
+        
+        if(refersToOLD){
+        	this.result.add("} ");
+        }
     }
 
     @Override
     public void visitInequivalenceRelational(Inequality exp) {
-
+        Translator lhsTrans = new Translator();
+        lhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTrans);
+        Translator rhsTrans = new Translator();
+        rhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTrans);
+        boolean refersToOLD=false ;
+        for (String res:lhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        for (String res:rhsTrans.result){
+        	if(res.contains(this.fieldName)){
+        		refersToOLD=true;
+        	}
+        }
+        if(refersToOLD){
+        	this.result.add(this.postOldSyntax);
+        }
+        this.result.addAll(lhsTrans.result);
+        this.result.add(" != ");
+        this.result.addAll(rhsTrans.result);
+        if(refersToOLD){
+        	this.result.add("} ");
+        }
     }
 
     @Override
     public void visitDisjunctionLogical(Disjunction exp) {
-
+        Translator lhsTrans = new Translator();
+        lhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTrans);
+        Translator rhsTrans = new Translator();
+        rhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTrans);
+        this.result.addAll(lhsTrans.result);
+        this.result.add(" or ");
+        this.result.addAll(rhsTrans.result);
     }
 
     @Override
@@ -260,7 +496,15 @@ public class Translator implements Visitor {
 
     @Override
     public void visitConjunctionLogical(Conjunction exp) {
-
+        Translator lhsTrans = new Translator();
+        lhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getLeftExpr().accept(lhsTrans);
+        Translator rhsTrans = new Translator();
+        rhsTrans.originalToAlloy = this.originalToAlloy;
+        exp.getRightExpr().accept(rhsTrans);
+        this.result.addAll(lhsTrans.result);
+        this.result.add(" and ");
+        this.result.addAll(rhsTrans.result);
     }
 
     @Override

@@ -21,7 +21,7 @@ statement: declaration
          | assertedConditional
          ;
 
-assertedConditional: 'if_require' '(' expression ')' conditional 'if_ensure' '(' expression ')' # ConditionalAssertionStatement
+assertedConditional: 'if_require' '(' logicalOp ')' conditional 'if_ensure' '(' logicalOp ')' # ConditionalAssertionStatement
 		;
 
 // if and else statements can't have empty bodies
