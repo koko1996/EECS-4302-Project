@@ -26,7 +26,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	 * be sure that the order in which we add declare variables into the list
 	 * `vars` is identical to how they are declared in the input program.
 	 */
-	private List<String> vars; // stores all the variables declared in the
+//	private List<String> vars; // stores all the variables declared in the
 	// program so far
 	private Values values; // Symbol table for storing values of
 	// variables
@@ -40,7 +40,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	 * @param semanticErrors list of semantic errors observed in the input file
 	 */
 	public AntlrToInstruction(List<String> semanticErrors) {
-		vars = new ArrayList<>();
+
+		// Delete if not needed
+		//		vars = new ArrayList<>();
 		values = Values.getInstance();
 		this.semanticErrors = semanticErrors;
 	}
@@ -51,9 +53,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	 * @param list of strings representing the variable names in the input
 	 * program
 	 */
-	public List<String> getVars() {
-		return vars;
-	}
+
 
 	@Override
 	public Instruction visitStatement(ExprParser.StatementContext ctx) {
@@ -73,7 +73,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		if (values.containsKey(id)) {
 			semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
 		} else {
-			vars.add(id);
+//			vars.add(id);
 			values.declareVariable(id, type);
 		}
 
@@ -95,7 +95,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
 			return new VariableInitialization(id, type, values.getValue(id));
 		} else {
-			vars.add(id);
+//			vars.add(id);
 			Instruction rhs = visit(ctx.expression());
 			while (rhs instanceof ParanthesesExpression) { // A while loop here as there can be nested ParanthesesExpressions.
 				rhs = ((ParanthesesExpression) rhs).getExpression();
@@ -188,7 +188,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		}
 
 		values.put(id, exp);
-		vars.add(id);
+//		vars.add(id);
 
 		return new ExpressionAssignment(id, exp);
 	}
@@ -224,9 +224,13 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableArithmetic(ExprParser.VariableArithmeticContext ctx) {
+		Token idToken = ctx.ID().getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+		
 		String id = ctx.ID().getText();
-		if (!vars.contains(id)) {
-			semanticErrors.add("Error: variable " + id + " is not declared.");
+		if (!values.containsKey(id) || !values.getType(id).equals("Int")) {
+			semanticErrors.add("Error: variable " + id + " of type int is not declared. " +line+" "+column);
 		}
 		return new IntegerVariable(ctx.ID().getText(), values.getValue(ctx.ID().getText()).value);
 	}
@@ -332,7 +336,11 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableLogical(ExprParser.VariableLogicalContext ctx) {
-		return new BooleanVariable(ctx.ID().getText(), values.getValue(ctx.ID().getText()).value);
+		String id = ctx.ID().getText();
+		if (!values.containsKey(id) || !values.getType(id).equals("Bool")) {
+			semanticErrors.add("Error: variable " + id + " of type Bool is not declared. ");
+		}
+		return new BooleanVariable(id, values.getValue(ctx.ID().getText()).value);
 	}
 
 	@Override
@@ -368,16 +376,20 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitIfConditional(ExprParser.IfConditionalContext ctx) {
-		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)), new ArrayList<>());
+		List<IfElseIfStatement> elseIfStatements = new ArrayList<>();
+		IfElseIfStatement elseIf = (IfElseIfStatement) visit(ctx.elseIf());		
+		
+		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)),elseIfStatements, elseIf );
 	}
 	@Override
 	public Instruction visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
-		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)), new ArrayList<>());
+//		return new IfElseIfStatement(visit(ctx.getChild(3)), visit(ctx.getChild(6)), new ArrayList<>());
+		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)), null, null );
 	}
 
 	@Override
 	public Instruction visitElseConditional(ExprParser.ElseConditionalContext ctx) {
-		return super.visitElseConditional(ctx);
+		return new IfElseIfStatement(new BooleanConstant(true), visit(ctx.getChild(2)), new ArrayList<>(),null);
 	}
 
 }

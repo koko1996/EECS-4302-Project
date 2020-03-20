@@ -25,7 +25,6 @@ public class AntlrToProgram extends ExprBaseVisitor<Program> {
 		// a helper visitor for transforming each subtree into an Instruction
 		// Object
 		AntlrToInstruction exprVisitor = new AntlrToInstruction(semanticErrors);
-		prog.setVariables(exprVisitor.getVars());
 
 		for (int i = 0; i < ctx.getChildCount() - 1; i++) {
 			prog.addInstructions(exprVisitor.visit(ctx.getChild(i)));

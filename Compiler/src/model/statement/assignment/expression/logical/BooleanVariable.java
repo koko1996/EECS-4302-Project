@@ -44,7 +44,7 @@ public class BooleanVariable extends Logical {
 
 	@Override
 	public void accept(Visitor visitor) {
-		//TODO
+		visitor.visitBooleanVariable(this);
 	}
 
 	@Override

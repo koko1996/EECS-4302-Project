@@ -50,7 +50,7 @@ public interface Visitor {
     void visitIntegerConstant(IntegerConstant exp);
 
     void visitIntegerVariable(IntegerVariable exp);
-
+    
     void visitLessRelational(LessThan exp);
 
     void visitLessEqualRelational(LessThanOrEqual exp);
@@ -76,6 +76,8 @@ public interface Visitor {
     void visitConjunctionLogical(Conjunction exp);
 
     void visitBooleanConstant(BooleanConstant exp);
+    
+    void visitBooleanVariable(BooleanVariable exp);
 
     void visitRelationalOpLogical(Instruction exp); //TODO
 

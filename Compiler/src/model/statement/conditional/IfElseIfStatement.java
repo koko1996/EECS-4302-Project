@@ -17,10 +17,11 @@ public class IfElseIfStatement extends Statement {
 	private IfElseIfStatement elseStatment;
 
 
-	public IfElseIfStatement(Instruction condition, Instruction assignments, List<IfElseIfStatement> elseIfStatments) {
+	public IfElseIfStatement(Instruction condition, Instruction assignments, List<IfElseIfStatement> elseIfStatments,IfElseIfStatement elseStatment ) {
 		this.logicalCondition = condition;
 		this.assignments = assignments;
 		this.elseIfStatments = elseIfStatments;
+		this.elseStatment = elseStatment;
 	}
 
 	/**
