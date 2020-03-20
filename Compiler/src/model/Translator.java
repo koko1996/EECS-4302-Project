@@ -144,7 +144,7 @@ public class Translator implements Visitor {
         
         Map<String, String> postOriginalToAlloy= new HashMap<>();
         Map<String, String> preOriginalToAlloy = new HashMap<>();
-        
+         
 
         int counter = 1;
         for (String each : vars.keySet()) {
@@ -233,7 +233,7 @@ public class Translator implements Visitor {
         
         for(String key : this.getOriginalToAlloy().keySet()){
         	this.result.add(this.getOriginalToAlloy().get(key));
-        	this.result.add(" = (");
+        	this.result.add(" = ( ");
         	this.result.addAll(conditionTranslator.getResult());
         	this.result.add(" => ");
         	this.result.add(assigTranslator.resultMap.get(assignMap.get(key)));
@@ -245,7 +245,7 @@ public class Translator implements Visitor {
         	}
 
         	this.result.add(" )");
-        	this.result.add("and");
+        	this.result.add(" and\n\t\t ");
         }
         this.result.remove(this.result.size()-1);
     }
