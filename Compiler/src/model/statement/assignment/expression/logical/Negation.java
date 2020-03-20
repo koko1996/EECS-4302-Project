@@ -1,12 +1,12 @@
 package model.statement.assignment.expression.logical;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import model.Instruction;
 import model.Value;
 import model.Visitor;
 import model.statement.assignment.expression.Logical;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Negation extends Logical {
@@ -37,8 +37,6 @@ public class Negation extends Logical {
 
 	@Override
 	public Map<String, Value> getVariables() {
-		Map<String,Value> result = new HashMap<>();
-		result.putAll(this.expr.getVariables());
-		return result;
+        return new HashMap<>(this.expr.getVariables());
 	}
 }

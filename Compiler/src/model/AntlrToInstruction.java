@@ -16,7 +16,6 @@ import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
 import model.statement.conditional.IfElseIfStatement;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.misc.IntSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,26 +57,24 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitStatement(ExprParser.StatementContext ctx) {
-		Instruction exp = visit(ctx.getChild(0));
-		return exp;
+		return super.visitStatement(ctx);
 	}
 
 	@Override
 	public Instruction visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx) {
-		// If values are not given by the user then we make default value
-		
 		Token idToken = ctx.ID().getSymbol();
 
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
 		String type = ctx.VARIABLE().getText();
+		type = type.substring(0, 1).toUpperCase() + type.substring(1);
 		String id = ctx.ID().getText();
 
-		if (Values.getInstance().containsKey(id)) {
+		if (values.containsKey(id)) {
 			semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
 		} else {
 			vars.add(id);
-			Values.getInstance().put(id, null, type);
+			values.declareVariable(id, type);
 		}
 
 		return new VariableInitialization(id, type);
@@ -86,42 +83,32 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx) {
-		Token idToken = ctx.ID().getSymbol(); // equivalent to:
-		// ctx.getChild(0).getSymbol()
+		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
 		String id = ctx.ID().getText();
 		String type = ctx.VARIABLE().getText();
+		type = type.substring(0, 1).toUpperCase() + type.substring(1);
 
 		// Maintaining the vars list for semantic error reporting
 		if (values.containsKey(id)) {
 			semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
-		}
-
-		Evaluator evaluator = new Evaluator();
-		Instruction inst = visit(ctx.expression());
-		inst.accept(evaluator);
-
-		try {
-			if (type.toLowerCase().equals("int")) {
-				int value = Evaluator.getIntVal(evaluator);
-				if (!values.containsKey(id)) {
-					values.put(id, value, type);
-					vars.add(id);
-				}
-				return new VariableInitialization(id, type, values.getValue(id));
-			} else if (type.toLowerCase().equals("bool")) {
-				boolean value = Evaluator.getBoolVal(evaluator);
-				if (!values.containsKey(id)) {
-					values.put(id, value, type);
-					vars.add(id);
-				}
-				return new VariableInitialization(id, type, values.getValue(id));
+			return new VariableInitialization(id, type, values.getValue(id));
+		} else {
+			vars.add(id);
+			Instruction rhs = visit(ctx.expression());
+			while (rhs instanceof ParanthesesExpression) { // A while loop here as there can be nested ParanthesesExpressions.
+				rhs = ((ParanthesesExpression) rhs).getExpression();
 			}
-		} catch (ClassCastException e) {
-			semanticErrors.add("Error: Type error at " + "line " + line);
+			if ((rhs instanceof BooleanConstant && !type.equals("Bool")) | (rhs instanceof IntegerConstant && !type.equals("Int"))) {
+				semanticErrors.add("Error: Right hand side of expression at line " + line + " is not a " + type);
+				values.declareVariable(id, type);
+				return new VariableInitialization(id, type, new Value(null, type));
+			} else {
+				values.put(id, (Expression) rhs);
+				return new VariableInitialization(id, type, new Value((Expression) rhs, type));
+			}
 		}
-		return null;
 	}
 
 	@Override
@@ -131,18 +118,21 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
 		String lhsID = ctx.ID().get(0).getText();
 		String lhsType = ctx.VARIABLE().getText();
+		lhsType = lhsType.substring(0, 1).toUpperCase() + lhsType.substring(1);
 
 		Token rhsIDToken = ctx.ID().get(1).getSymbol();
 		int rhsIDLine = rhsIDToken.getLine();
 		int rhsColumnLine = rhsIDToken.getCharPositionInLine() + 1;
 		String rhsID = ctx.ID().get(1).getText();
 		String rhsType = this.values.getType(rhsID);
+		rhsType = rhsType.substring(0, 1).toUpperCase() + rhsType.substring(1);
+
 		if (!rhsType.equals(lhsType)) {
 			semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
 					rhsID, rhsIDLine, rhsColumnLine, rhsType, lhsType));
 			return new VariableInitialization(lhsID, lhsType);
 		} else {
-			values.put(lhsID, values.getValue(rhsID).value, rhsType);
+			values.put(lhsID, values.getValue(rhsID).value);
 		}
 		return new VariableInitialization(lhsID, lhsType, values.getValue(lhsID));
 	}
@@ -167,7 +157,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
 		Value value;
-
 		// What should this do if variable not declared? Should it resume or break?
 		try {
 			value = this.values.getValue(id);
@@ -177,70 +166,53 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			return null; // to be fixed
 		}
 
-		Instruction exp = visit(ctx.expression());
-		if (exp instanceof ParanthesesExpression) {
+		String lhsType = values.getType(id);
+
+		Expression exp = (Expression) visit(ctx.getChild(2));
+		while (exp instanceof ParanthesesExpression) { // A while loop here as there can be nested ParanthesesExpressions.
 			exp = ((ParanthesesExpression) exp).getExpression();
 		}
 
-		if (exp instanceof Arithmetic) {
-			Arithmetic expArithmetic = (Arithmetic) exp;
-			if (!value.getType().equals("int")) {
+		if (exp instanceof BooleanConstant | exp instanceof Relational | exp instanceof Logical) {
+			if (!lhsType.equals("Bool")) {
 				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
-						id, line, column, "bool", value.getType()));
-			} else {
-				Evaluator ev = new Evaluator();
-				expArithmetic.accept(ev);
-				values.getValue(id).setValue(Evaluator.getIntVal(ev));
-				return new ExpressionAssignment(id, expArithmetic);
+						id, line, column, "Int", value.getType()));
 			}
-		} else if (exp instanceof Relational) {
-			Relational expRelational = (Relational) exp;
-			if (!value.getType().equals("bool")) {
+		} else if (exp instanceof IntegerConstant | exp instanceof Arithmetic) {
+			if (!lhsType.equals("Int")) {
 				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
-						id, line, column, "int", value.getType()));
-			} else {
-				Evaluator ev = new Evaluator();
-				expRelational.accept(ev);
-				values.getValue(id).setValue(Evaluator.getIntVal(ev));
-				return new ExpressionAssignment(id, expRelational);
+						id, line, column, "Bool", value.getType()));
 			}
-		} else if (exp instanceof Logical) {
-			Logical expLogical = (Logical) exp;
-			if (!value.getType().equals("bool")) {
-				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
-						id, line, column, "int", value.getType()));
-			} else {
-				Evaluator ev = new Evaluator();
-				expLogical.accept(ev);
-				values.getValue(id).setValue(Evaluator.getIntVal(ev));
-				return new ExpressionAssignment(id, expLogical);
-			}
+		} else {
+			throw new IllegalArgumentException("You probably should not get this exception."); // We will delete this branch later.
 		}
-		return null;
+
+		values.put(id, exp);
+		vars.add(id);
+
+		return new ExpressionAssignment(id, exp);
 	}
 
 	@Override
 	public Instruction visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) {
-		Instruction exp = visit(ctx.getChild(0));
-		return exp;
+		String valText = ctx.getChild(0).getText();
+		int value = Integer.parseInt(valText);
+		return new IntegerConstant(value);
 	}
 
 	@Override
 	public Instruction visitRelationalOperation(ExprParser.RelationalOperationContext ctx) {
-		Instruction exp = visit(ctx.getChild(0));
-		return exp;
+		return visit(ctx.getChild(0));
 	}
 
 	@Override
 	public Instruction visitLogicalOpteration(ExprParser.LogicalOpterationContext ctx) {
-		Instruction exp = visit(ctx.getChild(0));
-		return exp;
+		return visit(ctx.getChild(0));
 	}
 
 	@Override
 	public Instruction visitParanthesesExpression(ExprParser.ParanthesesExpressionContext ctx) {
-		Instruction exp = visit(ctx.getChild(1));
-		return exp;
+		return visit(ctx.getChild(1));
 	}
 
 	@Override
@@ -252,8 +224,11 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableArithmetic(ExprParser.VariableArithmeticContext ctx) {
-		// TODO check that the ID is defined previously
-		return new IntegerVariable(ctx.ID().getText(),values.getValue(ctx.ID().getText(), 1));
+		String id = ctx.ID().getText();
+		if (!vars.contains(id)) {
+			semanticErrors.add("Error: variable " + id + " is not declared.");
+		}
+		return new IntegerVariable(ctx.ID().getText(), values.getValue(ctx.ID().getText()).value);
 	}
 
 	@Override
@@ -357,7 +332,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableLogical(ExprParser.VariableLogicalContext ctx) {
-		return new BooleanVariable(ctx.ID().getText(),values.getValue(ctx.ID().getText(),true));
+		return new BooleanVariable(ctx.ID().getText(), values.getValue(ctx.ID().getText()).value);
 	}
 
 	@Override
@@ -404,4 +379,5 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	public Instruction visitElseConditional(ExprParser.ElseConditionalContext ctx) {
 		return super.visitElseConditional(ctx);
 	}
+
 }
