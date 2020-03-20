@@ -130,8 +130,7 @@ public class Translator implements Visitor {
         String funName = "funStatement";
         String assertName = "assertStatement";
         Map<String, Value> vars = exp.getVariables();
-        System.out.println("Size "+vars.size());
-        System.out.println("String "+vars.toString());
+
 
         StringBuilder sigVarialesSB = new StringBuilder();
         StringBuilder funParamSB = new StringBuilder();
@@ -593,7 +592,6 @@ public class Translator implements Visitor {
 
     @Override
     public void visitBooleanConstant(BooleanConstant exp) {
-
     }
 
     @Override

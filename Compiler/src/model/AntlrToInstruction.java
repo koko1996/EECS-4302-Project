@@ -2,7 +2,6 @@ package model;
 
 import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
-import model.declaration.VariableDeclaration;
 import model.declaration.VariableInitialization;
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
@@ -78,7 +77,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			values.declareVariable(id, type);
 		}
 
-		return new VariableDeclaration(id, type);
+		return new VariableInitialization(id, type);
 	}
 
 

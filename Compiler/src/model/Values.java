@@ -1,21 +1,23 @@
 package model;
 
 
-import java.util.ArrayList;
+import model.statement.assignment.Expression;
+import model.statement.assignment.expression.Arithmetic;
+import model.statement.assignment.expression.Logical;
+import model.statement.assignment.expression.ParanthesesExpression;
+import model.statement.assignment.expression.Relational;
+import model.statement.assignment.expression.arithmetic.IntegerConstant;
+import model.statement.assignment.expression.logical.BooleanConstant;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Values {
     private static Values singletonInstance;
     private Map<String, Value> values;
-    private List<String> supportedTypes;
 
     private Values() {
         this.values = new HashMap<>();
-        this.supportedTypes = new ArrayList<>();
-        this.supportedTypes.add("int");
-        this.supportedTypes.add("bool");
     }
 
     public static Values getInstance() {
@@ -23,28 +25,6 @@ public class Values {
             singletonInstance = new Values();
         }
         return singletonInstance;
-    }
-
-    public Integer getValue(String id, Integer varType) {
-        // Var type is only required so that the cast can be done implicitly here. varType will be discarded.
-        Value value = this.getValue(id);
-
-        if (value.getType().equals("int")) {
-            return (Integer) value.getValue();
-        } else {
-            throw new IllegalStateException(String.format("Variable %s is not an %s", id, "int"));
-        }
-    }
-
-    public Boolean getValue(String id, Boolean varType) {
-        // Var type is only required so that the cast can be done implicitly here. varType will be discarded.
-        Value value = this.getValue(id);
-
-        if (value.getType().equals("bool")) {
-            return (Boolean) value.getValue();
-        } else {
-            throw new IllegalStateException(String.format("Variable %s is not a %s", id, "bool"));
-        }
     }
 
     public Value getValue(String id) {
@@ -59,15 +39,27 @@ public class Values {
         return this.values.containsKey(id);
     }
 
-    public void put(String id, Object value, String type) {
-        if (supportedTypes.contains(type)) {
-            this.values.put(id, new Value(value, type));
+    public void put(String id, Expression value) {
+        while (value instanceof ParanthesesExpression) {
+            value = ((ParanthesesExpression) value).getExpression();
+        }
+
+        if (value instanceof BooleanConstant | value instanceof Relational | value instanceof Logical) {
+            values.put(id, new Value(value, "Bool"));
+        } else if (value instanceof IntegerConstant | value instanceof Arithmetic) {
+            values.put(id, new Value(value, "Int"));
         } else {
-            throw new IllegalArgumentException(String.format("Type %s is not supported.", type));
+            throw new IllegalArgumentException("You probably should not get this exception.");
         }
     }
 
     public String getType(String id) {
         return this.values.get(id).getType();
     }
+
+    public void declareVariable(String id, String type) {
+        this.values.put(id, new Value(null, type));
+    }
+
+
 }
