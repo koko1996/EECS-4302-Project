@@ -38,28 +38,13 @@ public class Values {
     public boolean containsKey(String id) {
         return this.values.containsKey(id);
     }
-
-    public void put(String id, Expression value) {
-        while (value instanceof ParanthesesExpression) {
-            value = ((ParanthesesExpression) value).getExpression();
-        }
-
-        if (value instanceof BooleanConstant | value instanceof Relational | value instanceof Logical) {
-            values.put(id, new Value(value, "Bool"));
-        } else if (value instanceof IntegerConstant | value instanceof Arithmetic) {
-            values.put(id, new Value(value, "Int"));
-        } else {
-            throw new IllegalArgumentException("You probably should not get this exception.");
-        }
+    
+    public void put(String id, Value val) {
+        values.put(id,val);
     }
 
     public String getType(String id) {
         return this.values.get(id).getType();
     }
-
-    public void declareVariable(String id, String type) {
-        this.values.put(id, new Value(null, type));
-    }
-
 
 }

@@ -6,6 +6,8 @@ import java.util.Map;
 import model.Declaration;
 import model.Value;
 import model.Visitor;
+import model.statement.assignment.expression.arithmetic.IntegerConstant;
+import model.statement.assignment.expression.logical.BooleanConstant;
 
 /*
  * VariableInitialization Class that represents initialization of a variable
@@ -19,6 +21,11 @@ public class VariableInitialization extends Declaration {
 	public VariableInitialization(String id, String type) {
 		this.id = id;
 		this.type = type;
+		if (type.equals("bool")){
+			this.value = new Value(new BooleanConstant(false),type);	
+		} else if (type.equals("int")){
+			this.value = new Value(new IntegerConstant(0),type);	
+		} 	
 	}
 	
 	/*

@@ -8,7 +8,6 @@ import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Arithmetic;
 import model.statement.assignment.expression.Logical;
-import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
@@ -21,13 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
-	/*
-	 * Given that all visit_* methods are called in a top-down fashion, we can
-	 * be sure that the order in which we add declare variables into the list
-	 * `vars` is identical to how they are declared in the input program.
-	 */
-//	private List<String> vars; // stores all the variables declared in the
-	// program so far
 	private Values values; // Symbol table for storing values of
 	// variables
 	private List<String> semanticErrors; // 1. duplicate declaration 2.
@@ -40,21 +32,34 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	 * @param semanticErrors list of semantic errors observed in the input file
 	 */
 	public AntlrToInstruction(List<String> semanticErrors) {
-
-		// Delete if not needed
-		//		vars = new ArrayList<>();
 		values = Values.getInstance();
 		this.semanticErrors = semanticErrors;
 	}
 
+
+	private boolean checkDefined(String id, int line, int column){
+		if (!values.containsKey(id)) {
+			semanticErrors.add("Error: variable " + id + " has not been declared (" + line + ", " + column + ")");
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean checkNotDefined(String id, int line, int column){
+		if (values.containsKey(id)) {
+			semanticErrors.add("Error: variable " + id + " has already been declared (" + line + ", " + column + ")");
+			return false;
+		}
+		return true;
+	}
+	
+	
 	/*
 	 * getter function to retrieve list of variables defined in the input file
 	 *
 	 * @param list of strings representing the variable names in the input
 	 * program
 	 */
-
-
 	@Override
 	public Instruction visitStatement(ExprParser.StatementContext ctx) {
 		return super.visitStatement(ctx);
@@ -69,15 +74,17 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String type = ctx.VARIABLE().getText();
 		type = type.substring(0, 1).toUpperCase() + type.substring(1);
 		String id = ctx.ID().getText();
-
-		if (values.containsKey(id)) {
-			semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
-		} else {
-//			vars.add(id);
-			values.declareVariable(id, type);
-		}
-
-		return new VariableInitialization(id, type);
+		
+		Value value = null ;
+		if (type.equals("Bool")){
+			value  = new Value(new BooleanConstant(false),type);	
+		} else if (type.equals("Int")){
+			value  = new Value(new IntegerConstant(0),type);	
+		} 
+		
+		checkNotDefined(id, line, column);
+		values.put(id, value);
+		return new VariableInitialization(id,type,value);
 	}
 
 
@@ -89,26 +96,18 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String id = ctx.ID().getText();
 		String type = ctx.VARIABLE().getText();
 		type = type.substring(0, 1).toUpperCase() + type.substring(1);
-
-		// Maintaining the vars list for semantic error reporting
-		if (values.containsKey(id)) {
-			semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
-			return new VariableInitialization(id, type, values.getValue(id));
-		} else {
-//			vars.add(id);
-			Instruction rhs = visit(ctx.expression());
-			while (rhs instanceof ParanthesesExpression) { // A while loop here as there can be nested ParanthesesExpressions.
-				rhs = ((ParanthesesExpression) rhs).getExpression();
-			}
-			if ((rhs instanceof BooleanConstant && !type.equals("Bool")) | (rhs instanceof IntegerConstant && !type.equals("Int"))) {
-				semanticErrors.add("Error: Right hand side of expression at line " + line + " is not a " + type);
-				values.declareVariable(id, type);
-				return new VariableInitialization(id, type, new Value(null, type));
-			} else {
-				values.put(id, (Expression) rhs);
-				return new VariableInitialization(id, type, new Value((Expression) rhs, type));
-			}
-		}
+		checkNotDefined(id, line, column);
+		
+		
+		Instruction rhs = visit(ctx.expression());
+		
+		if ((rhs instanceof BooleanConstant && !type.equals("Bool")) | (rhs instanceof IntegerConstant && !type.equals("Int"))) {
+			semanticErrors.add("Error: Right hand side of expression at line " + line + " is not a " + type);
+		} 
+		
+		Value value = new Value((Expression) rhs,type);
+		values.put(id, value);
+		return new VariableInitialization(id, type, value);
 	}
 
 	@Override
@@ -119,6 +118,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String lhsID = ctx.ID().get(0).getText();
 		String lhsType = ctx.VARIABLE().getText();
 		lhsType = lhsType.substring(0, 1).toUpperCase() + lhsType.substring(1);
+		checkNotDefined(lhsID, lhsIDLine, lhsColumnLine);
+		
 
 		Token rhsIDToken = ctx.ID().get(1).getSymbol();
 		int rhsIDLine = rhsIDToken.getLine();
@@ -126,15 +127,16 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String rhsID = ctx.ID().get(1).getText();
 		String rhsType = this.values.getType(rhsID);
 		rhsType = rhsType.substring(0, 1).toUpperCase() + rhsType.substring(1);
-
+		checkDefined(rhsID, rhsIDLine, rhsColumnLine);
+		
 		if (!rhsType.equals(lhsType)) {
-			semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
-					rhsID, rhsIDLine, rhsColumnLine, rhsType, lhsType));
-			return new VariableInitialization(lhsID, lhsType);
-		} else {
-			values.put(lhsID, values.getValue(rhsID).value);
+			semanticErrors.add("Error: Right hand side of expression at line " + rhsIDLine + " has type " + rhsType +
+					" but the left hand side has type " + lhsType);
 		}
-		return new VariableInitialization(lhsID, lhsType, values.getValue(lhsID));
+		
+		Value value = new Value(values.getValue(rhsID));
+		values.put(lhsID, value);
+		return new VariableInitialization(lhsID, lhsType, value);
 	}
 
 	@Override
@@ -156,48 +158,36 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
-		Value value;
-		// What should this do if variable not declared? Should it resume or break?
-		try {
-			value = this.values.getValue(id);
-		} catch (IllegalStateException e) {
-			// Add a semantic error if lhs variable is not declared.
-			semanticErrors.add(e.getMessage());
-			return null; // to be fixed
-		}
-
+		checkDefined(id, line, column);
+	
 		String lhsType = values.getType(id);
+		Value oldValue = values.getValue(id);
 
 		Expression exp = (Expression) visit(ctx.getChild(2));
-		while (exp instanceof ParanthesesExpression) { // A while loop here as there can be nested ParanthesesExpressions.
-			exp = ((ParanthesesExpression) exp).getExpression();
-		}
 
 		if (exp instanceof BooleanConstant | exp instanceof Relational | exp instanceof Logical) {
 			if (!lhsType.equals("Bool")) {
 				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
-						id, line, column, "Int", value.getType()));
+						id, line, column, "Int", oldValue.getType()));
 			}
 		} else if (exp instanceof IntegerConstant | exp instanceof Arithmetic) {
 			if (!lhsType.equals("Int")) {
 				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
-						id, line, column, "Bool", value.getType()));
+						id, line, column, "Bool", oldValue.getType()));
 			}
 		} else {
 			throw new IllegalArgumentException("You probably should not get this exception."); // We will delete this branch later.
 		}
-
-		values.put(id, exp);
-//		vars.add(id);
+		
+		Value newValue = new Value(exp,oldValue.getType());
+		values.put(id, newValue);
 
 		return new ExpressionAssignment(id, exp);
 	}
 
 	@Override
 	public Instruction visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) {
-		String valText = ctx.getChild(0).getText();
-		int value = Integer.parseInt(valText);
-		return new IntegerConstant(value);
+		return visit(ctx.getChild(0));
 	}
 
 	@Override
@@ -229,10 +219,12 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int column = idToken.getCharPositionInLine() + 1;
 		
 		String id = ctx.ID().getText();
-		if (!values.containsKey(id) || !values.getType(id).equals("Int")) {
-			semanticErrors.add("Error: variable " + id + " of type int is not declared. " +line+" "+column);
+		
+		if (checkDefined(id, line, column) && !values.getType(id).equals("Int")) {
+			semanticErrors.add("Error: The given ID has type " + values.getType(id) +
+					" but the expceted type is " + "int" + "(" + line + ", " + column + ")");
 		}
-		return new IntegerVariable(ctx.ID().getText(), values.getValue(ctx.ID().getText()).value);
+		return new IntegerVariable(ctx.ID().getText(), values.getValue(ctx.ID().getText()).getValue());
 	}
 
 	@Override
@@ -336,11 +328,16 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableLogical(ExprParser.VariableLogicalContext ctx) {
+		Token idToken = ctx.ID().getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+		
 		String id = ctx.ID().getText();
-		if (!values.containsKey(id) || !values.getType(id).equals("Bool")) {
-			semanticErrors.add("Error: variable " + id + " of type Bool is not declared. ");
+		if (checkDefined(id, line, column) && !values.getType(id).equals("Bool")) {
+			semanticErrors.add("Error: The given ID has type " + values.getType(id) +
+					" but the expceted type is " + "bool" + "(" + line + ", " + column + ")");
 		}
-		return new BooleanVariable(id, values.getValue(ctx.ID().getText()).value);
+		return new BooleanVariable(id, values.getValue(ctx.ID().getText()).getValue());
 	}
 
 	@Override
