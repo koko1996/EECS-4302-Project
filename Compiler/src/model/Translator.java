@@ -242,7 +242,7 @@ public class Translator implements Visitor {
         		this.result.add(assignMap.get(key));
         	}
 
-        	this.result.add(" )");
+        	this.result.add(" )\n\t\t");
         	this.result.add(" and ");
         }
         this.result.remove(this.result.size()-1);

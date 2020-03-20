@@ -13,15 +13,18 @@ import java.util.Map;
 public class IfElseIfStatement extends Statement {
 	private Instruction logicalCondition;
 	private Instruction assignments;
-	private List<IfElseIfStatement> elseIfStatments;
+	private List<Instruction> elseIfStatments;
 	private IfElseIfStatement elseStatment;
 
 
-	public IfElseIfStatement(Instruction condition, Instruction assignments, List<IfElseIfStatement> elseIfStatments,IfElseIfStatement elseStatment ) {
+	public IfElseIfStatement(Instruction condition, Instruction assignments, List<Instruction> elseIfStatments2,Instruction elseStatement ) {
 		this.logicalCondition = condition;
 		this.assignments = assignments;
-		this.elseIfStatments = elseIfStatments;
-		this.elseStatment = elseStatment;
+		this.elseIfStatments = elseIfStatments2;
+		if(elseStatement != null){
+			this.elseStatment = (IfElseIfStatement) elseStatement;	
+		}
+		this.elseStatment = null;
 	}
 
 	/**
@@ -41,7 +44,7 @@ public class IfElseIfStatement extends Statement {
 	/**
 	 * @return the elseIfStatments
 	 */
-	public List<IfElseIfStatement> getElseIfStatments() {
+	public List<Instruction> getElseIfStatments() {
 		return elseIfStatments;
     }
 

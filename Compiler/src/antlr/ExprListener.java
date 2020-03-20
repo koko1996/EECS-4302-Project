@@ -105,28 +105,16 @@ public interface ExprListener extends ParseTreeListener {
 	void exitElseIfConditional(ExprParser.ElseIfConditionalContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ElseConditional}
-	 * labeled alternative in {@link ExprParser#elseIf}.
+	 * labeled alternative in {@link ExprParser#finaElse}.
 	 * @param ctx the parse tree
 	 */
 	void enterElseConditional(ExprParser.ElseConditionalContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code ElseConditional}
-	 * labeled alternative in {@link ExprParser#elseIf}.
+	 * labeled alternative in {@link ExprParser#finaElse}.
 	 * @param ctx the parse tree
 	 */
 	void exitElseConditional(ExprParser.ElseConditionalContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code EpsilonConditional}
-	 * labeled alternative in {@link ExprParser#elseIf}.
-	 * @param ctx the parse tree
-	 */
-	void enterEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code EpsilonConditional}
-	 * labeled alternative in {@link ExprParser#elseIf}.
-	 * @param ctx the parse tree
-	 */
-	void exitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code MultipleAssignments}
 	 * labeled alternative in {@link ExprParser#multAssig}.
@@ -151,6 +139,18 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssignExpression(ExprParser.AssignExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code IDAssignment}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterIDAssignment(ExprParser.IDAssignmentContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code IDAssignment}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitIDAssignment(ExprParser.IDAssignmentContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code AssignAssignment}
 	 * labeled alternative in {@link ExprParser#assignment}.

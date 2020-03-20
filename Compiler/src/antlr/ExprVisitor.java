@@ -69,18 +69,11 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	T visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ElseConditional}
-	 * labeled alternative in {@link ExprParser#elseIf}.
+	 * labeled alternative in {@link ExprParser#finaElse}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitElseConditional(ExprParser.ElseConditionalContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code EpsilonConditional}
-	 * labeled alternative in {@link ExprParser#elseIf}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEpsilonConditional(ExprParser.EpsilonConditionalContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code MultipleAssignments}
 	 * labeled alternative in {@link ExprParser#multAssig}.
@@ -95,6 +88,13 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAssignExpression(ExprParser.AssignExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code IDAssignment}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIDAssignment(ExprParser.IDAssignmentContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code AssignAssignment}
 	 * labeled alternative in {@link ExprParser#assignment}.

@@ -2,10 +2,11 @@ int x = 10
 int y = 9
 bool z = true
 bool f 
-if_require( z && f )
+//if_require( z && f )
+if_require( x==10 && y > 9)
 if(x>0){
-	x=9
 	y=1
-	z=f
+} else {
+	x= 10
 }
 if_ensure(x==10 && y > 9 || y==x && y==x+1)

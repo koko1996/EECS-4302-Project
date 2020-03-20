@@ -1,2 +1,3 @@
 int x = 3 + 5
 bool y = x
+int z=9+y // should fail

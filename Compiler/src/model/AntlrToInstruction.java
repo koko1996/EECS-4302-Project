@@ -36,24 +36,22 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		this.semanticErrors = semanticErrors;
 	}
 
-
-	private boolean checkDefined(String id, int line, int column){
+	private boolean checkDefined(String id, int line, int column) {
 		if (!values.containsKey(id)) {
 			semanticErrors.add("Error: variable " + id + " has not been declared (" + line + ", " + column + ")");
 			return false;
 		}
 		return true;
 	}
-	
-	private boolean checkNotDefined(String id, int line, int column){
+
+	private boolean checkNotDefined(String id, int line, int column) {
 		if (values.containsKey(id)) {
 			semanticErrors.add("Error: variable " + id + " has already been declared (" + line + ", " + column + ")");
 			return false;
 		}
 		return true;
 	}
-	
-	
+
 	/*
 	 * getter function to retrieve list of variables defined in the input file
 	 *
@@ -74,19 +72,18 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String type = ctx.VARIABLE().getText();
 		type = type.substring(0, 1).toUpperCase() + type.substring(1);
 		String id = ctx.ID().getText();
-		
-		Value value = null ;
-		if (type.equals("Bool")){
-			value  = new Value(new BooleanConstant(false),type);	
-		} else if (type.equals("Int")){
-			value  = new Value(new IntegerConstant(0),type);	
-		} 
-		
+
+		Value value = null;
+		if (type.equals("Bool")) {
+			value = new Value(new BooleanConstant(false), type);
+		} else if (type.equals("Int")) {
+			value = new Value(new IntegerConstant(0), type);
+		}
+
 		checkNotDefined(id, line, column);
 		values.put(id, value);
-		return new VariableInitialization(id,type,value);
+		return new VariableInitialization(id, type, value);
 	}
-
 
 	@Override
 	public Instruction visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx) {
@@ -97,21 +94,22 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String type = ctx.VARIABLE().getText();
 		type = type.substring(0, 1).toUpperCase() + type.substring(1);
 		checkNotDefined(id, line, column);
-		
-		
+
 		Instruction rhs = visit(ctx.expression());
-		
-		if ((rhs instanceof BooleanConstant && !type.equals("Bool")) | (rhs instanceof IntegerConstant && !type.equals("Int"))) {
+
+		if ((rhs instanceof BooleanConstant && !type.equals("Bool"))
+				| (rhs instanceof IntegerConstant && !type.equals("Int"))) {
 			semanticErrors.add("Error: Right hand side of expression at line " + line + " is not a " + type);
-		} 
-		
-		Value value = new Value((Expression) rhs,type);
+		}
+
+		Value value = new Value((Expression) rhs, type);
 		values.put(id, value);
 		return new VariableInitialization(id, type, value);
 	}
 
 	@Override
-	public Instruction visitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx) {
+	public Instruction visitVariableInitializationConstantCopy(
+			ExprParser.VariableInitializationConstantCopyContext ctx) {
 		Token lhsIDToken = ctx.ID().get(0).getSymbol();
 		int lhsIDLine = lhsIDToken.getLine();
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
@@ -119,7 +117,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String lhsType = ctx.VARIABLE().getText();
 		lhsType = lhsType.substring(0, 1).toUpperCase() + lhsType.substring(1);
 		checkNotDefined(lhsID, lhsIDLine, lhsColumnLine);
-		
 
 		Token rhsIDToken = ctx.ID().get(1).getSymbol();
 		int rhsIDLine = rhsIDToken.getLine();
@@ -128,12 +125,12 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String rhsType = this.values.getType(rhsID);
 		rhsType = rhsType.substring(0, 1).toUpperCase() + rhsType.substring(1);
 		checkDefined(rhsID, rhsIDLine, rhsColumnLine);
-		
+
 		if (!rhsType.equals(lhsType)) {
-			semanticErrors.add("Error: Right hand side of expression at line " + rhsIDLine + " has type " + rhsType +
-					" but the left hand side has type " + lhsType);
+			semanticErrors.add("Error: Right hand side of expression at line " + rhsIDLine + " has type " + rhsType
+					+ " but the left hand side has type " + lhsType);
 		}
-		
+
 		Value value = new Value(values.getValue(rhsID));
 		values.put(lhsID, value);
 		return new VariableInitialization(lhsID, lhsType, value);
@@ -153,13 +150,40 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	}
 
 	@Override
+	public Instruction visitIDAssignment(ExprParser.IDAssignmentContext ctx) {
+		Token lhsIDToken = ctx.ID().get(0).getSymbol();
+		int lhsIDLine = lhsIDToken.getLine();
+		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
+		String lhsID = ctx.ID().get(0).getText();
+
+		Token rhsIDToken = ctx.ID().get(1).getSymbol();
+		int rhsIDLine = rhsIDToken.getLine();
+		int rhsColumnLine = rhsIDToken.getCharPositionInLine() + 1;
+		String rhsID = ctx.ID().get(1).getText();
+
+		if (checkDefined(lhsID, lhsIDLine, lhsColumnLine) & (checkDefined(rhsID, rhsIDLine, rhsColumnLine))) {
+			String lhsType = this.values.getType(lhsID);
+			String rhsType = this.values.getType(rhsID);
+			if (!rhsType.equals(lhsType)) {
+				semanticErrors.add("Error: Right hand side of expression at line " + rhsIDLine + " has type " + rhsType
+						+ " but the left hand side has type " + lhsType);
+			}
+		}
+
+		Value newValue = new Value(values.getValue(rhsID));
+		values.put(lhsID, newValue);
+
+		return new ExpressionAssignment(lhsID, values.getValue(rhsID).getValue());
+	}
+
+	@Override
 	public Instruction visitAssignAssignment(ExprParser.AssignAssignmentContext ctx) {
 		String id = ctx.ID().getText();
 		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
 		checkDefined(id, line, column);
-	
+
 		String lhsType = values.getType(id);
 		Value oldValue = values.getValue(id);
 
@@ -167,19 +191,24 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (exp instanceof BooleanConstant | exp instanceof Relational | exp instanceof Logical) {
 			if (!lhsType.equals("Bool")) {
-				semanticErrors.add("Error: The given lhs ID has type " + lhsType +
-						" but the expceted type is " + "bool" + "(" + line + ", " + column + ")");
+				semanticErrors.add("Error: The given lhs ID has type " + lhsType + " but the expceted type is " + "bool"
+						+ "(" + line + ", " + column + ")");
 			}
 		} else if (exp instanceof IntegerConstant | exp instanceof Arithmetic) {
 			if (!lhsType.equals("Int")) {
-				semanticErrors.add("Error: The given lhs ID has type " + lhsType +
-						" but the expceted type is " + "int" + "(" + line + ", " + column + ")");
+				semanticErrors.add("Error: The given lhs ID has type " + lhsType + " but the expceted type is " + "int"
+						+ "(" + line + ", " + column + ")");
 			}
 		} else {
-			throw new IllegalArgumentException("You probably should not get this exception."); // We will delete this branch later.
+			throw new IllegalArgumentException("You probably should not get this exception."); // We
+																								// will
+																								// delete
+																								// this
+																								// branch
+																								// later.
 		}
-		
-		Value newValue = new Value(exp,oldValue.getType());
+
+		Value newValue = new Value(exp, oldValue.getType());
 		values.put(id, newValue);
 
 		return new ExpressionAssignment(id, exp);
@@ -217,12 +246,12 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
-		
+
 		String id = ctx.ID().getText();
-		
+
 		if (checkDefined(id, line, column) && !values.getType(id).equals("Int")) {
-			semanticErrors.add("Error: The given ID has type " + values.getType(id) +
-					" but the expceted type is " + "int" + "(" + line + ", " + column + ")");
+			semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
+					+ "int" + "(" + line + ", " + column + ")");
 		}
 		return new IntegerVariable(ctx.ID().getText(), values.getValue(ctx.ID().getText()).getValue());
 	}
@@ -331,11 +360,11 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
-		
+
 		String id = ctx.ID().getText();
 		if (checkDefined(id, line, column) && !values.getType(id).equals("Bool")) {
-			semanticErrors.add("Error: The given ID has type " + values.getType(id) +
-					" but the expceted type is " + "bool" + "(" + line + ", " + column + ")");
+			semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
+					+ "bool" + "(" + line + ", " + column + ")");
 		}
 		return new BooleanVariable(id, values.getValue(ctx.ID().getText()).getValue());
 	}
@@ -368,20 +397,24 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) {
-		return new AssertedConditional(visit(ctx.getChild(2)),visit(ctx.getChild(7)), visit(ctx.getChild(4)));	
+		return new AssertedConditional(visit(ctx.getChild(2)), visit(ctx.getChild(7)), visit(ctx.getChild(4)));
 	}
 
 	@Override
 	public Instruction visitIfConditional(ExprParser.IfConditionalContext ctx) {
-		List<IfElseIfStatement> elseIfStatements = new ArrayList<>();
-		IfElseIfStatement elseIf = (IfElseIfStatement) visit(ctx.elseIf());		
+		List<Instruction> elseIfStatments = new ArrayList<>();
+		ctx.elseIf().forEach(each -> elseIfStatments.add(visit(each)));
+		Instruction finalElse = null;
+		if(ctx.finaElse() != null ){
+			finalElse = visit(ctx.finaElse());
+		}
 		
-		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)),elseIfStatements, elseIf );
+		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)),elseIfStatments,finalElse);
 	}
+
 	@Override
 	public Instruction visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
-//		return new IfElseIfStatement(visit(ctx.getChild(3)), visit(ctx.getChild(6)), new ArrayList<>());
-		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)), null, null );
+		return new IfElseIfStatement(visit(ctx.getChild(3)), visit(ctx.getChild(6)),new ArrayList<>(),null);
 	}
 
 	@Override
