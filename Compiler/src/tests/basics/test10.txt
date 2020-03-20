@@ -6,5 +6,6 @@ if_require( z && f )
 if(x>0){
 	x=9
 	y=1
+	z=f
 }
 if_ensure(x==10 && y > 9 || y==x && y==x+1)

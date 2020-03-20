@@ -167,13 +167,13 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (exp instanceof BooleanConstant | exp instanceof Relational | exp instanceof Logical) {
 			if (!lhsType.equals("Bool")) {
-				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
-						id, line, column, "Int", oldValue.getType()));
+				semanticErrors.add("Error: The given lhs ID has type " + lhsType +
+						" but the expceted type is " + "bool" + "(" + line + ", " + column + ")");
 			}
 		} else if (exp instanceof IntegerConstant | exp instanceof Arithmetic) {
 			if (!lhsType.equals("Int")) {
-				semanticErrors.add(String.format("Variable %s at (%d,%d) has type %s. Expected: %s",
-						id, line, column, "Bool", oldValue.getType()));
+				semanticErrors.add("Error: The given lhs ID has type " + lhsType +
+						" but the expceted type is " + "int" + "(" + line + ", " + column + ")");
 			}
 		} else {
 			throw new IllegalArgumentException("You probably should not get this exception."); // We will delete this branch later.
