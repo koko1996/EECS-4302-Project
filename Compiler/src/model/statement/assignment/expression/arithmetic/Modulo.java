@@ -5,6 +5,7 @@ import java.util.Map;
 import model.Instruction;
 import model.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 
 public class Modulo extends ArithmeticComposite {
 
@@ -17,4 +18,8 @@ public class Modulo extends ArithmeticComposite {
         visitor.visitModuloArithmetic(this);
     }
 
+	@Override
+	public Expression clone() {
+		return new Modulo(((Expression) left).clone(),((Expression) right).clone());
+	}
 }

@@ -2,6 +2,7 @@ package model.statement.assignment.expression.logical;
 
 import model.Instruction;
 import model.Visitor;
+import model.statement.assignment.Expression;
 
 /*
  * Equivalence Class that represents equivalence expression
@@ -22,4 +23,10 @@ public class Equivalence extends LogicalComposite {
     public void accept(Visitor visitor) {
         visitor.visitEquivalenceLogical(this);
     }
+    
+    @Override
+	public Expression clone() {
+		return new Equivalence(((Expression) left).clone(),((Expression) right).clone());
+	}
+
 }

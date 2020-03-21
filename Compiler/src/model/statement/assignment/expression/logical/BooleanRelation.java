@@ -3,6 +3,7 @@ package model.statement.assignment.expression.logical;
 import model.Instruction;
 import model.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;
 
 import java.util.HashMap;
@@ -37,5 +38,10 @@ public class BooleanRelation extends Logical {
 	@Override
 	public Map<String, Value> getVariables() {
         return new HashMap<>(this.expr.getVariables());
+	}
+	
+	@Override
+	public Expression clone() {
+		return new BooleanRelation(((Expression) expr).clone());
 	}
 }

@@ -2,6 +2,7 @@ package model.statement.assignment.expression.logical;
 
 import model.Instruction;
 import model.Visitor;
+import model.statement.assignment.Expression;
 
 /*
  * Disjunction Class that represents disjunction expression
@@ -23,4 +24,9 @@ public class Disjunction extends LogicalComposite {
     public void accept(Visitor visitor) {
         visitor.visitDisjunctionLogical(this);
     }
+    
+    @Override
+	public Expression clone() {
+		return new Disjunction(((Expression) left).clone(),((Expression) right).clone());
+	}
 }

@@ -58,14 +58,14 @@ public class AssertedConditional extends Statement {
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String, Value> preCondVars = preCond.getVariables();
-        System.out.println("preCondVars "+preCondVars.size());
-        System.out.println("preCondVars "+preCondVars.toString());
+//        System.out.println("preCondVars "+preCondVars.size());
+//        System.out.println("preCondVars "+preCondVars.toString());
 		Map<String, Value> postCondVars = postCond.getVariables();
-        System.out.println("postCondVars "+postCondVars.size());
-        System.out.println("postCondVars "+postCondVars.toString());
+//        System.out.println("postCondVars "+postCondVars.size());
+//        System.out.println("postCondVars "+postCondVars.toString());
 		Map<String, Value> ifElseIfVars = ifStatment.getVariables();
-        System.out.println("ifElseIfVars "+ifElseIfVars.size());
-        System.out.println("ifElseIfVars "+ifElseIfVars.toString());
+//        System.out.println("ifElseIfVars "+ifElseIfVars.size());
+//        System.out.println("ifElseIfVars "+ifElseIfVars.toString());
 		return this.combineVariables(preCondVars, postCondVars, ifElseIfVars);
 	}
 

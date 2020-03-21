@@ -5,8 +5,11 @@ bool f
 //if_require( z && f )
 if_require( x==10 && y > 9)
 if(x>0){
-	y=1
-} else {
+	x=1
+	y=6
+} else if (x>9){
 	x= 10
+} else {
+	y=0
 }
 if_ensure(x==10 && y > 9 || y==x && y==x+1)

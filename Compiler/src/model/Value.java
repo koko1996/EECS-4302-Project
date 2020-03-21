@@ -7,13 +7,14 @@ public class Value {
     private Expression value;
 
     public Value(Value other) {
-        this.value = other.value;
+        this.value = other.value.clone();
         this.type = other.type;
     }
     
     public Value(Expression value, String type) {
         this.value = value;
         this.type = type;
+        //TODO
     }
 
     public Expression getValue() {

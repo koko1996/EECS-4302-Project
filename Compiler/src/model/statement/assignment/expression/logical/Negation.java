@@ -3,7 +3,9 @@ package model.statement.assignment.expression.logical;
 import model.Instruction;
 import model.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;
+import model.statement.assignment.expression.ParanthesesExpression;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,5 +40,10 @@ public class Negation extends Logical {
 	@Override
 	public Map<String, Value> getVariables() {
         return new HashMap<>(this.expr.getVariables());
+	}
+	
+    @Override
+	public Expression clone() {
+		return new Negation(((Expression) expr).clone());
 	}
 }

@@ -54,4 +54,9 @@ public class IntegerVariable extends Arithmetic {
 		result.put(id,val);
 		return result;
 	}
+
+	@Override
+	public Expression clone() {
+		return new IntegerVariable(id,value.clone());
+	}
 }

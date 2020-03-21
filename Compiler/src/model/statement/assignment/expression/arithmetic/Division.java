@@ -2,6 +2,7 @@ package model.statement.assignment.expression.arithmetic;
 
 import model.Instruction;
 import model.Visitor;
+import model.statement.assignment.Expression;
 
 public class Division extends ArithmeticComposite {
 
@@ -13,4 +14,9 @@ public class Division extends ArithmeticComposite {
     public void accept(Visitor visitor) {
         visitor.visitDivisionArithmetic(this);
     }
+
+	@Override
+	public Expression clone() {
+		return new Division(((Expression) left).clone(),((Expression) right).clone());
+	}
 }

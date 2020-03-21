@@ -1,11 +1,8 @@
 package model.statement.assignment.expression.relational;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import model.Instruction;
-import model.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Relational;
 
 public class Equality extends Relational {
@@ -18,5 +15,10 @@ public class Equality extends Relational {
     public void accept(Visitor visitor) {
         visitor.visitEqualityRelational(this);
     }
+    
+    @Override
+	public Expression clone() {
+		return new Equality(((Expression) left).clone(),((Expression) right).clone());
+	}
 
 }

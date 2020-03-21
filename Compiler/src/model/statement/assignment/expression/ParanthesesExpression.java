@@ -3,6 +3,7 @@ package model.statement.assignment.expression;
 import model.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
+import model.statement.assignment.expression.relational.LessThanOrEqual;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,5 +40,10 @@ public class ParanthesesExpression extends Expression {
 		Map<String,Value> result = new HashMap<>();
 		result.putAll(this.expr.getVariables());
 		return result;
+	}
+	
+    @Override
+	public Expression clone() {
+		return new ParanthesesExpression(expr.clone());
 	}
 }

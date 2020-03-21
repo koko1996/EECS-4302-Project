@@ -10,16 +10,18 @@ grammar Expr;
 prog: (statement)+ EOF # Program
     ;
 
-declaration: VARIABLE ID                   	# VariableDeclaration
-            | VARIABLE ID '=' ID            # VariableInitializationConstantCopy
-    		| VARIABLE ID '=' expression  	# VariableInitializationConstant
-    		;
-
 statement: declaration
          | assignment
          | conditional
          | assertedConditional
          ;
+
+
+declaration: VARIABLE ID                   	# VariableDeclaration
+            | VARIABLE ID '=' ID            # VariableInitializationConstantCopy
+    		| VARIABLE ID '=' expression  	# VariableInitializationConstant
+    		;
+
 
 assertedConditional: 'if_require' '(' logicalOp ')' conditional 'if_ensure' '(' logicalOp ')' # ConditionalAssertionStatement
 		;

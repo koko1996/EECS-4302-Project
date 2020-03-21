@@ -6,6 +6,7 @@ import java.util.Map;
 import model.Instruction;
 import model.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 
 public class Addition extends ArithmeticComposite {
 
@@ -16,6 +17,11 @@ public class Addition extends ArithmeticComposite {
 	@Override
 	public void accept(Visitor visitor) {
 		visitor.visitAdditionArithmetic(this);
+	}
+
+	@Override
+	public Expression clone() {
+		return new Addition(((Expression) left).clone(),((Expression) right).clone());
 	}
 
 }

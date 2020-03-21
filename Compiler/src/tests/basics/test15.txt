@@ -1,0 +1,8 @@
+int x = 10
+int y = 1  
+if_require( x==10)
+if(x>0){
+	x=y/9*9
+	y=20
+} 
+if_ensure(x==10)

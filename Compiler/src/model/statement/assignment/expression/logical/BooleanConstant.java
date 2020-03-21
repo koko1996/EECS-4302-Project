@@ -4,6 +4,7 @@ import java.util.Map;
 
 import model.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;
 
 public class BooleanConstant extends Logical{
@@ -37,8 +38,12 @@ public class BooleanConstant extends Logical{
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String,Value> result = new HashMap<>();
-//		Value val = new Value(value,"bool");
-//		result.put("",val);
 		return result;
+	}
+
+
+	@Override
+	public Expression clone() {
+		return new BooleanConstant(value);
 	}
 }

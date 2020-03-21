@@ -24,6 +24,7 @@ public class BooleanVariable extends Logical {
 		this.value = value;
 	}
 
+	
 	/*
 	 * retrieve the id of the variable expression
 	 *
@@ -53,5 +54,11 @@ public class BooleanVariable extends Logical {
 		Value val = new Value(value, "Bool");
 		result.put(id, val);
 		return result;
+	}
+
+
+	@Override
+	public Expression clone() {
+		return new BooleanVariable(id, value.clone());
 	}
 }

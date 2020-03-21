@@ -9,19 +9,20 @@ import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
+import model.statement.conditional.ElseIfStatement;
 import model.statement.conditional.IfElseIfStatement;
 import model.statement.conditional.PostcondStatement;
 import model.statement.conditional.PrecondStatement;
 
 public interface Visitor {
 
-    void visitConditionalAssertionStatement(AssertedConditional exp); //TODO
+    void visitConditionalAssertionStatement(AssertedConditional exp); 
 
     void visitIfConditional(IfElseIfStatement exp);
+    
+    void visitElseIfConditional(ElseIfStatement exp);
 
-    void visitEpsilonConditional(Instruction exp); //TODO
-
-    void visitAssignExpression(ExpressionAssignment exp); //TODO
+    void visitAssignExpression(ExpressionAssignment exp); 
 
     void visitAssignAssignment(Instruction exp); //TODO
 

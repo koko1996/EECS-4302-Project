@@ -1,10 +1,8 @@
 package model.statement.assignment.expression.relational;
 
-import java.util.Map;
-
 import model.Instruction;
-import model.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Relational;
 
 public class GreaterThan extends Relational {
@@ -18,4 +16,8 @@ public class GreaterThan extends Relational {
         visitor.visitGreaterRelational(this);
     }
 
+    @Override
+	public Expression clone() {
+		return new GreaterThan(((Expression) left).clone(),((Expression) right).clone());
+	}
 }

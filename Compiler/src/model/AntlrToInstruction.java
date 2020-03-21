@@ -13,6 +13,7 @@ import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
+import model.statement.conditional.ElseIfStatement;
 import model.statement.conditional.IfElseIfStatement;
 import org.antlr.v4.runtime.Token;
 
@@ -109,7 +110,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableInitializationConstantCopy(
-			ExprParser.VariableInitializationConstantCopyContext ctx) {
+		ExprParser.VariableInitializationConstantCopyContext ctx) {
 		Token lhsIDToken = ctx.ID().get(0).getSymbol();
 		int lhsIDLine = lhsIDToken.getLine();
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
@@ -155,22 +156,26 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int lhsIDLine = lhsIDToken.getLine();
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
 		String lhsID = ctx.ID().get(0).getText();
-
+		System.out.println("visitIDAssignment: "+lhsIDLine);
 		Token rhsIDToken = ctx.ID().get(1).getSymbol();
 		int rhsIDLine = rhsIDToken.getLine();
 		int rhsColumnLine = rhsIDToken.getCharPositionInLine() + 1;
 		String rhsID = ctx.ID().get(1).getText();
-
+		Value newValue = null;
+		
 		if (checkDefined(lhsID, lhsIDLine, lhsColumnLine) & (checkDefined(rhsID, rhsIDLine, rhsColumnLine))) {
 			String lhsType = this.values.getType(lhsID);
 			String rhsType = this.values.getType(rhsID);
 			if (!rhsType.equals(lhsType)) {
 				semanticErrors.add("Error: Right hand side of expression at line " + rhsIDLine + " has type " + rhsType
 						+ " but the left hand side has type " + lhsType);
+			} else if(lhsType.equals("Int")){
+				newValue = new Value(new IntegerVariable(rhsID, values.getValue(rhsID).getValue().clone()),lhsType);	
+			} else if(lhsType.equals("Bool")){
+				newValue = new Value(new BooleanVariable(rhsID, values.getValue(rhsID).getValue().clone()),lhsType);
 			}
 		}
 
-		Value newValue = new Value(values.getValue(rhsID));
 		values.put(lhsID, newValue);
 
 		return new ExpressionAssignment(lhsID, values.getValue(rhsID).getValue());
@@ -200,12 +205,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 						+ "(" + line + ", " + column + ")");
 			}
 		} else {
-			throw new IllegalArgumentException("You probably should not get this exception."); // We
-																								// will
-																								// delete
-																								// this
-																								// branch
-																								// later.
+			throw new IllegalArgumentException("You probably should not get this exception."); // We  will delete this branch later.
 		}
 
 		Value newValue = new Value(exp, oldValue.getType());
@@ -402,6 +402,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitIfConditional(ExprParser.IfConditionalContext ctx) {
+		
+		Instruction ifStatement = visit(ctx.getChild(5));
 		List<Instruction> elseIfStatments = new ArrayList<>();
 		ctx.elseIf().forEach(each -> elseIfStatments.add(visit(each)));
 		Instruction finalElse = null;
@@ -409,12 +411,12 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			finalElse = visit(ctx.finaElse());
 		}
 		
-		return new IfElseIfStatement(visit(ctx.getChild(2)), visit(ctx.getChild(5)),elseIfStatments,finalElse);
+		return new IfElseIfStatement(visit(ctx.getChild(2)),ifStatement ,elseIfStatments,finalElse);
 	}
 
 	@Override
 	public Instruction visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
-		return new IfElseIfStatement(visit(ctx.getChild(3)), visit(ctx.getChild(6)),new ArrayList<>(),null);
+		return new ElseIfStatement(visit(ctx.getChild(3)), visit(ctx.getChild(6)));
 	}
 
 	@Override

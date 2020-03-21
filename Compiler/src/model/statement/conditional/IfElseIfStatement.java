@@ -1,30 +1,33 @@
 package model.statement.conditional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import model.Instruction;
 import model.Statement;
 import model.Value;
 import model.Visitor;
 import model.statement.MultiAssignment;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class IfElseIfStatement extends Statement {
 	private Instruction logicalCondition;
 	private Instruction assignments;
-	private List<Instruction> elseIfStatments;
+	private List<ElseIfStatement> elseIfStatments;
 	private IfElseIfStatement elseStatment;
 
 
-	public IfElseIfStatement(Instruction condition, Instruction assignments, List<Instruction> elseIfStatments2,Instruction elseStatement ) {
+	public IfElseIfStatement(Instruction condition, Instruction assignments, List<Instruction> elseIfStatments,Instruction elseStatement ) {
 		this.logicalCondition = condition;
 		this.assignments = assignments;
-		this.elseIfStatments = elseIfStatments2;
+		this.elseIfStatments = new ArrayList<>();
+		for(Instruction instr : elseIfStatments){
+			this.elseIfStatments.add((ElseIfStatement) instr);
+		}
 		if(elseStatement != null){
 			this.elseStatment = (IfElseIfStatement) elseStatement;	
-		}
-		this.elseStatment = null;
+		} 
 	}
 
 	/**
@@ -44,7 +47,7 @@ public class IfElseIfStatement extends Statement {
 	/**
 	 * @return the elseIfStatments
 	 */
-	public List<Instruction> getElseIfStatments() {
+	public List<ElseIfStatement> getElseIfStatments() {
 		return elseIfStatments;
     }
 
@@ -75,14 +78,14 @@ public class IfElseIfStatement extends Statement {
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String, Value> logicalConditionVars = logicalCondition.getVariables();
-        System.out.println("logicalConditionVars "+logicalConditionVars.size());
-        System.out.println("logicalConditionVars "+logicalConditionVars.toString());
+//        System.out.println("logicalConditionVars "+logicalConditionVars.size());
+//        System.out.println("logicalConditionVars "+logicalConditionVars.toString());
 		Map<String, Value> assignmentsVars = assignments.getVariables();
-        System.out.println("assignmentsVars "+assignmentsVars.size());
-        System.out.println("assignmentsVars "+assignmentsVars.toString());
+//        System.out.println("assignmentsVars "+assignmentsVars.size());
+//        System.out.println("assignmentsVars "+assignmentsVars.toString());
 		Map<String, Value> ifElseIfVars = new HashMap<>();
-        System.out.println("ifElseIfVars "+ifElseIfVars.size());
-        System.out.println("ifElseIfVars "+ifElseIfVars.toString());
+//        System.out.println("ifElseIfVars "+ifElseIfVars.size());
+//        System.out.println("ifElseIfVars "+ifElseIfVars.toString());
 		elseIfStatments.forEach(each -> ifElseIfVars.putAll(each.getVariables()));
 		Map<String, Value> elseVars =new HashMap<>();
 		if (elseStatment != null){
