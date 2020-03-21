@@ -148,60 +148,53 @@ public class Translator implements Visitor {
 
 	@Override
 	public void visitConditionalAssertionStatement(AssertedConditional exp) {
-		String stateName = "state";
-		String funName = "funStatement";
+		String predName = "predStatement";
 		String assertName = "assertStatement";
 		Map<String, Value> vars = exp.getVariables();
 
-		StringBuilder sigVarialesSB = new StringBuilder();
-		StringBuilder funParamSB = new StringBuilder();
-		StringBuilder postOldSyntaxSB = new StringBuilder();
-
-		sigVarialesSB.append("sig ").append(stateName).append("{");
-		postOldSyntaxSB.append("all field: " + funName + this.getStatementsTranslated() + " [");
-
-		Map<String, String> postOriginalToAlloy = new HashMap<>();
+		StringBuilder predParamSB = new StringBuilder();
+		StringBuilder forAllParamSB = new StringBuilder();
+		StringBuilder forSomeParamSB = new StringBuilder();
+		StringBuilder predInputParamSB = new StringBuilder();
+		
 		Map<String, String> preOriginalToAlloy = new HashMap<>();
+		Map<String, String> postOriginalToAlloy = new HashMap<>();
 
 		int counter = 1;
 		for (String each : vars.keySet()) {
 			String alloyVar = "arg" + (counter);
+			String alloyPostVar = alloyVar+"'";
 			String originalVar = each;
 			String varType = vars.get(originalVar).getType();
 
-			preOriginalToAlloy.put(originalVar, "n." + alloyVar);
-			postOriginalToAlloy.put(originalVar, this.getFieldName() + "." + alloyVar);
-			postOriginalToAlloy.put(originalVar + "_old", "n." + alloyVar);
+			predParamSB.append(alloyVar).append(":").append(varType).append(",");
+			predParamSB.append(alloyPostVar).append(":").append(varType).append(",");
+			
+			forAllParamSB.append(alloyVar).append(":").append(varType).append(",");
+			forSomeParamSB.append(alloyPostVar).append(":").append(varType).append(",");
+			predInputParamSB.append(alloyVar).append(",").append(alloyPostVar).append(",");
+			
+			preOriginalToAlloy.put(originalVar, alloyVar);
+			postOriginalToAlloy.put(originalVar + "_old", alloyVar);
+			postOriginalToAlloy.put(originalVar , alloyPostVar);
 
-			sigVarialesSB.append("\n\t");
-			sigVarialesSB.append(alloyVar).append(":").append(varType).append(",");
-			funParamSB.append("p" + alloyVar).append(":").append(varType).append(",");
-			postOldSyntaxSB.append("n.").append(alloyVar).append(",");
 			counter++;
 		}
-
-		sigVarialesSB.deleteCharAt(sigVarialesSB.lastIndexOf(","));
-		sigVarialesSB.append("\n}\n\n");
-
-		funParamSB.deleteCharAt(funParamSB.lastIndexOf(","));
-		String funParamString = funParamSB.toString();
-
-		postOldSyntaxSB.deleteCharAt(postOldSyntaxSB.lastIndexOf(","));
-		postOldSyntaxSB.append("] | { ");
-		postOldSyntax = postOldSyntaxSB.toString();
-
+		
+		
+		predParamSB.deleteCharAt(predParamSB.lastIndexOf(","));
+		forAllParamSB.deleteCharAt(forAllParamSB.lastIndexOf(","));
+		forSomeParamSB.deleteCharAt(forSomeParamSB.lastIndexOf(","));
+		predInputParamSB.deleteCharAt(predInputParamSB.lastIndexOf(","));
+		
+		
 		Translator functionTranslator = new Translator(preOriginalToAlloy, postOldSyntax);
 		exp.getIfStatment().accept(functionTranslator);
 		List<String> functionTranslated = functionTranslator.getResult();
 		StringBuilder functionSB = new StringBuilder();
 		functionTranslated.forEach(functionSB::append);
 		String functionTranslatedString = functionSB.toString();
-
-		sigVarialesSB.append("fun ").append(funName).append(this.getStatementsTranslated()).append(" (")
-				.append(funParamString).append(") : ").append(stateName).append(" {\n");
-		sigVarialesSB.append("\t{ n : " + stateName + " | \n\t\t");
-		sigVarialesSB.append(functionTranslatedString).append(" \n\t}\n}\n\n");
-
+		
 		Translator precondTranslator = new Translator(preOriginalToAlloy, postOldSyntax);
 		exp.getPreCond().accept(precondTranslator);
 		List<String> precondTranslated = precondTranslator.getResult();
@@ -216,28 +209,33 @@ public class Translator implements Visitor {
 		postcondTranslated.forEach(postcondSB::append);
 		String postcondTranslatedString = postcondSB.toString();
 
-		sigVarialesSB.append("assert ").append(assertName).append(this.getStatementsTranslated()).append(" {\n");
-		sigVarialesSB.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString)
-				.append(") => (").append(postcondTranslatedString).append(")\n}\n\n");
-
-		sigVarialesSB.append("check ").append(assertName).append(this.getStatementsTranslated());
+		
+		StringBuilder predSignitureSB = new StringBuilder();
+		predSignitureSB.append("pred ").append(predName).append(statementsTranslated);
+		predSignitureSB.append(" [").append(predParamSB).append("] {\n");
+		predSignitureSB.append("\t").append(functionTranslatedString).append(" \n\t");
+		predSignitureSB.append(postcondTranslatedString).append("\n}\n\n");
+		
+		this.finalResult = predSignitureSB.toString();
+		
+		
+		StringBuilder assertSB = new StringBuilder();
+		assertSB.append("check ").append(assertName).append(statementsTranslated).append(" {\n");
+		assertSB.append("\t { all ").append(forAllParamSB).append(" | some ").append(forSomeParamSB);
+		assertSB.append(" | ").append(precondTranslatedString).append(" => ").append(predName).append(statementsTranslated).append("[");
+		assertSB.append(predInputParamSB).append("] }").append("\n}");
 
 		this.incrementStatementsTranslated();
 
-		this.finalResult = sigVarialesSB.toString();
+		this.finalResult += assertSB.toString();
 	}
 
 	@Override
 	public void visitIfConditional(IfElseIfStatement exp) {
-		Map<String, String> parameterNameMap = new HashMap<>();
-		for (String key : originalToAlloy.keySet()) {
-			parameterNameMap.put(key, originalToAlloy.get(key).replaceFirst("n.", "p"));
-		}
-
-		Translator conditionTranslator = new Translator(parameterNameMap, postOldSyntax);
+		Translator conditionTranslator = new Translator(originalToAlloy, postOldSyntax);
 		exp.getCondition().accept(conditionTranslator);
 
-		Translator ifTranslator = new Translator(parameterNameMap, postOldSyntax);
+		Translator ifTranslator = new Translator(originalToAlloy, postOldSyntax);
 		exp.getAssignments().accept(ifTranslator);
 		
 		
@@ -245,61 +243,62 @@ public class Translator implements Visitor {
 		List<List<String>> elseIfConditions = new ArrayList<>();
 		List<Map<String,String>> elseIfAssignments = new ArrayList<>();
 		for ( ElseIfStatement stmt : exp.getElseIfStatments()){
-			Translator elseIfTranslator = new Translator(parameterNameMap, postOldSyntax);
+			Translator elseIfTranslator = new Translator(originalToAlloy, postOldSyntax);
 			stmt.accept(elseIfTranslator);
 			elseIfConditions.add(elseIfTranslator.getResult());
 			elseIfAssignments.add(elseIfTranslator.getResultMap());
 		}
 		assert(elseIfAssignments.size()==elseIfConditions.size());
 		
-		Translator elseTranslator = new Translator(parameterNameMap, postOldSyntax);
+		Translator elseTranslator = new Translator(originalToAlloy, postOldSyntax);
 		if (exp.getElseStatment() != null) {
 			exp.getElseStatment().getAssignments().accept(elseTranslator);
 		}
 
 		System.out.println("getOriginalToAlloy: " + this.getOriginalToAlloy().toString());
-		System.out.println("parameterNameMap: " + parameterNameMap.toString());
 		System.out.println("If Updates: " + ifTranslator.resultMap.toString());
-		System.out.println("Else Updates: " + elseTranslator.resultMap.toString());
-		
 		System.out.println("ElseIf conditions: " + elseIfConditions.toString());
 		System.out.println("ElseIf  Updates: " + elseIfAssignments.toString());
-		for (String key : this.getOriginalToAlloy().keySet()) {
-			this.result.add(this.getOriginalToAlloy().get(key));
-			this.result.add(" = (");
-			this.result.addAll(conditionTranslator.getResult());
-			this.result.add(" => ");
-			String assignment = ifTranslator.resultMap.get(parameterNameMap.get(key));
-			if (assignment == null) {
-				assignment = parameterNameMap.get(key);
-			}
-			this.result.add(assignment);
-			
-			for(int i=0;i<elseIfConditions.size();i++){
-				if(elseIfAssignments.get(i).containsKey(parameterNameMap.get(key))){
-					this.result.add(" else");
-					this.result.add(" ( ");
-					this.result.addAll(elseIfConditions.get(i));
-					this.result.add(" )");
-					this.result.add(" => ");
-					this.result.add(elseIfAssignments.get(i).get(parameterNameMap.get(key)));
-					this.result.add(" ");
-				}
-			}
+		System.out.println("Else Updates: " + elseTranslator.resultMap.toString());
 
-			this.result.add(" else ");
-			String elseAssignment = parameterNameMap.get(key);
-			if (exp.getElseStatment() != null) {
-				if (elseTranslator.resultMap.containsKey(parameterNameMap.get(key))) {
-					elseAssignment = elseTranslator.resultMap.get(parameterNameMap.get(key));
-				}
-			}
-			this.result.add(elseAssignment);
 
-			this.result.add(" )\n\t\t");
+		this.result.add("(");
+		this.result.addAll(conditionTranslator.getResult());
+		this.result.add(")");
+		this.result.add(" => ");
+		this.result.add(" (1.add[2]=3) ");
+		for (String key : ifTranslator.getResultMap().keySet()) {
 			this.result.add(" and ");
+			this.result.add(key+"'");
+			this.result.add("=");
+			this.result.add(ifTranslator.getResultMap().get(key));
 		}
-		this.result.remove(this.result.size() - 1);
+		
+		
+		for(int i=0;i<elseIfConditions.size();i++){
+			this.result.add(" else");
+			this.result.add(" ( ");
+			this.result.addAll(elseIfConditions.get(i));
+			this.result.add(" ) ");
+			for (String key : elseIfAssignments.get(i).keySet()) {
+				this.result.add(key+"'");
+				this.result.add("=");
+				this.result.add(ifTranslator.getResultMap().get(key));
+				this.result.add(" and ");
+			}
+			this.result.remove(this.result.size()-1);
+		}		
+		
+		if(exp.getElseStatment() != null){
+			this.result.add("\n else \n");
+			for (String key : elseTranslator.getResultMap().keySet()) {
+				this.result.add(key+"'");
+				this.result.add("=");
+				this.result.add(ifTranslator.getResultMap().get(key));
+				this.result.add(" and ");
+			}
+			this.result.remove(this.result.size()-1);
+		}
 	}
 
 	@Override
