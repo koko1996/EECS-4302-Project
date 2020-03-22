@@ -1,42 +1,18 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.antlr.v4.runtime.atn.OrderedATNConfigSet;
-
 import model.statement.MultiAssignment;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
-import model.statement.assignment.expression.Relational;
-import model.statement.assignment.expression.arithmetic.Addition;
-import model.statement.assignment.expression.arithmetic.Division;
-import model.statement.assignment.expression.arithmetic.IntegerConstant;
-import model.statement.assignment.expression.arithmetic.IntegerVariable;
-import model.statement.assignment.expression.arithmetic.Modulo;
-import model.statement.assignment.expression.arithmetic.Multiplication;
-import model.statement.assignment.expression.arithmetic.Subtraction;
-import model.statement.assignment.expression.logical.BooleanConstant;
-import model.statement.assignment.expression.logical.BooleanVariable;
-import model.statement.assignment.expression.logical.Conjunction;
-import model.statement.assignment.expression.logical.Disjunction;
-import model.statement.assignment.expression.logical.Equivalence;
-import model.statement.assignment.expression.logical.Implication;
-import model.statement.assignment.expression.logical.Negation;
-import model.statement.assignment.expression.relational.Equality;
-import model.statement.assignment.expression.relational.GreaterThan;
-import model.statement.assignment.expression.relational.GreaterThanOrEqual;
-import model.statement.assignment.expression.relational.Inequality;
-import model.statement.assignment.expression.relational.LessThan;
-import model.statement.assignment.expression.relational.LessThanOrEqual;
-import model.statement.conditional.AssertedConditional;
-import model.statement.conditional.ElseIfStatement;
-import model.statement.conditional.IfElseIfStatement;
-import model.statement.conditional.PostcondStatement;
-import model.statement.conditional.PrecondStatement;
+import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.logical.*;
+import model.statement.assignment.expression.relational.*;
+import model.statement.conditional.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Translator implements Visitor {
 
@@ -209,14 +185,12 @@ public class Translator implements Visitor {
 		StringBuilder precondSB = new StringBuilder();
 		precondTranslated.forEach(precondSB::append);
 		String precondTranslatedString = precondSB.toString();
-//		String precondTranslatedString = precondSB.toString() + " in True";
 
 		Translator postcondTranslator = new Translator(postOriginalToAlloy, postOldSyntax);
 		exp.getPostCond().accept(postcondTranslator);
 		List<String> postcondTranslated = postcondTranslator.getResult();
 		StringBuilder postcondSB = new StringBuilder();
 		postcondTranslated.forEach(postcondSB::append);
-//		String postcondTranslatedString = postcondSB.toString();
 		String postcondTranslatedString = postcondSB.toString();
 
 		sigVarialesSB.append("assert ").append(assertName).append(this.getStatementsTranslated()).append(" {\n");
@@ -242,31 +216,31 @@ public class Translator implements Visitor {
 
 		Translator ifTranslator = new Translator(parameterNameMap, postOldSyntax);
 		exp.getAssignments().accept(ifTranslator);
-		
-		
+
+
 		// Parse ElseIf if there is any 	
 		List<List<String>> elseIfConditions = new ArrayList<>();
-		List<Map<String,String>> elseIfAssignments = new ArrayList<>();
-		for ( ElseIfStatement stmt : exp.getElseIfStatments()){
+		List<Map<String, String>> elseIfAssignments = new ArrayList<>();
+		for (ElseIfStatement stmt : exp.getElseIfStatments()) {
 			Translator elseIfTranslator = new Translator(parameterNameMap, postOldSyntax);
 			stmt.accept(elseIfTranslator);
 			elseIfConditions.add(elseIfTranslator.getResult());
 			elseIfAssignments.add(elseIfTranslator.getResultMap());
 		}
-		assert(elseIfAssignments.size()==elseIfConditions.size());
-		
+		assert (elseIfAssignments.size() == elseIfConditions.size());
+
 		Translator elseTranslator = new Translator(parameterNameMap, postOldSyntax);
 		if (exp.getElseStatment() != null) {
 			exp.getElseStatment().getAssignments().accept(elseTranslator);
 		}
 
-		System.out.println("getOriginalToAlloy: " + this.getOriginalToAlloy().toString());
-		System.out.println("parameterNameMap: " + parameterNameMap.toString());
-		System.out.println("If Updates: " + ifTranslator.resultMap.toString());
-		System.out.println("Else Updates: " + elseTranslator.resultMap.toString());
-		
-		System.out.println("ElseIf conditions: " + elseIfConditions.toString());
-		System.out.println("ElseIf  Updates: " + elseIfAssignments.toString());
+//		System.out.println("getOriginalToAlloy: " + this.getOriginalToAlloy().toString());
+//		System.out.println("parameterNameMap: " + parameterNameMap.toString());
+//		System.out.println("If Updates: " + ifTranslator.resultMap.toString());
+//		System.out.println("Else Updates: " + elseTranslator.resultMap.toString());
+//		System.out.println("ElseIf conditions: " + elseIfConditions.toString());
+//		System.out.println("ElseIf  Updates: " + elseIfAssignments.toString());
+
 		for (String key : this.getOriginalToAlloy().keySet()) {
 			this.result.add(this.getOriginalToAlloy().get(key));
 			this.result.add(" = ((");
@@ -277,9 +251,9 @@ public class Translator implements Visitor {
 				assignment = parameterNameMap.get(key);
 			}
 			this.result.add(assignment);
-			
-			for(int i=0;i<elseIfConditions.size();i++){
-				if(elseIfAssignments.get(i).containsKey(parameterNameMap.get(key))){
+
+			for (int i = 0; i < elseIfConditions.size(); i++) {
+				if (elseIfAssignments.get(i).containsKey(parameterNameMap.get(key))) {
 					this.result.add(" else");
 					this.result.add(" ( ");
 					this.result.addAll(elseIfConditions.get(i));
@@ -324,7 +298,7 @@ public class Translator implements Visitor {
 			Translator instTranslator = new Translator(originalToAlloy, postOldSyntax);
 			inst.accept(instTranslator);
 			int size = instTranslator.getResult().size();
-			System.out.println("SIZE : "+ size);
+//			System.out.println("SIZE : "+ size);
 			assert (instTranslator.getResult().size() == 2);
 			this.resultMap.put(instTranslator.getResult().get(0), instTranslator.getResult().get(1));
 
@@ -342,26 +316,6 @@ public class Translator implements Visitor {
 		}
 		
 		this.result.add(rhsResult.toString());
-	}
-
-	@Override
-	public void visitAssignAssignment(Instruction exp) {
-
-	}
-
-	@Override
-	public void visitArithmeticOperation(Instruction exp) {
-
-	}
-
-	@Override
-	public void visitRelationalOperation(Relational exp) {
-
-	}
-
-	@Override
-	public void visitLogicalOpteration(Logical exp) {
-
 	}
 
 	@Override
@@ -383,11 +337,6 @@ public class Translator implements Visitor {
 		result.add(".div[");
 		result.addAll(rhsTranslator.getResult());
 		result.add("]");
-	}
-
-	@Override
-	public void visitVariableArithmetic(Instruction exp) {
-
 	}
 
 	@Override
@@ -416,12 +365,6 @@ public class Translator implements Visitor {
 		result.add(".mul[");
 		result.addAll(rhsTranslator.getResult());
 		result.add("]");
-	}
-
-	@Override
-	public void visitNegationIntegerConstant(IntegerConstant exp) {
-		String value = String.valueOf(exp.getValue());
-		result.add(value);
 	}
 
 	@Override
@@ -651,13 +594,6 @@ public class Translator implements Visitor {
 	}
 
 	@Override
-	public void visitVariableLogical(Instruction exp) {
-		Translator lhsTrans = new Translator(originalToAlloy, postOldSyntax);
-		exp.accept(lhsTrans);
-		this.result.addAll(lhsTrans.getResult());
-	}
-
-	@Override
 	public void visitEquivalenceLogical(Equivalence exp) {
 		Translator lhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getLeftExpr().accept(lhsTrans);
@@ -726,11 +662,6 @@ public class Translator implements Visitor {
 	public void visitBooleanVariable(BooleanVariable exp) {
 		String alloyVarName = this.originalToAlloy.get(exp.getID());
 		result.add(alloyVarName);
-	}
-
-	@Override
-	public void visitRelationalOpLogical(Instruction exp) {
-
 	}
 
 	@Override

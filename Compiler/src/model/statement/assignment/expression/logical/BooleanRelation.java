@@ -32,7 +32,7 @@ public class BooleanRelation extends Logical {
 
     @Override
     public void accept(Visitor visitor) {
-//        visitor.visitBooleanRelation(this);  // TODO
+        // We will not need this unless we want visitor classes other than Translator.
     }
 
 	@Override

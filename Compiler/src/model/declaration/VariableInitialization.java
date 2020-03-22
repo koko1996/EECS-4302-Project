@@ -1,31 +1,31 @@
 package model.declaration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import model.Declaration;
 import model.Value;
 import model.Visitor;
 import model.statement.assignment.expression.arithmetic.IntegerConstant;
 import model.statement.assignment.expression.logical.BooleanConstant;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /*
  * VariableInitialization Class that represents initialization of a variable
  */
 public class VariableInitialization extends Declaration {
-	private String id;
-	private Value value;
-	private String type;
+    private String id;
+    private Value value;
+    private String type;
 
-	
-	public VariableInitialization(String id, String type) {
-		this.id = id;
-		this.type = type;
-		if (type.equals("bool")){
-			this.value = new Value(new BooleanConstant(false),type);	
-		} else if (type.equals("int")){
-			this.value = new Value(new IntegerConstant(0),type);	
-		} 	
+
+    public VariableInitialization(String id, String type) {
+        this.id = id;
+        this.type = type;
+        if (type.equals("bool")) {
+            this.value = new Value(new BooleanConstant(false), type);
+        } else if (type.equals("int")) {
+            this.value = new Value(new IntegerConstant(0), type);
+        }
 	}
 	
 	/*
@@ -83,9 +83,9 @@ public class VariableInitialization extends Declaration {
 
 	@Override
 	public void accept(Visitor visitor) {
-		// TODO Auto-generated method stub
-		
-	}
+        // We will not need this unless we want to add visitor classes other than Translator.
+
+    }
 
 	@Override
 	public Map<String, Value> getVariables() {

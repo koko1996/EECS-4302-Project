@@ -4,18 +4,19 @@ import model.Instruction;
 import model.Statement;
 import model.Value;
 import model.Visitor;
+import model.statement.assignment.expression.Logical;
 
 import java.util.Map;
 
 public class PrecondStatement extends Statement {
 
-    private Instruction logicalCondition; // See if we can restrict the static type here TODO
+    private Logical logicalCondition;
 
     public Instruction getLogicalCondition() {
         return logicalCondition;
     }
 
-    public void setLogicalCondition(Instruction logicalCondition) {
+    public void setLogicalCondition(Logical logicalCondition) {
         this.logicalCondition = logicalCondition;
     }
 

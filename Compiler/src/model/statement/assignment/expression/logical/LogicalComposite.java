@@ -1,12 +1,12 @@
 package model.statement.assignment.expression.logical;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import model.Instruction;
 import model.Value;
 import model.Visitor;
 import model.statement.assignment.expression.Logical;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public abstract class LogicalComposite extends Logical {
@@ -45,7 +45,7 @@ public abstract class LogicalComposite extends Logical {
 
     @Override
     public void accept(Visitor visitor) {
-        //TODO
+        // We will not need this unless we want visitor classes other than Translator.
     }
 
 	@Override
