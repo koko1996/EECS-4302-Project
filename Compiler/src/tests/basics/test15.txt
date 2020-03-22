@@ -1,6 +1,6 @@
 int x = 10
 int y = 1  
-if_require( x==10)
+if_require( x==10 && y == 1)
 if(x>0){
 	x=y/9*9
 	y=20

@@ -61,8 +61,8 @@ public class Translator implements Visitor {
 	public Translator() {
 		finalResult = "";
 		postOldSyntax = "";
-		falseInAlloy = " (2=3)";
-		trueInAlloy = "(2.add[1]=3)";
+		falseInAlloy = "False";
+		trueInAlloy = "True";
 		statementsTranslated = 0;
 		result = new ArrayList<>();
 		resultMap = new HashMap<>();
@@ -71,8 +71,8 @@ public class Translator implements Visitor {
 
 	public Translator(Map<String, String> originalToAlloy, String postOldSyntax) {
 		finalResult = "";
-		falseInAlloy = " (2=3)";
-		trueInAlloy = "(2.add[1]=3)";
+		falseInAlloy = "False";
+		trueInAlloy = "True";
 		statementsTranslated = 0;
 		result = new ArrayList<>();
 		resultMap = new HashMap<>();
@@ -156,7 +156,8 @@ public class Translator implements Visitor {
 		StringBuilder sigVarialesSB = new StringBuilder();
 		StringBuilder funParamSB = new StringBuilder();
 		StringBuilder postOldSyntaxSB = new StringBuilder();
-
+		
+		sigVarialesSB.append("open logical\n");
 		sigVarialesSB.append("sig ").append(stateName).append("{");
 		postOldSyntaxSB.append("all field: " + funName + this.getStatementsTranslated() + " [");
 
@@ -620,9 +621,13 @@ public class Translator implements Visitor {
 		exp.getLeftExpr().accept(lhsTrans);
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
+		exp.getRightExpr().accept(rhsTrans);
+		this.result.add("orGate[");
 		this.result.addAll(lhsTrans.getResult());
-		this.result.add(" or ");
+		this.result.add(", ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add("]");
+		this.result.add(".arg3");
 	}
 
 	@Override
@@ -650,7 +655,7 @@ public class Translator implements Visitor {
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
 		this.result.addAll(lhsTrans.getResult());
-		this.result.add(" = ");
+		this.result.add(" in ");
 		this.result.addAll(rhsTrans.getResult());
 	}
 
@@ -670,9 +675,12 @@ public class Translator implements Visitor {
 		exp.getLeftExpr().accept(lhsTrans);
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
+		this.result.add("andGate[");
 		this.result.addAll(lhsTrans.getResult());
-		this.result.add(" and ");
+		this.result.add(", ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add("]");
+		this.result.add(".arg3");
 	}
 
 	@Override
@@ -688,10 +696,8 @@ public class Translator implements Visitor {
 
 	@Override
 	public void visitBooleanVariable(BooleanVariable exp) {
-		String origName = exp.getID();
-		Translator trans = new Translator(originalToAlloy, postOldSyntax);
-		Values.getInstance().getValue(origName).getValue().accept(trans);
-		result.addAll(trans.getResult());
+		String alloyVarName = this.originalToAlloy.get(exp.getID());
+		result.add(alloyVarName);
 	}
 
 	@Override
