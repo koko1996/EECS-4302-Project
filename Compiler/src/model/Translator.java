@@ -209,17 +209,19 @@ public class Translator implements Visitor {
 		StringBuilder precondSB = new StringBuilder();
 		precondTranslated.forEach(precondSB::append);
 		String precondTranslatedString = precondSB.toString();
+//		String precondTranslatedString = precondSB.toString() + " in True";
 
 		Translator postcondTranslator = new Translator(postOriginalToAlloy, postOldSyntax);
 		exp.getPostCond().accept(postcondTranslator);
 		List<String> postcondTranslated = postcondTranslator.getResult();
 		StringBuilder postcondSB = new StringBuilder();
 		postcondTranslated.forEach(postcondSB::append);
+//		String postcondTranslatedString = postcondSB.toString();
 		String postcondTranslatedString = postcondSB.toString();
 
 		sigVarialesSB.append("assert ").append(assertName).append(this.getStatementsTranslated()).append(" {\n");
 		sigVarialesSB.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString)
-				.append(") => (").append(postcondTranslatedString).append(")\n}\n\n");
+				.append(")" + " in True => (").append(postcondTranslatedString + "in True" ).append(")\n}\n\n");
 
 		sigVarialesSB.append("check ").append(assertName).append(this.getStatementsTranslated());
 
@@ -581,6 +583,7 @@ public class Translator implements Visitor {
 		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" = ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" => True else False");
 
 		if (refersToOLD) {
 			this.result.add("} ");
@@ -610,6 +613,7 @@ public class Translator implements Visitor {
 		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" != ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" => True else False");
 		if (refersToOLD) {
 			this.result.add("} ");
 		}
@@ -671,6 +675,7 @@ public class Translator implements Visitor {
 		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" in ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" => True else False");
 
 		if (refersToOLD) {
 			this.result.add("} ");
