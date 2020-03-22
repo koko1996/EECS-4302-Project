@@ -157,7 +157,7 @@ public class Translator implements Visitor {
 		StringBuilder funParamSB = new StringBuilder();
 		StringBuilder postOldSyntaxSB = new StringBuilder();
 		
-		sigVarialesSB.append("open logical\n");
+		sigVarialesSB.append("open logicFuncs\n");
 		sigVarialesSB.append("sig ").append(stateName).append("{");
 		postOldSyntaxSB.append("all field: " + funName + this.getStatementsTranslated() + " [");
 
@@ -654,9 +654,27 @@ public class Translator implements Visitor {
 		exp.getLeftExpr().accept(lhsTrans);
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
+		boolean refersToOLD = false;
+		for (String res : lhsTrans.getResult()) {
+			if (res.contains(this.fieldName)) {
+				refersToOLD = true;
+			}
+		}
+		for (String res : rhsTrans.getResult()) {
+			if (res.contains(this.fieldName)) {
+				refersToOLD = true;
+			}
+		}
+		if (refersToOLD) {
+			this.result.add(this.postOldSyntax);
+		}
 		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" in ");
 		this.result.addAll(rhsTrans.getResult());
+
+		if (refersToOLD) {
+			this.result.add("} ");
+		}
 	}
 
 	@Override
