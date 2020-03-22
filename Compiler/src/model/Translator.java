@@ -269,9 +269,9 @@ public class Translator implements Visitor {
 		System.out.println("ElseIf  Updates: " + elseIfAssignments.toString());
 		for (String key : this.getOriginalToAlloy().keySet()) {
 			this.result.add(this.getOriginalToAlloy().get(key));
-			this.result.add(" = (");
+			this.result.add(" = ((");
 			this.result.addAll(conditionTranslator.getResult());
-			this.result.add(" => ");
+			this.result.add(") in True => ");
 			String assignment = ifTranslator.resultMap.get(parameterNameMap.get(key));
 			if (assignment == null) {
 				assignment = parameterNameMap.get(key);
@@ -466,13 +466,15 @@ public class Translator implements Visitor {
 
 	@Override
 	public void visitLessRelational(LessThan exp) {
+		// WHY NO referstoold here?
 		Translator lhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getLeftExpr().accept(lhsTrans);
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
 		this.result.addAll(lhsTrans.getResult());
-		this.result.add(" < ");
+		this.result.add(" = ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" => True else False");
 	}
 
 	@Override
@@ -495,9 +497,10 @@ public class Translator implements Visitor {
 		if (refersToOLD) {
 			this.result.add(this.postOldSyntax);
 		}
-		this.result.addAll(lhsTrans.result);
+		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" <= ");
-		this.result.addAll(rhsTrans.result);
+		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" => True else False");
 		if (refersToOLD) {
 			this.result.add("} ");
 		}
@@ -526,6 +529,7 @@ public class Translator implements Visitor {
 		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" > ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" => True else False");
 		if (refersToOLD) {
 			this.result.add("} ");
 		}
@@ -554,6 +558,7 @@ public class Translator implements Visitor {
 		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" >= ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" => True else False");
 
 		if (refersToOLD) {
 			this.result.add("} ");
