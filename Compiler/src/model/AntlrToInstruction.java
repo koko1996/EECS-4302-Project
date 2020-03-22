@@ -98,8 +98,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		Instruction rhs = visit(ctx.expression());
 
-		if ((rhs instanceof BooleanConstant && !type.equals("Bool"))
-				| (rhs instanceof IntegerConstant && !type.equals("Int"))) {
+		if (((rhs instanceof BooleanConstant | rhs instanceof Logical) && !type.equals("Bool"))
+				| ((rhs instanceof IntegerConstant | rhs instanceof Arithmetic) && !type.equals("Int"))) {
 			semanticErrors.add("Error: Right hand side of expression at line " + line + " is not a " + type);
 		}
 
@@ -125,11 +125,18 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String rhsID = ctx.ID().get(1).getText();
 		String rhsType = this.values.getType(rhsID);
 		rhsType = rhsType.substring(0, 1).toUpperCase() + rhsType.substring(1);
-		checkDefined(rhsID, rhsIDLine, rhsColumnLine);
+
+
+		if (!checkDefined(rhsID, rhsIDLine, rhsColumnLine)) {
+			Value value = null;
+			return new VariableInitialization(lhsID, lhsType, value);
+		}
 
 		if (!rhsType.equals(lhsType)) {
 			semanticErrors.add("Error: Right hand side of expression at line " + rhsIDLine + " has type " + rhsType
 					+ " but the left hand side has type " + lhsType);
+			Value value = null;
+			return new VariableInitialization(lhsID, lhsType, value);
 		}
 
 		Value value = new Value(values.getValue(rhsID));
@@ -146,8 +153,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitAssignExpression(ExprParser.AssignExpressionContext ctx) {
-		Instruction exp = visit(ctx.getChild(0));
-		return exp;
+		return visit(ctx.getChild(0));
 	}
 
 	@Override
@@ -156,23 +162,31 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int lhsIDLine = lhsIDToken.getLine();
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
 		String lhsID = ctx.ID().get(0).getText();
-		System.out.println("visitIDAssignment: "+lhsIDLine);
+		System.out.println("visitIDAssignment: " + lhsIDLine);
 		Token rhsIDToken = ctx.ID().get(1).getSymbol();
 		int rhsIDLine = rhsIDToken.getLine();
 		int rhsColumnLine = rhsIDToken.getCharPositionInLine() + 1;
 		String rhsID = ctx.ID().get(1).getText();
 		Value newValue = null;
-		
+
+		if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
+			return new ExpressionAssignment(lhsID, null);
+		}
+
+		if (!checkDefined(rhsID, rhsIDLine, rhsColumnLine)) {
+			return new ExpressionAssignment(lhsID, null);
+		}
+
 		if (checkDefined(lhsID, lhsIDLine, lhsColumnLine) & (checkDefined(rhsID, rhsIDLine, rhsColumnLine))) {
 			String lhsType = this.values.getType(lhsID);
 			String rhsType = this.values.getType(rhsID);
 			if (!rhsType.equals(lhsType)) {
 				semanticErrors.add("Error: Right hand side of expression at line " + rhsIDLine + " has type " + rhsType
 						+ " but the left hand side has type " + lhsType);
-			} else if(lhsType.equals("Int")){
-				newValue = new Value(new IntegerVariable(rhsID, values.getValue(rhsID).getValue().clone()),lhsType);	
-			} else if(lhsType.equals("Bool")){
-				newValue = new Value(new BooleanVariable(rhsID, values.getValue(rhsID).getValue().clone()),lhsType);
+			} else if (lhsType.equals("Int")) {
+				newValue = new Value(new IntegerVariable(rhsID, values.getValue(rhsID).getValue().clone()), lhsType);
+			} else if (lhsType.equals("Bool")) {
+				newValue = new Value(new BooleanVariable(rhsID, values.getValue(rhsID).getValue().clone()), lhsType);
 			}
 		}
 
@@ -187,7 +201,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
-		checkDefined(id, line, column);
+
+		if (!checkDefined(id, line, column)) {
+			return new ExpressionAssignment(id, null);
+		}
 
 		String lhsType = values.getType(id);
 		Value oldValue = values.getValue(id);
@@ -249,6 +266,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		String id = ctx.ID().getText();
 
+		if (!checkDefined(id, line, column)) {
+			return new IntegerVariable(ctx.ID().getText(), null);
+		}
+
 		if (checkDefined(id, line, column) && !values.getType(id).equals("Int")) {
 			semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
 					+ "int" + "(" + line + ", " + column + ")");
@@ -272,7 +293,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitNegationIntegerConstant(ExprParser.NegationIntegerConstantContext ctx) {
-		String numText = ctx.getChild(0).getText();
+		StringBuilder numTextSB = new StringBuilder();
+		ctx.children.forEach(numTextSB::append);
+		String numText = numTextSB.toString();
 		int num = Integer.parseInt(numText);
 		num = num * (-1);
 		return new IntegerConstant(num);

@@ -132,10 +132,10 @@ public class Translator implements Visitor {
 		StringBuilder sigVarialesSB = new StringBuilder();
 		StringBuilder funParamSB = new StringBuilder();
 		StringBuilder postOldSyntaxSB = new StringBuilder();
-		
+
 		sigVarialesSB.append("open logicFuncs\n");
 		sigVarialesSB.append("sig ").append(stateName).append("{");
-		postOldSyntaxSB.append("all field: " + funName + this.getStatementsTranslated() + " [");
+		postOldSyntaxSB.append("all field: ").append(funName).append(this.getStatementsTranslated()).append(" [");
 
 		Map<String, String> postOriginalToAlloy = new HashMap<>();
 		Map<String, String> preOriginalToAlloy = new HashMap<>();
@@ -152,7 +152,7 @@ public class Translator implements Visitor {
 
 			sigVarialesSB.append("\n\t");
 			sigVarialesSB.append(alloyVar).append(":").append(varType).append(",");
-			funParamSB.append("p" + alloyVar).append(":").append(varType).append(",");
+			funParamSB.append("p").append(alloyVar).append(":").append(varType).append(",");
 			postOldSyntaxSB.append("n.").append(alloyVar).append(",");
 			counter++;
 		}
@@ -176,7 +176,7 @@ public class Translator implements Visitor {
 
 		sigVarialesSB.append("fun ").append(funName).append(this.getStatementsTranslated()).append(" (")
 				.append(funParamString).append(") : ").append(stateName).append(" {\n");
-		sigVarialesSB.append("\t{ n : " + stateName + " | \n\t\t");
+		sigVarialesSB.append("\t{ n : ").append(stateName).append(" | \n\t\t");
 		sigVarialesSB.append(functionTranslatedString).append(" \n\t}\n}\n\n");
 
 		Translator precondTranslator = new Translator(preOriginalToAlloy, postOldSyntax);
@@ -195,7 +195,7 @@ public class Translator implements Visitor {
 
 		sigVarialesSB.append("assert ").append(assertName).append(this.getStatementsTranslated()).append(" {\n");
 		sigVarialesSB.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString)
-				.append(")" + " in True => (").append(postcondTranslatedString + "in True" ).append(")\n}\n\n");
+				.append(")" + " in True => (").append(postcondTranslatedString).append("in True").append(")\n}\n\n");
 
 		sigVarialesSB.append("check ").append(assertName).append(this.getStatementsTranslated());
 
@@ -293,7 +293,6 @@ public class Translator implements Visitor {
 	
 	@Override
 	public void visitMultipleAssignments(MultiAssignment exp) {
-
 		for (Instruction inst : exp.getAssignments()) {
 			Translator instTranslator = new Translator(originalToAlloy, postOldSyntax);
 			inst.accept(instTranslator);
@@ -301,7 +300,6 @@ public class Translator implements Visitor {
 //			System.out.println("SIZE : "+ size);
 			assert (instTranslator.getResult().size() == 2);
 			this.resultMap.put(instTranslator.getResult().get(0), instTranslator.getResult().get(1));
-
 		}
 	}
 
@@ -430,11 +428,13 @@ public class Translator implements Visitor {
 		for (String res : lhsTrans.result) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		for (String res : rhsTrans.result) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		if (refersToOLD) {
@@ -459,11 +459,13 @@ public class Translator implements Visitor {
 		for (String res : lhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		for (String res : rhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		if (refersToOLD) {
@@ -488,11 +490,13 @@ public class Translator implements Visitor {
 		for (String res : lhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		for (String res : rhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		if (refersToOLD) {
@@ -518,11 +522,13 @@ public class Translator implements Visitor {
 		for (String res : lhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		for (String res : rhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		if (refersToOLD) {
@@ -548,11 +554,13 @@ public class Translator implements Visitor {
 		for (String res : lhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		for (String res : rhsTrans.getResult()) {
 			if (res.contains(this.getFieldName())) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		if (refersToOLD) {
@@ -603,11 +611,13 @@ public class Translator implements Visitor {
 		for (String res : lhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		for (String res : rhsTrans.getResult()) {
 			if (res.contains(this.fieldName)) {
 				refersToOLD = true;
+				break;
 			}
 		}
 		if (refersToOLD) {
