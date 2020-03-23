@@ -206,7 +206,7 @@ public class Translator implements Visitor {
 
         sigVarialesSB.append("assert ").append(assertName).append(this.getStatementsTranslated()).append(" {\n");
         sigVarialesSB.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString)
-                .append(")" + " in True => (").append(postcondTranslatedString).append(" in True").append(")\n}\n\n");
+                .append(")" + " in True => (").append(postcondTranslatedString).append(")  in True \n}\n\n");
 
 		sigVarialesSB.append("check ").append(assertName).append(this.getStatementsTranslated());
 
@@ -651,21 +651,9 @@ public class Translator implements Visitor {
 		exp.getRightExpr().accept(rhsTrans);
 		boolean refersToOLD = this.inEnsure;
 		this.result.add("andGate[");
-		if (refersToOLD) {
-			this.result.add(this.postOldSyntax);
-		}
 		this.result.addAll(lhsTrans.getResult());
-		if (refersToOLD) {
-			this.result.add("} ");
-		}
 		this.result.add(", ");
-		if (refersToOLD) {
-			this.result.add(this.postOldSyntax);
-		}
 		this.result.addAll(rhsTrans.getResult());
-		if (refersToOLD) {
-			this.result.add("} ");
-		}
 		this.result.add("]");
 		this.result.add(".arg3");
 	}
@@ -684,7 +672,16 @@ public class Translator implements Visitor {
 	@Override
 	public void visitBooleanVariable(BooleanVariable exp) {
 		String alloyVarName = this.originalToAlloy.get(exp.getID());
+		boolean refersToOLD = this.inEnsure;
+		if (refersToOLD) {
+			this.result.add(this.postOldSyntax);
+			this.result.add("(");
+		}
 		result.add(alloyVarName);
+		result.add(" in True");
+		if (refersToOLD) {
+			this.result.add(" => True else False )} ");
+		}
 	}
 
 	@Override

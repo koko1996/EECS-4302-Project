@@ -5,4 +5,4 @@ if_require(a)
 if (a) {
     b = !!a
 }
-if_ensure(a&&b)
+if_ensure(a && b)
