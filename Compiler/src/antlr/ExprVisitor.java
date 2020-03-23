@@ -15,29 +15,23 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	/**
 	 * Visit a parse tree produced by the {@code Program}
 	 * labeled alternative in {@link ExprParser#prog}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitProgram(ExprParser.ProgramContext ctx);
-
 	/**
 	 * Visit a parse tree produced by {@link ExprParser#statement}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitStatement(ExprParser.StatementContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code VariableDeclaration}
 	 * labeled alternative in {@link ExprParser#declaration}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code VariableInitializationConstantCopy}
 	 * labeled alternative in {@link ExprParser#declaration}.
@@ -101,20 +95,43 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIDAssignment(ExprParser.IDAssignmentContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code AssignAssignment}
 	 * labeled alternative in {@link ExprParser#assignment}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssignAssignment(ExprParser.AssignAssignmentContext ctx);
+
+	/**
+	 * Visit a parse tree produced by the {@code AssignConditional}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 *
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignConditional(ExprParser.AssignConditionalContext ctx);
+
+	/**
+	 * Visit a parse tree produced by the {@code AssignAssertedConditional}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 *
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignAssertedConditional(ExprParser.AssignAssertedConditionalContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code ArithmeticOperation}
 	 * labeled alternative in {@link ExprParser#expression}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code RelationalOperation}
 	 * labeled alternative in {@link ExprParser#expression}.
@@ -157,34 +174,27 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitModuloArithmetic(ExprParser.ModuloArithmeticContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code MultiplicationArithmetic}
 	 * labeled alternative in {@link ExprParser#arithmeticOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMultiplicationArithmetic(ExprParser.MultiplicationArithmeticContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code ParanthesesArithmetic}
 	 * labeled alternative in {@link ExprParser#arithmeticOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code NegationIntegerConstant}
 	 * labeled alternative in {@link ExprParser#arithmeticOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNegationIntegerConstant(ExprParser.NegationIntegerConstantContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code AdditionArithmetic}
 	 * labeled alternative in {@link ExprParser#arithmeticOp}.
@@ -199,34 +209,27 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSubtractionArithmetic(ExprParser.SubtractionArithmeticContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code IntegerConstant}
 	 * labeled alternative in {@link ExprParser#arithmeticOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitIntegerConstant(ExprParser.IntegerConstantContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code ParanthesesRelational}
 	 * labeled alternative in {@link ExprParser#relationalOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code LessRelational}
 	 * labeled alternative in {@link ExprParser#relationalOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitLessRelational(ExprParser.LessRelationalContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code LessEqualRelational}
 	 * labeled alternative in {@link ExprParser#relationalOp}.
@@ -290,38 +293,30 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitEquivalenceLogical(ExprParser.EquivalenceLogicalContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code NegationLogical}
 	 * labeled alternative in {@link ExprParser#logicalOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNegationLogical(ExprParser.NegationLogicalContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code ConjunctionLogical}
 	 * labeled alternative in {@link ExprParser#logicalOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitConjunctionLogical(ExprParser.ConjunctionLogicalContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code ParanthesesLogical}
 	 * labeled alternative in {@link ExprParser#logicalOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code BooleanConstant}
 	 * labeled alternative in {@link ExprParser#logicalOp}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */

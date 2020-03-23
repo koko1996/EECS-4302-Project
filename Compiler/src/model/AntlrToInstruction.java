@@ -163,7 +163,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int lhsIDLine = lhsIDToken.getLine();
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
 		String lhsID = ctx.ID().get(0).getText();
-		System.out.println("visitIDAssignment: " + lhsIDLine);
+//		System.out.println("visitIDAssignment: " + lhsIDLine);
 		Token rhsIDToken = ctx.ID().get(1).getSymbol();
 		int rhsIDLine = rhsIDToken.getLine();
 		int rhsColumnLine = rhsIDToken.getCharPositionInLine() + 1;
@@ -461,5 +461,15 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	@Override
 	public Instruction visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx) {
 		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
+	}
+
+	@Override
+	public Instruction visitAssignConditional(ExprParser.AssignConditionalContext ctx) {
+		return visit(ctx.getChild(0));
+	}
+
+	@Override
+	public Instruction visitAssignAssertedConditional(ExprParser.AssignAssertedConditionalContext ctx) {
+		return visit(ctx.getChild(0));
 	}
 }

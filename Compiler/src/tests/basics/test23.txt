@@ -1,0 +1,8 @@
+bool a = true
+bool b
+
+if_require(a)
+if (a) {
+    b = !!a
+}
+if_ensure(a)

@@ -176,26 +176,31 @@ public class Translator implements Visitor {
 
 		sigVarialesSB.append("fun ").append(funName).append(this.getStatementsTranslated()).append(" (")
 				.append(funParamString).append(") : ").append(stateName).append(" {\n");
-		sigVarialesSB.append("\t{ n : ").append(stateName).append(" | \n\t\t");
-		sigVarialesSB.append(functionTranslatedString).append(" \n\t}\n}\n\n");
+        sigVarialesSB.append("\t{ n : ").append(stateName).append(" | \n\t\t");
+        sigVarialesSB.append(functionTranslatedString).append(" \n\t}\n}\n\n");
 
-		Translator precondTranslator = new Translator(preOriginalToAlloy, postOldSyntax);
-		exp.getPreCond().accept(precondTranslator);
-		List<String> precondTranslated = precondTranslator.getResult();
-		StringBuilder precondSB = new StringBuilder();
-		precondTranslated.forEach(precondSB::append);
-		String precondTranslatedString = precondSB.toString();
+        Translator precondTranslator = new Translator(preOriginalToAlloy, postOldSyntax);
+        exp.getPreCond().accept(precondTranslator);
+        List<String> precondTranslated = precondTranslator.getResult();
+        StringBuilder precondSB = new StringBuilder();
+        precondTranslated.forEach(precondSB::append);
+        String precondTranslatedString = precondSB.toString();
 
-		Translator postcondTranslator = new Translator(postOriginalToAlloy, postOldSyntax);
-		exp.getPostCond().accept(postcondTranslator);
-		List<String> postcondTranslated = postcondTranslator.getResult();
-		StringBuilder postcondSB = new StringBuilder();
-		postcondTranslated.forEach(postcondSB::append);
-		String postcondTranslatedString = postcondSB.toString();
+        Translator postcondTranslator;
+        if (exp.getPostCond() instanceof BooleanVariable) {
+            postcondTranslator = new Translator(preOriginalToAlloy, postOldSyntax);
+        } else {
+            postcondTranslator = new Translator(postOriginalToAlloy, postOldSyntax);
+        }
+        exp.getPostCond().accept(postcondTranslator);
+        List<String> postcondTranslated = postcondTranslator.getResult();
+        StringBuilder postcondSB = new StringBuilder();
+        postcondTranslated.forEach(postcondSB::append);
+        String postcondTranslatedString = postcondSB.toString();
 
-		sigVarialesSB.append("assert ").append(assertName).append(this.getStatementsTranslated()).append(" {\n");
-		sigVarialesSB.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString)
-				.append(")" + " in True => (").append(postcondTranslatedString).append("in True").append(")\n}\n\n");
+        sigVarialesSB.append("assert ").append(assertName).append(this.getStatementsTranslated()).append(" {\n");
+        sigVarialesSB.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString)
+                .append(")" + " in True => (").append(postcondTranslatedString).append(" in True").append(")\n}\n\n");
 
 		sigVarialesSB.append("check ").append(assertName).append(this.getStatementsTranslated());
 

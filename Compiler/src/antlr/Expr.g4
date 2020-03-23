@@ -42,6 +42,8 @@ multAssig: (assignment)+			# MultipleAssignments
 assignment: expression				# AssignExpression
 		  | ID '=' ID  				# IDAssignment
 		  | ID '=' expression  		# AssignAssignment
+		  | conditional             # AssignConditional
+		  | assertedConditional     # AssignAssertedConditional
 		  ;
 
 expression: arithmeticOp			# ArithmeticOperation

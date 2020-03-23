@@ -13,8 +13,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class ExprBaseListener implements ExprListener {
-	/**
-	 * {@inheritDoc}
+    /**
+     * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
@@ -62,16 +62,22 @@ public class ExprBaseListener implements ExprListener {
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitVariableDeclaration(ExprParser.VariableDeclarationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx) { }
-	/**
-	 * {@inheritDoc}
+     */
+    @Override
+    public void exitVariableDeclaration(ExprParser.VariableDeclarationContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
@@ -171,25 +177,71 @@ public class ExprBaseListener implements ExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIDAssignment(ExprParser.IDAssignmentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAssignAssignment(ExprParser.AssignAssignmentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAssignAssignment(ExprParser.AssignAssignmentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) { }
+	@Override public void exitIDAssignment(ExprParser.IDAssignmentContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterAssignAssignment(ExprParser.AssignAssignmentContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitAssignAssignment(ExprParser.AssignAssignmentContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterAssignConditional(ExprParser.AssignConditionalContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitAssignConditional(ExprParser.AssignConditionalContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterAssignAssertedConditional(ExprParser.AssignAssertedConditionalContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitAssignAssertedConditional(ExprParser.AssignAssertedConditionalContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterArithmeticOperation(ExprParser.ArithmeticOperationContext ctx) {
+    }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -252,22 +304,29 @@ public class ExprBaseListener implements ExprListener {
 	@Override public void enterVariableArithmetic(ExprParser.VariableArithmeticContext ctx) { }
 	/**
 	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitVariableArithmetic(ExprParser.VariableArithmeticContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterModuloArithmetic(ExprParser.ModuloArithmeticContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitModuloArithmetic(ExprParser.ModuloArithmeticContext ctx) {
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitVariableArithmetic(ExprParser.VariableArithmeticContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterModuloArithmetic(ExprParser.ModuloArithmeticContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitModuloArithmetic(ExprParser.ModuloArithmeticContext ctx) {
     }
 
     /**
@@ -319,32 +378,45 @@ public class ExprBaseListener implements ExprListener {
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitNegationIntegerConstant(ExprParser.NegationIntegerConstantContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNegationIntegerConstant(ExprParser.NegationIntegerConstantContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAdditionArithmetic(ExprParser.AdditionArithmeticContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAdditionArithmetic(ExprParser.AdditionArithmeticContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSubtractionArithmetic(ExprParser.SubtractionArithmeticContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSubtractionArithmetic(ExprParser.SubtractionArithmeticContext ctx) {
+	@Override
+    public void enterAdditionArithmetic(ExprParser.AdditionArithmeticContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitAdditionArithmetic(ExprParser.AdditionArithmeticContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterSubtractionArithmetic(ExprParser.SubtractionArithmeticContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitSubtractionArithmetic(ExprParser.SubtractionArithmeticContext ctx) {
     }
 
     /**
@@ -496,28 +568,40 @@ public class ExprBaseListener implements ExprListener {
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEquivalenceLogical(ExprParser.EquivalenceLogicalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEquivalenceLogical(ExprParser.EquivalenceLogicalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNegationLogical(ExprParser.NegationLogicalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNegationLogical(ExprParser.NegationLogicalContext ctx) { }
-	/**
-	 * {@inheritDoc}
+     */
+    @Override
+    public void enterEquivalenceLogical(ExprParser.EquivalenceLogicalContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitEquivalenceLogical(ExprParser.EquivalenceLogicalContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterNegationLogical(ExprParser.NegationLogicalContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitNegationLogical(ExprParser.NegationLogicalContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
@@ -563,8 +647,8 @@ public class ExprBaseListener implements ExprListener {
 
     /**
      * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitBooleanConstant(ExprParser.BooleanConstantContext ctx) { }
 	/**
