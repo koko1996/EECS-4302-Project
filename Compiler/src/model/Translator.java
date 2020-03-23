@@ -304,7 +304,18 @@ public class Translator implements Visitor {
 			int size = instTranslator.getResult().size();
 //			System.out.println("SIZE : "+ size);
 			assert (instTranslator.getResult().size() == 2);
-			this.resultMap.put(instTranslator.getResult().get(0), instTranslator.getResult().get(1));
+			String key = instTranslator.getResult().get(0);
+			String value;
+			if (inst instanceof IfElseIfStatement || inst instanceof AssertedConditional) {
+				StringBuilder valueBuilder = new StringBuilder();
+//				valueBuilder.append("(");
+				instTranslator.getResult().subList(2, instTranslator.getResult().size() - 1).forEach(each -> valueBuilder.append(each));
+//				valueBuilder.append(")");
+				value = valueBuilder.toString();
+			} else {
+				value = instTranslator.getResult().get(1);
+			}
+			this.resultMap.put(key, value);
 		}
 	}
 
