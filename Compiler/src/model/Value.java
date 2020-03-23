@@ -14,7 +14,6 @@ public class Value {
     public Value(Expression value, String type) {
         this.value = value;
         this.type = type;
-        //TODO Make deep copy of value
     }
 
     public Expression getValue() {

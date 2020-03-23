@@ -407,15 +407,42 @@ public class Translator implements Visitor {
 
 	@Override
 	public void visitLessRelational(LessThan exp) {
-		// WHY NO referstoold here?
 		Translator lhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getLeftExpr().accept(lhsTrans);
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
+		boolean refersToOLD = false;
+		for (String res : lhsTrans.result) {
+			if (res.contains(this.fieldName)) {
+				refersToOLD = true;
+				break;
+			}
+		}
+		for (String res : rhsTrans.result) {
+			if (res.contains(this.fieldName)) {
+				refersToOLD = true;
+				break;
+			}
+		}
+		if (refersToOLD) {
+			this.result.add(this.postOldSyntax);
+		}
 		this.result.addAll(lhsTrans.getResult());
-		this.result.add(" = ");
+		this.result.add(" < ");
 		this.result.addAll(rhsTrans.getResult());
 		this.result.add(" => True else False");
+		if (refersToOLD) {
+			this.result.add("} ");
+		}
+//		// WHY NO referstoold here?
+//		Translator lhsTrans = new Translator(originalToAlloy, postOldSyntax);
+//		exp.getLeftExpr().accept(lhsTrans);
+//		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
+//		exp.getRightExpr().accept(rhsTrans);
+//		this.result.addAll(lhsTrans.getResult());
+//		this.result.add(" = ");
+//		this.result.addAll(rhsTrans.getResult());
+//		this.result.add(" => True else False");
 	}
 
 	@Override
@@ -637,10 +664,10 @@ public class Translator implements Visitor {
 	public void visitNegationLogical(Negation exp) {
 		Translator lhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getExpression().accept(lhsTrans);
-		result.add("not");
-		result.add("(");
+		this.result.add("notGate[");
 		this.result.addAll(lhsTrans.getResult());
-		result.add(")");
+		this.result.add("]");
+		this.result.add(".arg3");
 	}
 
 	@Override

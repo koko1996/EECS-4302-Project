@@ -3,8 +3,8 @@ bool y = false
 bool z = true
 bool a = false
 
-if_require(x <=> true)
-if (x && y <=> false) {
+if_require(x <=> false)
+if (x && a <=> false) {
     y = true
 }
 if_ensure(y <=> true)

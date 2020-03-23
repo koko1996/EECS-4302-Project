@@ -401,7 +401,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitNegationLogical(ExprParser.NegationLogicalContext ctx) {
-		return new Negation(visit(ctx.getChild(0)));
+		return new Negation(visit(ctx.getChild(1))); // TODO NOT SURE IF THIS IS GONNA WORK
 	}
 
 	@Override
