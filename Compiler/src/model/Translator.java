@@ -259,14 +259,15 @@ public class Translator implements Visitor {
 
 			for (int i = 0; i < elseIfConditions.size(); i++) {
 				if (elseIfAssignments.get(i).containsKey(parameterNameMap.get(key))) {
-					this.result.add(" else");
-					this.result.add(" ( ");
-					this.result.addAll(elseIfConditions.get(i));
-					this.result.add(" )");
-					this.result.add(" => ");
-					this.result.add(elseIfAssignments.get(i).get(parameterNameMap.get(key)));
-					this.result.add(" ");
-				}
+                    this.result.add(" else");
+                    this.result.add(" (");
+                    this.result.addAll(elseIfConditions.get(i));
+                    this.result.add(")");
+                    this.result.add(" in True");
+                    this.result.add(" => ");
+                    this.result.add(elseIfAssignments.get(i).get(parameterNameMap.get(key)));
+                    this.result.add(" ");
+                }
 			}
 
 			this.result.add(" else ");
