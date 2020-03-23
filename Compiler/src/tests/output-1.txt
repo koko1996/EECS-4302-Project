@@ -1,0 +1,28 @@
+// Comments will NOT be generated
+ 
+open logicFuncs // Use the logicFuncs module which needs
+// to be on the working directory as explained in the docs
+
+// State of your program
+sig state{
+	arg1:Int
+}
+
+// The translation of if statement
+fun funStatement0 (parg1:Int) : state {
+	{ n : state | 
+		n.arg1 = ((parg1 > 0 => True else False) in True => 2 else parg1 )
+		 
+	}
+}
+
+// Assert that executing the if statement given that the precondition
+// holds then the post condition holds for all ints (of size 4 bits) 
+assert assertStatement0 {
+						
+	 all n: state | (n.arg1 = 1 => True else False) in True => (all field: funStatement0 [n.arg1] | { field.arg1 = 2 => True else False}  in True)
+					// The pre condition is true	  	    Then				The post condition holds
+				
+}
+
+check assertStatement0

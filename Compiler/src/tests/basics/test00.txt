@@ -1,14 +1,13 @@
-x-1
- x
- x=-1
- x=x-1
- if(x>t){
+int x =1
+x=-1
+x=x-1
+if(x>t){
      if(true){
          x%y
      } else {
          z-3
      }
- } else if(x>r) {
+} else if(x>r) {
      if(true){
          x%y
      } else if (false){
@@ -16,13 +15,13 @@ x-1
      } else {
          a=q+a
      }
- } else if(x+1>r) {
+} else if(x+1>r) {
      x=x/y
 
- } else {
+} else {
      if(true){
          x%y
      } else if (false){
          z-3
      }
- }
+}

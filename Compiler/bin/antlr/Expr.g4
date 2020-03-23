@@ -84,15 +84,12 @@ logicalOp: '(' logicalOp ')'                    # ParanthesesLogical
 		 ;
 
 
-//VARIABLE: 'int' | 'bool';
-//ID: [a-z][a-zA-Z0-9_]*;
-//IntConstant : [0-9][1-9]*;
-//WS : [ \t\n\r]+ -> skip;
-	/* Tokens */
-    VARIABLE: 'int' | 'bool';
-	IntConstant : [0-9]+;
-	BoolConstant: 'true' | 'false';
-	ConstantValue: IntConstant | BoolConstant;
-	ID: [a-z][a-zA-Z0-9_]*;
-	COMMENT: '//' ~[\r\n]* -> skip;
-	WS : [ \t\n\r]+ -> skip ;
+
+/* Tokens */
+VARIABLE: 'int' | 'bool';
+IntConstant : [0-9]+;
+BoolConstant: 'true' | 'false';
+ConstantValue: IntConstant | BoolConstant;
+ID: [a-z][a-zA-Z0-9_]*;
+COMMENT: '//' ~[\r\n]* -> skip;
+WS : [ \t\n\r]+ -> skip ;

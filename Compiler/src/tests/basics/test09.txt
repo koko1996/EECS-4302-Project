@@ -4,5 +4,7 @@ if_require(x==10)
 if(x>0){
 	x=9
 	y=1
+} else {
+	
 }
-if_ensure(x==9)
+if_ensure(y==1)
