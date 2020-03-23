@@ -1,0 +1,25 @@
+int x = 1
+int y
+y = 5
+int z
+
+bool a = true
+bool b = false
+bool c
+c = true
+bool d
+
+int w = z
+int k = y + z
+int plsdontbreak1 = true && false
+bool plsdontbreak2 = 1 + 2
+int plsdontbreak3 = a && b && c && d
+bool plsdontbreak4 = x + y + z
+int plsdontbreak5 = x + y + z
+bool plsdontbreak6 = a && b && c && d
+bool plsdontbreak7 = !d || c
+int plsdontbreak8 = a <=> b
+bool wowsuchassignment = a <=> b
+bool muchfun = 1299 < 1453 < (1881 > 1919 >= 1923)
+
+

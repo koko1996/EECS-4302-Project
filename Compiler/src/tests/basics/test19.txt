@@ -1,0 +1,29 @@
+int x = 1
+int y = 0
+int z = -1
+int xaddz = x + z
+int xmulz = x * z
+int xdivz = x / z
+int xminz = x - z
+int xmodz = 1 % -1
+int random = xaddz + xmulz + xdivz + xminz + 5454
+int notint
+notint = 5
+notint = 2 * notint
+bool a = true
+bool b = false
+bool c
+c = false
+
+bool res1 = x < y
+bool res2 = x <= y
+bool res3 = x > y
+bool res4 = x >= y
+bool res5 = x == y
+bool res6 = x != y
+bool res7 = res1 && res2
+bool res8 = res1 || res2
+bool res9 = !res7
+bool res10 = !(!res7 && res1 || res2 && (res1 => res2))
+
+

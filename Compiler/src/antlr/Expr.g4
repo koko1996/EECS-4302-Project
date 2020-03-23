@@ -50,7 +50,8 @@ expression: arithmeticOp			# ArithmeticOperation
 		  | '(' expression ')'		# ParanthesesExpression
 		  ;
 
-arithmeticOp: arithmeticOp '*' arithmeticOp		# MultiplicationArithmetic
+arithmeticOp: '(' arithmeticOp ')'              # ParanthesesArithmetic
+            | arithmeticOp '*' arithmeticOp		# MultiplicationArithmetic
 			| arithmeticOp '/' arithmeticOp		# DivisionArithmetic
 			| arithmeticOp '%' arithmeticOp		# ModuloArithmetic
 			| arithmeticOp '+' arithmeticOp 	# AdditionArithmetic
@@ -60,7 +61,8 @@ arithmeticOp: arithmeticOp '*' arithmeticOp		# MultiplicationArithmetic
 			| '-' IntConstant					# NegationIntegerConstant
 			;
 
-relationalOp: arithmeticOp '<' arithmeticOp			# LessRelational
+relationalOp: '(' relationalOp ')'                  # ParanthesesRelational
+            | arithmeticOp '<' arithmeticOp			# LessRelational
 			| arithmeticOp '<=' arithmeticOp		# LessEqualRelational
 			| arithmeticOp '>' arithmeticOp			# GreaterRelational
 			| arithmeticOp '>=' arithmeticOp		# GreaterEqualRelational
@@ -68,7 +70,8 @@ relationalOp: arithmeticOp '<' arithmeticOp			# LessRelational
 			| arithmeticOp '!=' arithmeticOp		# InequivalenceRelational
 			;
 
-logicalOp: '!' logicalOp						# NegationLogical
+logicalOp: '(' logicalOp ')'                    # ParanthesesLogical
+         | '!' logicalOp						# NegationLogical
 		 | logicalOp '&&' logicalOp				# ConjunctionLogical
 		 | logicalOp '||' logicalOp				# DisjunctionLogical
 		 | logicalOp '=>' logicalOp				# ImplicationLogical

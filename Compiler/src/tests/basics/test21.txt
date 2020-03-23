@@ -1,0 +1,31 @@
+bool a = true
+bool b
+if (a <=> true) {
+    b = !!a
+    if (a) {
+        a = false
+    }
+    if (1 == 2) {
+        a = true
+    } else {
+        a = false
+    }
+}
+
+bool c = false
+
+if_require(c <=> false)
+if (2 == 1) {
+    c = false
+} else if (!(c <=> false)) {
+    c = false
+} else {
+    if (!c) {
+        c = false
+    }
+
+    if (true) {
+        c = true
+    }
+}
+if_ensure(c <=> true)

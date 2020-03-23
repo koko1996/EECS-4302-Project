@@ -2,14 +2,17 @@
 
         package antlr;
 
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ExprParser extends Parser {
@@ -17,34 +20,94 @@ public class ExprParser extends Parser {
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
-		new PredictionContextCache();
+			new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
-		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
-		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, T__23=24, 
-		T__24=25, VARIABLE=26, IntConstant=27, BoolConstant=28, ConstantValue=29, 
-		ID=30, COMMENT=31, WS=32;
+			T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, T__7 = 8, T__8 = 9,
+			T__9 = 10, T__10 = 11, T__11 = 12, T__12 = 13, T__13 = 14, T__14 = 15, T__15 = 16, T__16 = 17,
+			T__17 = 18, T__18 = 19, T__19 = 20, T__20 = 21, T__21 = 22, T__22 = 23, T__23 = 24,
+			T__24 = 25, VARIABLE = 26, IntConstant = 27, BoolConstant = 28, ConstantValue = 29,
+			ID = 30, COMMENT = 31, WS = 32;
 	public static final int
-		RULE_prog = 0, RULE_declaration = 1, RULE_statement = 2, RULE_assertedConditional = 3, 
-		RULE_conditional = 4, RULE_elseIf = 5, RULE_finaElse = 6, RULE_multAssig = 7, 
-		RULE_assignment = 8, RULE_expression = 9, RULE_arithmeticOp = 10, RULE_relationalOp = 11, 
-		RULE_logicalOp = 12;
-	private static String[] makeRuleNames() {
-		return new String[] {
-			"prog", "declaration", "statement", "assertedConditional", "conditional", 
-			"elseIf", "finaElse", "multAssig", "assignment", "expression", "arithmeticOp", 
-			"relationalOp", "logicalOp"
-		};
-	}
+			RULE_prog = 0, RULE_statement = 1, RULE_declaration = 2, RULE_assertedConditional = 3,
+			RULE_conditional = 4, RULE_elseIf = 5, RULE_finaElse = 6, RULE_multAssig = 7,
+			RULE_assignment = 8, RULE_expression = 9, RULE_arithmeticOp = 10, RULE_relationalOp = 11,
+			RULE_logicalOp = 12;
+	public static final String _serializedATN =
+			"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\"\u00cf\4\2\t\2\4" +
+					"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t" +
+					"\13\4\f\t\f\4\r\t\r\4\16\t\16\3\2\6\2\36\n\2\r\2\16\2\37\3\2\3\2\3\3\3" +
+					"\3\3\3\3\3\5\3(\n\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4\64\n\4" +
+					"\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3" +
+					"\6\7\6H\n\6\f\6\16\6K\13\6\3\6\5\6N\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3" +
+					"\7\3\7\3\b\3\b\3\b\3\b\3\b\3\t\6\t_\n\t\r\t\16\t`\3\n\3\n\3\n\3\n\3\n" +
+					"\3\n\3\n\5\nj\n\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\5\13s\n\13\3\f\3" +
+					"\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\5\f~\n\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3" +
+					"\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\7\f\u008f\n\f\f\f\16\f\u0092\13\f\3\r\3" +
+					"\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r" +
+					"\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u00b0\n\r\3\16\3\16\3\16\3\16" +
+					"\3\16\3\16\3\16\3\16\3\16\3\16\5\16\u00bc\n\16\3\16\3\16\3\16\3\16\3\16" +
+					"\3\16\3\16\3\16\3\16\3\16\3\16\3\16\7\16\u00ca\n\16\f\16\16\16\u00cd\13" +
+					"\16\3\16\2\4\26\32\17\2\4\6\b\n\f\16\20\22\24\26\30\32\2\2\2\u00e5\2\35" +
+					"\3\2\2\2\4\'\3\2\2\2\6\63\3\2\2\2\b\65\3\2\2\2\n?\3\2\2\2\fO\3\2\2\2\16" +
+					"X\3\2\2\2\20^\3\2\2\2\22i\3\2\2\2\24r\3\2\2\2\26}\3\2\2\2\30\u00af\3\2" +
+					"\2\2\32\u00bb\3\2\2\2\34\36\5\4\3\2\35\34\3\2\2\2\36\37\3\2\2\2\37\35" +
+					"\3\2\2\2\37 \3\2\2\2 !\3\2\2\2!\"\7\2\2\3\"\3\3\2\2\2#(\5\6\4\2$(\5\22" +
+					"\n\2%(\5\n\6\2&(\5\b\5\2\'#\3\2\2\2\'$\3\2\2\2\'%\3\2\2\2\'&\3\2\2\2(" +
+					"\5\3\2\2\2)*\7\34\2\2*\64\7 \2\2+,\7\34\2\2,-\7 \2\2-.\7\3\2\2.\64\7 " +
+					"\2\2/\60\7\34\2\2\60\61\7 \2\2\61\62\7\3\2\2\62\64\5\24\13\2\63)\3\2\2" +
+					"\2\63+\3\2\2\2\63/\3\2\2\2\64\7\3\2\2\2\65\66\7\4\2\2\66\67\7\5\2\2\67" +
+					"8\5\32\16\289\7\6\2\29:\5\n\6\2:;\7\7\2\2;<\7\5\2\2<=\5\32\16\2=>\7\6" +
+					"\2\2>\t\3\2\2\2?@\7\b\2\2@A\7\5\2\2AB\5\32\16\2BC\7\6\2\2CD\7\t\2\2DE" +
+					"\5\20\t\2EI\7\n\2\2FH\5\f\7\2GF\3\2\2\2HK\3\2\2\2IG\3\2\2\2IJ\3\2\2\2" +
+					"JM\3\2\2\2KI\3\2\2\2LN\5\16\b\2ML\3\2\2\2MN\3\2\2\2N\13\3\2\2\2OP\7\13" +
+					"\2\2PQ\7\b\2\2QR\7\5\2\2RS\5\32\16\2ST\7\6\2\2TU\7\t\2\2UV\5\20\t\2VW" +
+					"\7\n\2\2W\r\3\2\2\2XY\7\13\2\2YZ\7\t\2\2Z[\5\20\t\2[\\\7\n\2\2\\\17\3" +
+					"\2\2\2]_\5\22\n\2^]\3\2\2\2_`\3\2\2\2`^\3\2\2\2`a\3\2\2\2a\21\3\2\2\2" +
+					"bj\5\24\13\2cd\7 \2\2de\7\3\2\2ej\7 \2\2fg\7 \2\2gh\7\3\2\2hj\5\24\13" +
+					"\2ib\3\2\2\2ic\3\2\2\2if\3\2\2\2j\23\3\2\2\2ks\5\26\f\2ls\5\30\r\2ms\5" +
+					"\32\16\2no\7\5\2\2op\5\24\13\2pq\7\6\2\2qs\3\2\2\2rk\3\2\2\2rl\3\2\2\2" +
+					"rm\3\2\2\2rn\3\2\2\2s\25\3\2\2\2tu\b\f\1\2uv\7\5\2\2vw\5\26\f\2wx\7\6" +
+					"\2\2x~\3\2\2\2y~\7 \2\2z~\7\35\2\2{|\7\20\2\2|~\7\35\2\2}t\3\2\2\2}y\3" +
+					"\2\2\2}z\3\2\2\2}{\3\2\2\2~\u0090\3\2\2\2\177\u0080\f\n\2\2\u0080\u0081" +
+					"\7\f\2\2\u0081\u008f\5\26\f\13\u0082\u0083\f\t\2\2\u0083\u0084\7\r\2\2" +
+					"\u0084\u008f\5\26\f\n\u0085\u0086\f\b\2\2\u0086\u0087\7\16\2\2\u0087\u008f" +
+					"\5\26\f\t\u0088\u0089\f\7\2\2\u0089\u008a\7\17\2\2\u008a\u008f\5\26\f" +
+					"\b\u008b\u008c\f\6\2\2\u008c\u008d\7\20\2\2\u008d\u008f\5\26\f\7\u008e" +
+					"\177\3\2\2\2\u008e\u0082\3\2\2\2\u008e\u0085\3\2\2\2\u008e\u0088\3\2\2" +
+					"\2\u008e\u008b\3\2\2\2\u008f\u0092\3\2\2\2\u0090\u008e\3\2\2\2\u0090\u0091" +
+					"\3\2\2\2\u0091\27\3\2\2\2\u0092\u0090\3\2\2\2\u0093\u0094\7\5\2\2\u0094" +
+					"\u0095\5\30\r\2\u0095\u0096\7\6\2\2\u0096\u00b0\3\2\2\2\u0097\u0098\5" +
+					"\26\f\2\u0098\u0099\7\21\2\2\u0099\u009a\5\26\f\2\u009a\u00b0\3\2\2\2" +
+					"\u009b\u009c\5\26\f\2\u009c\u009d\7\22\2\2\u009d\u009e\5\26\f\2\u009e" +
+					"\u00b0\3\2\2\2\u009f\u00a0\5\26\f\2\u00a0\u00a1\7\23\2\2\u00a1\u00a2\5" +
+					"\26\f\2\u00a2\u00b0\3\2\2\2\u00a3\u00a4\5\26\f\2\u00a4\u00a5\7\24\2\2" +
+					"\u00a5\u00a6\5\26\f\2\u00a6\u00b0\3\2\2\2\u00a7\u00a8\5\26\f\2\u00a8\u00a9" +
+					"\7\25\2\2\u00a9\u00aa\5\26\f\2\u00aa\u00b0\3\2\2\2\u00ab\u00ac\5\26\f" +
+					"\2\u00ac\u00ad\7\26\2\2\u00ad\u00ae\5\26\f\2\u00ae\u00b0\3\2\2\2\u00af" +
+					"\u0093\3\2\2\2\u00af\u0097\3\2\2\2\u00af\u009b\3\2\2\2\u00af\u009f\3\2" +
+					"\2\2\u00af\u00a3\3\2\2\2\u00af\u00a7\3\2\2\2\u00af\u00ab\3\2\2\2\u00b0" +
+					"\31\3\2\2\2\u00b1\u00b2\b\16\1\2\u00b2\u00b3\7\5\2\2\u00b3\u00b4\5\32" +
+					"\16\2\u00b4\u00b5\7\6\2\2\u00b5\u00bc\3\2\2\2\u00b6\u00b7\7\27\2\2\u00b7" +
+					"\u00bc\5\32\16\n\u00b8\u00bc\5\30\r\2\u00b9\u00bc\7 \2\2\u00ba\u00bc\7" +
+					"\36\2\2\u00bb\u00b1\3\2\2\2\u00bb\u00b6\3\2\2\2\u00bb\u00b8\3\2\2\2\u00bb" +
+					"\u00b9\3\2\2\2\u00bb\u00ba\3\2\2\2\u00bc\u00cb\3\2\2\2\u00bd\u00be\f\t" +
+					"\2\2\u00be\u00bf\7\30\2\2\u00bf\u00ca\5\32\16\n\u00c0\u00c1\f\b\2\2\u00c1" +
+					"\u00c2\7\31\2\2\u00c2\u00ca\5\32\16\t\u00c3\u00c4\f\7\2\2\u00c4\u00c5" +
+					"\7\32\2\2\u00c5\u00ca\5\32\16\b\u00c6\u00c7\f\6\2\2\u00c7\u00c8\7\33\2" +
+					"\2\u00c8\u00ca\5\32\16\7\u00c9\u00bd\3\2\2\2\u00c9\u00c0\3\2\2\2\u00c9" +
+					"\u00c3\3\2\2\2\u00c9\u00c6\3\2\2\2\u00ca\u00cd\3\2\2\2\u00cb\u00c9\3\2" +
+					"\2\2\u00cb\u00cc\3\2\2\2\u00cc\33\3\2\2\2\u00cd\u00cb\3\2\2\2\21\37\'" +
+					"\63IM`ir}\u008e\u0090\u00af\u00bb\u00c9\u00cb";
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
-		return new String[] {
-			null, "'='", "'if_require'", "'('", "')'", "'if_ensure'", "'if'", "'{'", 
-			"'}'", "'else'", "'*'", "'/'", "'%'", "'+'", "'-'", "'<'", "'<='", "'>'", 
-			"'>='", "'=='", "'!='", "'!'", "'&&'", "'||'", "'=>'", "'<=>'"
+		return new String[]{
+				null, "'='", "'if_require'", "'('", "')'", "'if_ensure'", "'if'", "'{'",
+				"'}'", "'else'", "'*'", "'/'", "'%'", "'+'", "'-'", "'<'", "'<='", "'>'",
+				"'>='", "'=='", "'!='", "'!'", "'&&'", "'||'", "'=>'", "'<=>'"
 		};
 	}
+
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
@@ -170,8 +233,68 @@ public class ExprParser extends Parser {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
 			_errHandler.recover(this, re);
+		} finally {
+			exitRule();
 		}
-		finally {
+		return _localctx;
+	}
+
+	private static String[] makeRuleNames() {
+		return new String[]{
+				"prog", "statement", "declaration", "assertedConditional", "conditional",
+				"elseIf", "finaElse", "multAssig", "assignment", "expression", "arithmeticOp",
+				"relationalOp", "logicalOp"
+		};
+	}
+
+	public final StatementContext statement() throws RecognitionException {
+		StatementContext _localctx = new StatementContext(_ctx, getState());
+		enterRule(_localctx, 2, RULE_statement);
+		try {
+			setState(37);
+			_errHandler.sync(this);
+			switch (_input.LA(1)) {
+				case VARIABLE:
+					enterOuterAlt(_localctx, 1);
+				{
+					setState(33);
+					declaration();
+				}
+				break;
+				case T__2:
+				case T__13:
+				case T__20:
+				case IntConstant:
+				case BoolConstant:
+				case ID:
+					enterOuterAlt(_localctx, 2);
+				{
+					setState(34);
+					assignment();
+				}
+				break;
+				case T__5:
+					enterOuterAlt(_localctx, 3);
+				{
+					setState(35);
+					conditional();
+				}
+				break;
+				case T__1:
+					enterOuterAlt(_localctx, 4);
+				{
+					setState(36);
+					assertedConditional();
+				}
+				break;
+				default:
+					throw new NoViableAltException(this);
+			}
+		} catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		} finally {
 			exitRule();
 		}
 		return _localctx;
@@ -181,9 +304,15 @@ public class ExprParser extends Parser {
 		public DeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_declaration; }
-	 
-		public DeclarationContext() { }
+
+		@Override
+		public int getRuleIndex() {
+			return RULE_declaration;
+		}
+
+		public DeclarationContext() {
+		}
+
 		public void copyFrom(DeclarationContext ctx) {
 			super.copyFrom(ctx);
 		}
@@ -251,136 +380,49 @@ public class ExprParser extends Parser {
 
 	public final DeclarationContext declaration() throws RecognitionException {
 		DeclarationContext _localctx = new DeclarationContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_declaration);
+		enterRule(_localctx, 4, RULE_declaration);
 		try {
-			setState(43);
+			setState(49);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
-			case 1:
-				_localctx = new VariableDeclarationContext(_localctx);
-				enterOuterAlt(_localctx, 1);
+			switch (getInterpreter().adaptivePredict(_input, 2, _ctx)) {
+				case 1:
+					_localctx = new VariableDeclarationContext(_localctx);
+					enterOuterAlt(_localctx, 1);
 				{
-				setState(33);
-				match(VARIABLE);
-				setState(34);
-				match(ID);
+					setState(39);
+					match(VARIABLE);
+					setState(40);
+					match(ID);
 				}
 				break;
 			case 2:
 				_localctx = new VariableInitializationConstantCopyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
-				{
-				setState(35);
+			{
+				setState(41);
 				match(VARIABLE);
-				setState(36);
+				setState(42);
 				match(ID);
-				setState(37);
+				setState(43);
 				match(T__0);
-				setState(38);
+				setState(44);
 				match(ID);
-				}
+			}
 				break;
 			case 3:
 				_localctx = new VariableInitializationConstantContext(_localctx);
 				enterOuterAlt(_localctx, 3);
-				{
-				setState(39);
-				match(VARIABLE);
-				setState(40);
-				match(ID);
-				setState(41);
-				match(T__0);
-				setState(42);
-				expression();
-				}
-				break;
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class StatementContext extends ParserRuleContext {
-		public DeclarationContext declaration() {
-			return getRuleContext(DeclarationContext.class,0);
-		}
-		public AssignmentContext assignment() {
-			return getRuleContext(AssignmentContext.class,0);
-		}
-		public ConditionalContext conditional() {
-			return getRuleContext(ConditionalContext.class,0);
-		}
-		public AssertedConditionalContext assertedConditional() {
-			return getRuleContext(AssertedConditionalContext.class,0);
-		}
-		public StatementContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_statement; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitStatement(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final StatementContext statement() throws RecognitionException {
-		StatementContext _localctx = new StatementContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_statement);
-		try {
-			setState(49);
-			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case VARIABLE:
-				enterOuterAlt(_localctx, 1);
-				{
+			{
 				setState(45);
-				declaration();
-				}
-				break;
-			case T__2:
-			case T__13:
-			case T__20:
-			case IntConstant:
-			case BoolConstant:
-			case ID:
-				enterOuterAlt(_localctx, 2);
-				{
+				match(VARIABLE);
 				setState(46);
-				assignment();
-				}
-				break;
-			case T__5:
-				enterOuterAlt(_localctx, 3);
-				{
+				match(ID);
 				setState(47);
-				conditional();
-				}
-				break;
-			case T__1:
-				enterOuterAlt(_localctx, 4);
-				{
+				match(T__0);
 				setState(48);
-				assertedConditional();
-				}
+				expression();
+			}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1101,45 +1143,281 @@ public class ExprParser extends Parser {
 		public void enterRule(ParseTreeListener listener) {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterModuloArithmetic(this);
 		}
+
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitModuloArithmetic(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitModuloArithmetic(this);
 		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitModuloArithmetic(this);
+			if (visitor instanceof ExprVisitor) return ((ExprVisitor<? extends T>) visitor).visitModuloArithmetic(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class MultiplicationArithmeticContext extends ArithmeticOpContext {
-		public List<ArithmeticOpContext> arithmeticOp() {
-			return getRuleContexts(ArithmeticOpContext.class);
+
+	private ArithmeticOpContext arithmeticOp(int _p) throws RecognitionException {
+		ParserRuleContext _parentctx = _ctx;
+		int _parentState = getState();
+		ArithmeticOpContext _localctx = new ArithmeticOpContext(_ctx, _parentState);
+		ArithmeticOpContext _prevctx = _localctx;
+		int _startState = 20;
+		enterRecursionRule(_localctx, 20, RULE_arithmeticOp, _p);
+		try {
+			int _alt;
+			enterOuterAlt(_localctx, 1);
+			{
+				setState(123);
+				_errHandler.sync(this);
+				switch (_input.LA(1)) {
+					case T__2: {
+						_localctx = new ParanthesesArithmeticContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+
+						setState(115);
+						match(T__2);
+						setState(116);
+						arithmeticOp(0);
+						setState(117);
+						match(T__3);
+					}
+					break;
+					case ID: {
+						_localctx = new VariableArithmeticContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+						setState(119);
+						match(ID);
+					}
+					break;
+					case IntConstant: {
+						_localctx = new IntegerConstantContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+						setState(120);
+						match(IntConstant);
+					}
+					break;
+					case T__13: {
+						_localctx = new NegationIntegerConstantContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+						setState(121);
+						match(T__13);
+						setState(122);
+						match(IntConstant);
+					}
+					break;
+					default:
+						throw new NoViableAltException(this);
+				}
+				_ctx.stop = _input.LT(-1);
+				setState(142);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input, 10, _ctx);
+				while (_alt != 2 && _alt != org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER) {
+					if (_alt == 1) {
+						if (_parseListeners != null) triggerExitRuleEvent();
+						_prevctx = _localctx;
+						{
+							setState(140);
+							_errHandler.sync(this);
+							switch (getInterpreter().adaptivePredict(_input, 9, _ctx)) {
+								case 1: {
+									_localctx = new MultiplicationArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
+									setState(125);
+									if (!(precpred(_ctx, 8)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 8)");
+									setState(126);
+									match(T__9);
+									setState(127);
+									arithmeticOp(9);
+								}
+								break;
+								case 2: {
+									_localctx = new DivisionArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
+									setState(128);
+									if (!(precpred(_ctx, 7)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 7)");
+									setState(129);
+									match(T__10);
+									setState(130);
+									arithmeticOp(8);
+								}
+								break;
+								case 3: {
+									_localctx = new ModuloArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
+									setState(131);
+									if (!(precpred(_ctx, 6)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+									setState(132);
+									match(T__11);
+									setState(133);
+									arithmeticOp(7);
+								}
+								break;
+								case 4: {
+									_localctx = new AdditionArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
+									setState(134);
+									if (!(precpred(_ctx, 5)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+									setState(135);
+									match(T__12);
+									setState(136);
+									arithmeticOp(6);
+								}
+								break;
+								case 5: {
+									_localctx = new SubtractionArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
+									setState(137);
+									if (!(precpred(_ctx, 4)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+									setState(138);
+									match(T__13);
+									setState(139);
+									arithmeticOp(5);
+								}
+								break;
+							}
+						}
+					}
+					setState(144);
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input, 10, _ctx);
+				}
+			}
+		} catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		} finally {
+			unrollRecursionContexts(_parentctx);
 		}
-		public ArithmeticOpContext arithmeticOp(int i) {
-			return getRuleContext(ArithmeticOpContext.class,i);
-		}
-		public MultiplicationArithmeticContext(ArithmeticOpContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterMultiplicationArithmetic(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitMultiplicationArithmetic(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitMultiplicationArithmetic(this);
-			else return visitor.visitChildren(this);
-		}
+		return _localctx;
 	}
+
+	public final RelationalOpContext relationalOp() throws RecognitionException {
+		RelationalOpContext _localctx = new RelationalOpContext(_ctx, getState());
+		enterRule(_localctx, 22, RULE_relationalOp);
+		try {
+			setState(173);
+			_errHandler.sync(this);
+			switch (getInterpreter().adaptivePredict(_input, 11, _ctx)) {
+				case 1:
+					_localctx = new ParanthesesRelationalContext(_localctx);
+					enterOuterAlt(_localctx, 1);
+				{
+					setState(145);
+					match(T__2);
+					setState(146);
+					relationalOp();
+					setState(147);
+					match(T__3);
+				}
+				break;
+				case 2:
+					_localctx = new LessRelationalContext(_localctx);
+					enterOuterAlt(_localctx, 2);
+				{
+					setState(149);
+					arithmeticOp(0);
+					setState(150);
+					match(T__14);
+					setState(151);
+					arithmeticOp(0);
+				}
+				break;
+				case 3:
+					_localctx = new LessEqualRelationalContext(_localctx);
+					enterOuterAlt(_localctx, 3);
+				{
+					setState(153);
+					arithmeticOp(0);
+					setState(154);
+					match(T__15);
+					setState(155);
+					arithmeticOp(0);
+				}
+				break;
+				case 4:
+					_localctx = new GreaterRelationalContext(_localctx);
+					enterOuterAlt(_localctx, 4);
+				{
+					setState(157);
+					arithmeticOp(0);
+					setState(158);
+					match(T__16);
+					setState(159);
+					arithmeticOp(0);
+				}
+				break;
+				case 5:
+					_localctx = new GreaterEqualRelationalContext(_localctx);
+					enterOuterAlt(_localctx, 5);
+				{
+					setState(161);
+					arithmeticOp(0);
+					setState(162);
+					match(T__17);
+					setState(163);
+					arithmeticOp(0);
+				}
+				break;
+				case 6:
+					_localctx = new EqualityRelationalContext(_localctx);
+					enterOuterAlt(_localctx, 6);
+				{
+					setState(165);
+					arithmeticOp(0);
+					setState(166);
+					match(T__18);
+					setState(167);
+					arithmeticOp(0);
+				}
+				break;
+				case 7:
+					_localctx = new InequivalenceRelationalContext(_localctx);
+					enterOuterAlt(_localctx, 7);
+				{
+					setState(169);
+					arithmeticOp(0);
+					setState(170);
+					match(T__19);
+					setState(171);
+					arithmeticOp(0);
+				}
+				break;
+			}
+		} catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		} finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
 	public static class NegationIntegerConstantContext extends ArithmeticOpContext {
-		public TerminalNode IntConstant() { return getToken(ExprParser.IntConstant, 0); }
-		public NegationIntegerConstantContext(ArithmeticOpContext ctx) { copyFrom(ctx); }
+		public TerminalNode IntConstant() {
+			return getToken(ExprParser.IntConstant, 0);
+		}
+
+		public NegationIntegerConstantContext(ArithmeticOpContext ctx) {
+			copyFrom(ctx);
+		}
+
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterNegationIntegerConstant(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterNegationIntegerConstant(this);
 		}
+
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitNegationIntegerConstant(this);
@@ -1207,7 +1485,7 @@ public class ExprParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitIntegerConstant(this);
+			if (visitor instanceof ExprVisitor) return ((ExprVisitor<? extends T>) visitor).visitIntegerConstant(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1216,132 +1494,135 @@ public class ExprParser extends Parser {
 		return arithmeticOp(0);
 	}
 
-	private ArithmeticOpContext arithmeticOp(int _p) throws RecognitionException {
+	private LogicalOpContext logicalOp(int _p) throws RecognitionException {
 		ParserRuleContext _parentctx = _ctx;
 		int _parentState = getState();
-		ArithmeticOpContext _localctx = new ArithmeticOpContext(_ctx, _parentState);
-		ArithmeticOpContext _prevctx = _localctx;
-		int _startState = 20;
-		enterRecursionRule(_localctx, 20, RULE_arithmeticOp, _p);
+		LogicalOpContext _localctx = new LogicalOpContext(_ctx, _parentState);
+		LogicalOpContext _prevctx = _localctx;
+		int _startState = 24;
+		enterRecursionRule(_localctx, 24, RULE_logicalOp, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(119);
-			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case ID:
-				{
-				_localctx = new VariableArithmeticContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-
-				setState(115);
-				match(ID);
-				}
-				break;
-			case IntConstant:
-				{
-				_localctx = new IntegerConstantContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(116);
-				match(IntConstant);
-				}
-				break;
-			case T__13:
-				{
-				_localctx = new NegationIntegerConstantContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(117);
-				match(T__13);
-				setState(118);
-				match(IntConstant);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-			_ctx.stop = _input.LT(-1);
-			setState(138);
-			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					if ( _parseListeners!=null ) triggerExitRuleEvent();
-					_prevctx = _localctx;
-					{
-					setState(136);
-					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
-					case 1:
-						{
-						_localctx = new MultiplicationArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
-						setState(121);
-						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
-						setState(122);
-						match(T__9);
-						setState(123);
-						arithmeticOp(9);
-						}
-						break;
-					case 2:
-						{
-						_localctx = new DivisionArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
-						setState(124);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(125);
-						match(T__10);
-						setState(126);
-						arithmeticOp(8);
-						}
-						break;
-					case 3:
-						{
-						_localctx = new ModuloArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
-						setState(127);
-						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
-						setState(128);
-						match(T__11);
-						setState(129);
-						arithmeticOp(7);
-						}
-						break;
-					case 4:
-						{
-						_localctx = new AdditionArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
-						setState(130);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
-						setState(131);
-						match(T__12);
-						setState(132);
-						arithmeticOp(6);
-						}
-						break;
-					case 5:
-						{
-						_localctx = new SubtractionArithmeticContext(new ArithmeticOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_arithmeticOp);
-						setState(133);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-						setState(134);
-						match(T__13);
-						setState(135);
-						arithmeticOp(5);
-						}
-						break;
-					}
-					} 
-				}
-				setState(140);
+				setState(185);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
-			}
+				switch (getInterpreter().adaptivePredict(_input, 12, _ctx)) {
+					case 1: {
+						_localctx = new ParanthesesLogicalContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+
+						setState(176);
+						match(T__2);
+						setState(177);
+						logicalOp(0);
+						setState(178);
+						match(T__3);
+					}
+					break;
+					case 2: {
+						_localctx = new NegationLogicalContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+						setState(180);
+						match(T__20);
+						setState(181);
+						logicalOp(8);
+					}
+					break;
+					case 3: {
+						_localctx = new RelationalOpLogicalContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+						setState(182);
+						relationalOp();
+					}
+					break;
+					case 4: {
+						_localctx = new VariableLogicalContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+						setState(183);
+						match(ID);
+					}
+					break;
+					case 5: {
+						_localctx = new BooleanConstantContext(_localctx);
+						_ctx = _localctx;
+						_prevctx = _localctx;
+						setState(184);
+						match(BoolConstant);
+					}
+					break;
+				}
+				_ctx.stop = _input.LT(-1);
+				setState(201);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input, 14, _ctx);
+				while (_alt != 2 && _alt != org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER) {
+					if (_alt == 1) {
+						if (_parseListeners != null) triggerExitRuleEvent();
+						_prevctx = _localctx;
+						{
+							setState(199);
+							_errHandler.sync(this);
+							switch (getInterpreter().adaptivePredict(_input, 13, _ctx)) {
+								case 1: {
+									_localctx = new ConjunctionLogicalContext(new LogicalOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_logicalOp);
+									setState(187);
+									if (!(precpred(_ctx, 7)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 7)");
+									setState(188);
+									match(T__21);
+									setState(189);
+									logicalOp(8);
+								}
+								break;
+								case 2: {
+									_localctx = new DisjunctionLogicalContext(new LogicalOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_logicalOp);
+									setState(190);
+									if (!(precpred(_ctx, 6)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+									setState(191);
+									match(T__22);
+									setState(192);
+									logicalOp(7);
+								}
+								break;
+								case 3: {
+									_localctx = new ImplicationLogicalContext(new LogicalOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_logicalOp);
+									setState(193);
+									if (!(precpred(_ctx, 5)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+									setState(194);
+									match(T__23);
+									setState(195);
+									logicalOp(6);
+								}
+								break;
+								case 4: {
+									_localctx = new EquivalenceLogicalContext(new LogicalOpContext(_parentctx, _parentState));
+									pushNewRecursionContext(_localctx, _startState, RULE_logicalOp);
+									setState(196);
+									if (!(precpred(_ctx, 4)))
+										throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+									setState(197);
+									match(T__24);
+									setState(198);
+									logicalOp(5);
+								}
+								break;
+							}
+						}
+					}
+					setState(203);
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input, 14, _ctx);
+				}
 			}
 		}
 		catch (RecognitionException re) {
@@ -1444,24 +1725,76 @@ public class ExprParser extends Parser {
 		public void enterRule(ParseTreeListener listener) {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterGreaterEqualRelational(this);
 		}
+
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitGreaterEqualRelational(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitGreaterEqualRelational(this);
 		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitGreaterEqualRelational(this);
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitGreaterEqualRelational(this);
 			else return visitor.visitChildren(this);
 		}
 	}
+
+	public static class StatementContext extends ParserRuleContext {
+		public StatementContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+
+		public DeclarationContext declaration() {
+			return getRuleContext(DeclarationContext.class, 0);
+		}
+
+		public AssignmentContext assignment() {
+			return getRuleContext(AssignmentContext.class, 0);
+		}
+
+		public ConditionalContext conditional() {
+			return getRuleContext(ConditionalContext.class, 0);
+		}
+
+		public AssertedConditionalContext assertedConditional() {
+			return getRuleContext(AssertedConditionalContext.class, 0);
+		}
+
+		@Override
+		public int getRuleIndex() {
+			return RULE_statement;
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterStatement(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitStatement(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor) return ((ExprVisitor<? extends T>) visitor).visitStatement(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
 	public static class InequivalenceRelationalContext extends RelationalOpContext {
 		public List<ArithmeticOpContext> arithmeticOp() {
 			return getRuleContexts(ArithmeticOpContext.class);
 		}
+
 		public ArithmeticOpContext arithmeticOp(int i) {
-			return getRuleContext(ArithmeticOpContext.class,i);
+			return getRuleContext(ArithmeticOpContext.class, i);
 		}
-		public InequivalenceRelationalContext(RelationalOpContext ctx) { copyFrom(ctx); }
+
+		public InequivalenceRelationalContext(RelationalOpContext ctx) {
+			copyFrom(ctx);
+		}
+
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterInequivalenceRelational(this);
@@ -1490,114 +1823,61 @@ public class ExprParser extends Parser {
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitLessEqualRelational(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitLessEqualRelational(this);
 		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitLessEqualRelational(this);
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitLessEqualRelational(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final RelationalOpContext relationalOp() throws RecognitionException {
-		RelationalOpContext _localctx = new RelationalOpContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_relationalOp);
-		try {
-			setState(165);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
-			case 1:
-				_localctx = new LessRelationalContext(_localctx);
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(141);
-				arithmeticOp(0);
-				setState(142);
-				match(T__14);
-				setState(143);
-				arithmeticOp(0);
-				}
-				break;
-			case 2:
-				_localctx = new LessEqualRelationalContext(_localctx);
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(145);
-				arithmeticOp(0);
-				setState(146);
-				match(T__15);
-				setState(147);
-				arithmeticOp(0);
-				}
-				break;
-			case 3:
-				_localctx = new GreaterRelationalContext(_localctx);
-				enterOuterAlt(_localctx, 3);
-				{
-				setState(149);
-				arithmeticOp(0);
-				setState(150);
-				match(T__16);
-				setState(151);
-				arithmeticOp(0);
-				}
-				break;
-			case 4:
-				_localctx = new GreaterEqualRelationalContext(_localctx);
-				enterOuterAlt(_localctx, 4);
-				{
-				setState(153);
-				arithmeticOp(0);
-				setState(154);
-				match(T__17);
-				setState(155);
-				arithmeticOp(0);
-				}
-				break;
-			case 5:
-				_localctx = new EqualityRelationalContext(_localctx);
-				enterOuterAlt(_localctx, 5);
-				{
-				setState(157);
-				arithmeticOp(0);
-				setState(158);
-				match(T__18);
-				setState(159);
-				arithmeticOp(0);
-				}
-				break;
-			case 6:
-				_localctx = new InequivalenceRelationalContext(_localctx);
-				enterOuterAlt(_localctx, 6);
-				{
-				setState(161);
-				arithmeticOp(0);
-				setState(162);
-				match(T__19);
-				setState(163);
-				arithmeticOp(0);
-				}
-				break;
-			}
+	public static class MultiplicationArithmeticContext extends ArithmeticOpContext {
+		public List<ArithmeticOpContext> arithmeticOp() {
+			return getRuleContexts(ArithmeticOpContext.class);
 		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
+
+		public ArithmeticOpContext arithmeticOp(int i) {
+			return getRuleContext(ArithmeticOpContext.class, i);
 		}
-		finally {
-			exitRule();
+
+		public MultiplicationArithmeticContext(ArithmeticOpContext ctx) {
+			copyFrom(ctx);
 		}
-		return _localctx;
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterMultiplicationArithmetic(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitMultiplicationArithmetic(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitMultiplicationArithmetic(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public static class LogicalOpContext extends ParserRuleContext {
 		public LogicalOpContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_logicalOp; }
-	 
-		public LogicalOpContext() { }
+
+		@Override
+		public int getRuleIndex() {
+			return RULE_logicalOp;
+		}
+
+		public LogicalOpContext() {
+		}
+
 		public void copyFrom(LogicalOpContext ctx) {
 			super.copyFrom(ctx);
 		}
@@ -1694,35 +1974,69 @@ public class ExprParser extends Parser {
 		public void enterRule(ParseTreeListener listener) {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterNegationLogical(this);
 		}
+
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitNegationLogical(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitNegationLogical(this);
 		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitNegationLogical(this);
+			if (visitor instanceof ExprVisitor) return ((ExprVisitor<? extends T>) visitor).visitNegationLogical(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class ConjunctionLogicalContext extends LogicalOpContext {
-		public List<LogicalOpContext> logicalOp() {
-			return getRuleContexts(LogicalOpContext.class);
+
+	public static class ParanthesesArithmeticContext extends ArithmeticOpContext {
+		public ParanthesesArithmeticContext(ArithmeticOpContext ctx) {
+			copyFrom(ctx);
 		}
-		public LogicalOpContext logicalOp(int i) {
-			return getRuleContext(LogicalOpContext.class,i);
+
+		public ArithmeticOpContext arithmeticOp() {
+			return getRuleContext(ArithmeticOpContext.class, 0);
 		}
-		public ConjunctionLogicalContext(LogicalOpContext ctx) { copyFrom(ctx); }
+
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterConjunctionLogical(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterParanthesesArithmetic(this);
 		}
+
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitConjunctionLogical(this);
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitParanthesesArithmetic(this);
 		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitConjunctionLogical(this);
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitParanthesesArithmetic(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public static class ParanthesesRelationalContext extends RelationalOpContext {
+		public ParanthesesRelationalContext(RelationalOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		public RelationalOpContext relationalOp() {
+			return getRuleContext(RelationalOpContext.class, 0);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterParanthesesRelational(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitParanthesesRelational(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitParanthesesRelational(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1758,7 +2072,8 @@ public class ExprParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExprVisitor ) return ((ExprVisitor<? extends T>)visitor).visitRelationalOpLogical(this);
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitRelationalOpLogical(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1767,146 +2082,43 @@ public class ExprParser extends Parser {
 		return logicalOp(0);
 	}
 
-	private LogicalOpContext logicalOp(int _p) throws RecognitionException {
-		ParserRuleContext _parentctx = _ctx;
-		int _parentState = getState();
-		LogicalOpContext _localctx = new LogicalOpContext(_ctx, _parentState);
-		LogicalOpContext _prevctx = _localctx;
-		int _startState = 24;
-		enterRecursionRule(_localctx, 24, RULE_logicalOp, _p);
-		try {
-			int _alt;
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(173);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
-			case 1:
-				{
-				_localctx = new NegationLogicalContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
+	public static class ConjunctionLogicalContext extends LogicalOpContext {
+		public List<LogicalOpContext> logicalOp() {
+			return getRuleContexts(LogicalOpContext.class);
+		}
 
-				setState(168);
-				match(T__20);
-				setState(169);
-				logicalOp(8);
-				}
-				break;
-			case 2:
-				{
-				_localctx = new RelationalOpLogicalContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(170);
-				relationalOp();
-				}
-				break;
-			case 3:
-				{
-				_localctx = new VariableLogicalContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(171);
-				match(ID);
-				}
-				break;
-			case 4:
-				{
-				_localctx = new BooleanConstantContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(172);
-				match(BoolConstant);
-				}
-				break;
-			}
-			_ctx.stop = _input.LT(-1);
-			setState(189);
-			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					if ( _parseListeners!=null ) triggerExitRuleEvent();
-					_prevctx = _localctx;
-					{
-					setState(187);
-					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,13,_ctx) ) {
-					case 1:
-						{
-						_localctx = new ConjunctionLogicalContext(new LogicalOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_logicalOp);
-						setState(175);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(176);
-						match(T__21);
-						setState(177);
-						logicalOp(8);
-						}
-						break;
-					case 2:
-						{
-						_localctx = new DisjunctionLogicalContext(new LogicalOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_logicalOp);
-						setState(178);
-						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
-						setState(179);
-						match(T__22);
-						setState(180);
-						logicalOp(7);
-						}
-						break;
-					case 3:
-						{
-						_localctx = new ImplicationLogicalContext(new LogicalOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_logicalOp);
-						setState(181);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
-						setState(182);
-						match(T__23);
-						setState(183);
-						logicalOp(6);
-						}
-						break;
-					case 4:
-						{
-						_localctx = new EquivalenceLogicalContext(new LogicalOpContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_logicalOp);
-						setState(184);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-						setState(185);
-						match(T__24);
-						setState(186);
-						logicalOp(5);
-						}
-						break;
-					}
-					} 
-				}
-				setState(191);
-				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
-			}
-			}
+		public LogicalOpContext logicalOp(int i) {
+			return getRuleContext(LogicalOpContext.class, i);
 		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
+
+		public ConjunctionLogicalContext(LogicalOpContext ctx) {
+			copyFrom(ctx);
 		}
-		finally {
-			unrollRecursionContexts(_parentctx);
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterConjunctionLogical(this);
 		}
-		return _localctx;
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitConjunctionLogical(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitConjunctionLogical(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 10:
-			return arithmeticOp_sempred((ArithmeticOpContext)_localctx, predIndex);
-		case 12:
-			return logicalOp_sempred((LogicalOpContext)_localctx, predIndex);
+			case 10:
+				return arithmeticOp_sempred((ArithmeticOpContext) _localctx, predIndex);
+			case 12:
+				return logicalOp_sempred((LogicalOpContext) _localctx, predIndex);
 		}
 		return true;
 	}
@@ -1929,79 +2141,46 @@ public class ExprParser extends Parser {
 		switch (predIndex) {
 		case 5:
 			return precpred(_ctx, 7);
-		case 6:
-			return precpred(_ctx, 6);
-		case 7:
-			return precpred(_ctx, 5);
-		case 8:
-			return precpred(_ctx, 4);
+			case 6:
+				return precpred(_ctx, 6);
+			case 7:
+				return precpred(_ctx, 5);
+			case 8:
+				return precpred(_ctx, 4);
 		}
 		return true;
 	}
 
-	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\"\u00c3\4\2\t\2\4"+
-		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
-		"\13\4\f\t\f\4\r\t\r\4\16\t\16\3\2\6\2\36\n\2\r\2\16\2\37\3\2\3\2\3\3\3"+
-		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3.\n\3\3\4\3\4\3\4\3\4\5\4\64\n\4"+
-		"\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3"+
-		"\6\7\6H\n\6\f\6\16\6K\13\6\3\6\5\6N\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3"+
-		"\7\3\7\3\b\3\b\3\b\3\b\3\b\3\t\6\t_\n\t\r\t\16\t`\3\n\3\n\3\n\3\n\3\n"+
-		"\3\n\3\n\5\nj\n\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\5\13s\n\13\3\f\3"+
-		"\f\3\f\3\f\3\f\5\fz\n\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3"+
-		"\f\3\f\3\f\3\f\7\f\u008b\n\f\f\f\16\f\u008e\13\f\3\r\3\r\3\r\3\r\3\r\3"+
-		"\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r"+
-		"\3\r\5\r\u00a8\n\r\3\16\3\16\3\16\3\16\3\16\3\16\5\16\u00b0\n\16\3\16"+
-		"\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\7\16\u00be\n\16"+
-		"\f\16\16\16\u00c1\13\16\3\16\2\4\26\32\17\2\4\6\b\n\f\16\20\22\24\26\30"+
-		"\32\2\2\2\u00d6\2\35\3\2\2\2\4-\3\2\2\2\6\63\3\2\2\2\b\65\3\2\2\2\n?\3"+
-		"\2\2\2\fO\3\2\2\2\16X\3\2\2\2\20^\3\2\2\2\22i\3\2\2\2\24r\3\2\2\2\26y"+
-		"\3\2\2\2\30\u00a7\3\2\2\2\32\u00af\3\2\2\2\34\36\5\6\4\2\35\34\3\2\2\2"+
-		"\36\37\3\2\2\2\37\35\3\2\2\2\37 \3\2\2\2 !\3\2\2\2!\"\7\2\2\3\"\3\3\2"+
-		"\2\2#$\7\34\2\2$.\7 \2\2%&\7\34\2\2&\'\7 \2\2\'(\7\3\2\2(.\7 \2\2)*\7"+
-		"\34\2\2*+\7 \2\2+,\7\3\2\2,.\5\24\13\2-#\3\2\2\2-%\3\2\2\2-)\3\2\2\2."+
-		"\5\3\2\2\2/\64\5\4\3\2\60\64\5\22\n\2\61\64\5\n\6\2\62\64\5\b\5\2\63/"+
-		"\3\2\2\2\63\60\3\2\2\2\63\61\3\2\2\2\63\62\3\2\2\2\64\7\3\2\2\2\65\66"+
-		"\7\4\2\2\66\67\7\5\2\2\678\5\32\16\289\7\6\2\29:\5\n\6\2:;\7\7\2\2;<\7"+
-		"\5\2\2<=\5\32\16\2=>\7\6\2\2>\t\3\2\2\2?@\7\b\2\2@A\7\5\2\2AB\5\32\16"+
-		"\2BC\7\6\2\2CD\7\t\2\2DE\5\20\t\2EI\7\n\2\2FH\5\f\7\2GF\3\2\2\2HK\3\2"+
-		"\2\2IG\3\2\2\2IJ\3\2\2\2JM\3\2\2\2KI\3\2\2\2LN\5\16\b\2ML\3\2\2\2MN\3"+
-		"\2\2\2N\13\3\2\2\2OP\7\13\2\2PQ\7\b\2\2QR\7\5\2\2RS\5\32\16\2ST\7\6\2"+
-		"\2TU\7\t\2\2UV\5\20\t\2VW\7\n\2\2W\r\3\2\2\2XY\7\13\2\2YZ\7\t\2\2Z[\5"+
-		"\20\t\2[\\\7\n\2\2\\\17\3\2\2\2]_\5\22\n\2^]\3\2\2\2_`\3\2\2\2`^\3\2\2"+
-		"\2`a\3\2\2\2a\21\3\2\2\2bj\5\24\13\2cd\7 \2\2de\7\3\2\2ej\7 \2\2fg\7 "+
-		"\2\2gh\7\3\2\2hj\5\24\13\2ib\3\2\2\2ic\3\2\2\2if\3\2\2\2j\23\3\2\2\2k"+
-		"s\5\26\f\2ls\5\30\r\2ms\5\32\16\2no\7\5\2\2op\5\24\13\2pq\7\6\2\2qs\3"+
-		"\2\2\2rk\3\2\2\2rl\3\2\2\2rm\3\2\2\2rn\3\2\2\2s\25\3\2\2\2tu\b\f\1\2u"+
-		"z\7 \2\2vz\7\35\2\2wx\7\20\2\2xz\7\35\2\2yt\3\2\2\2yv\3\2\2\2yw\3\2\2"+
-		"\2z\u008c\3\2\2\2{|\f\n\2\2|}\7\f\2\2}\u008b\5\26\f\13~\177\f\t\2\2\177"+
-		"\u0080\7\r\2\2\u0080\u008b\5\26\f\n\u0081\u0082\f\b\2\2\u0082\u0083\7"+
-		"\16\2\2\u0083\u008b\5\26\f\t\u0084\u0085\f\7\2\2\u0085\u0086\7\17\2\2"+
-		"\u0086\u008b\5\26\f\b\u0087\u0088\f\6\2\2\u0088\u0089\7\20\2\2\u0089\u008b"+
-		"\5\26\f\7\u008a{\3\2\2\2\u008a~\3\2\2\2\u008a\u0081\3\2\2\2\u008a\u0084"+
-		"\3\2\2\2\u008a\u0087\3\2\2\2\u008b\u008e\3\2\2\2\u008c\u008a\3\2\2\2\u008c"+
-		"\u008d\3\2\2\2\u008d\27\3\2\2\2\u008e\u008c\3\2\2\2\u008f\u0090\5\26\f"+
-		"\2\u0090\u0091\7\21\2\2\u0091\u0092\5\26\f\2\u0092\u00a8\3\2\2\2\u0093"+
-		"\u0094\5\26\f\2\u0094\u0095\7\22\2\2\u0095\u0096\5\26\f\2\u0096\u00a8"+
-		"\3\2\2\2\u0097\u0098\5\26\f\2\u0098\u0099\7\23\2\2\u0099\u009a\5\26\f"+
-		"\2\u009a\u00a8\3\2\2\2\u009b\u009c\5\26\f\2\u009c\u009d\7\24\2\2\u009d"+
-		"\u009e\5\26\f\2\u009e\u00a8\3\2\2\2\u009f\u00a0\5\26\f\2\u00a0\u00a1\7"+
-		"\25\2\2\u00a1\u00a2\5\26\f\2\u00a2\u00a8\3\2\2\2\u00a3\u00a4\5\26\f\2"+
-		"\u00a4\u00a5\7\26\2\2\u00a5\u00a6\5\26\f\2\u00a6\u00a8\3\2\2\2\u00a7\u008f"+
-		"\3\2\2\2\u00a7\u0093\3\2\2\2\u00a7\u0097\3\2\2\2\u00a7\u009b\3\2\2\2\u00a7"+
-		"\u009f\3\2\2\2\u00a7\u00a3\3\2\2\2\u00a8\31\3\2\2\2\u00a9\u00aa\b\16\1"+
-		"\2\u00aa\u00ab\7\27\2\2\u00ab\u00b0\5\32\16\n\u00ac\u00b0\5\30\r\2\u00ad"+
-		"\u00b0\7 \2\2\u00ae\u00b0\7\36\2\2\u00af\u00a9\3\2\2\2\u00af\u00ac\3\2"+
-		"\2\2\u00af\u00ad\3\2\2\2\u00af\u00ae\3\2\2\2\u00b0\u00bf\3\2\2\2\u00b1"+
-		"\u00b2\f\t\2\2\u00b2\u00b3\7\30\2\2\u00b3\u00be\5\32\16\n\u00b4\u00b5"+
-		"\f\b\2\2\u00b5\u00b6\7\31\2\2\u00b6\u00be\5\32\16\t\u00b7\u00b8\f\7\2"+
-		"\2\u00b8\u00b9\7\32\2\2\u00b9\u00be\5\32\16\b\u00ba\u00bb\f\6\2\2\u00bb"+
-		"\u00bc\7\33\2\2\u00bc\u00be\5\32\16\7\u00bd\u00b1\3\2\2\2\u00bd\u00b4"+
-		"\3\2\2\2\u00bd\u00b7\3\2\2\2\u00bd\u00ba\3\2\2\2\u00be\u00c1\3\2\2\2\u00bf"+
-		"\u00bd\3\2\2\2\u00bf\u00c0\3\2\2\2\u00c0\33\3\2\2\2\u00c1\u00bf\3\2\2"+
-		"\2\21\37-\63IM`iry\u008a\u008c\u00a7\u00af\u00bd\u00bf";
+	public static class ParanthesesLogicalContext extends LogicalOpContext {
+		public ParanthesesLogicalContext(LogicalOpContext ctx) {
+			copyFrom(ctx);
+		}
+
+		public LogicalOpContext logicalOp() {
+			return getRuleContext(LogicalOpContext.class, 0);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).enterParanthesesLogical(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof ExprListener) ((ExprListener) listener).exitParanthesesLogical(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof ExprVisitor)
+				return ((ExprVisitor<? extends T>) visitor).visitParanthesesLogical(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
 	public static final ATN _ATN =
-		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
+			new ATNDeserializer().deserialize(_serializedATN.toCharArray());
+
 	static {
 		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
 		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
