@@ -660,7 +660,7 @@ public class Translator implements Visitor {
 		}
 	}
 
-	@Override // TODO Verify this is working after adding boolean functionality.
+	@Override
 	public void visitNegationLogical(Negation exp) {
 		Translator lhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getExpression().accept(lhsTrans);

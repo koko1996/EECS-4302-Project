@@ -21,6 +21,10 @@ fun xorGate (x, y: Bool): stateInternal {
 	{v: stateInternal | v.arg1 = x and v.arg2 = y and v.arg3 = ((andGate[x, y].arg3 in False) and (orGate[x, y].arg3 in True) => True else False)}
 }
 
+fun notGate (x : Bool): stateInternal {
+	{v: stateInternal | v.arg1 = x and v.arg3 = (v.arg1 in True => False else True)} 
+}
+
 pred andCheck [preval1, preval2, preresult, postval1, postval2, postresult: Bool] {
 	{v: stateInternal | v.arg1 = postval1 and v.arg2 = postval2 and v.arg3 = postresult} = andGate[preval1, preval2]
 }
