@@ -297,8 +297,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		StringBuilder numTextSB = new StringBuilder();
 		ctx.children.forEach(numTextSB::append);
 		String numText = numTextSB.toString();
-		int num = Integer.parseInt(numText);
-		num = num * (-1);
+		int num = Integer.parseInt(numText); // negative sign is in the string
 		return new IntegerConstant(num);
 	}
 

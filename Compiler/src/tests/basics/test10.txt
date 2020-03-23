@@ -1,15 +1,8 @@
-int x = 10  
-int y = 9
+int x = 1
 bool z = true
-bool f 
-//if_require( z && f )
-if_require( x==10 && y > 9)
+if_require( x>0)
 if(x>0){
-	x=1
-	y=6
-} else if (x>9){
-	x= 10
-} else {
-	y=0
+	z = true
 }
-if_ensure(x==10 && y > 9 || y==x && y==x+1)
+if_ensure( z==true )
+if_ensure( z )
