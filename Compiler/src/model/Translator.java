@@ -148,7 +148,7 @@ public class Translator implements Visitor {
 
 	@Override
 	public void visitConditionalAssertionStatement(AssertedConditional exp) {
-		String stateName = "state";
+		String stateName = "state"+this.statementsTranslated;
 		String funName = "funStatement";
 		String assertName = "assertStatement";
 		Map<String, Value> vars = exp.getVariables();
@@ -156,7 +156,7 @@ public class Translator implements Visitor {
 		StringBuilder sigVarialesSB = new StringBuilder();
 		StringBuilder funParamSB = new StringBuilder();
 		StringBuilder postOldSyntaxSB = new StringBuilder();
-
+		
 		sigVarialesSB.append("sig ").append(stateName).append("{");
 		postOldSyntaxSB.append("all field: " + funName + this.getStatementsTranslated() + " [");
 
@@ -220,7 +220,7 @@ public class Translator implements Visitor {
 		sigVarialesSB.append("\t all n: ").append(stateName).append(" | (").append(precondTranslatedString)
 				.append(") => (").append(postcondTranslatedString).append(")\n}\n\n");
 
-		sigVarialesSB.append("check ").append(assertName).append(this.getStatementsTranslated());
+		sigVarialesSB.append("check ").append(assertName).append(this.getStatementsTranslated()).append("\n");
 
 		this.incrementStatementsTranslated();
 
@@ -257,13 +257,13 @@ public class Translator implements Visitor {
 			exp.getElseStatment().getAssignments().accept(elseTranslator);
 		}
 
-		System.out.println("getOriginalToAlloy: " + this.getOriginalToAlloy().toString());
-		System.out.println("parameterNameMap: " + parameterNameMap.toString());
-		System.out.println("If Updates: " + ifTranslator.resultMap.toString());
-		System.out.println("Else Updates: " + elseTranslator.resultMap.toString());
-		
-		System.out.println("ElseIf conditions: " + elseIfConditions.toString());
-		System.out.println("ElseIf  Updates: " + elseIfAssignments.toString());
+//		System.out.println("getOriginalToAlloy: " + this.getOriginalToAlloy().toString());
+//		System.out.println("parameterNameMap: " + parameterNameMap.toString());
+//		System.out.println("If Updates: " + ifTranslator.resultMap.toString());
+//		System.out.println("Else Updates: " + elseTranslator.resultMap.toString());
+//		
+//		System.out.println("ElseIf conditions: " + elseIfConditions.toString());
+//		System.out.println("ElseIf  Updates: " + elseIfAssignments.toString());
 		for (String key : this.getOriginalToAlloy().keySet()) {
 			this.result.add(this.getOriginalToAlloy().get(key));
 			this.result.add(" = (");
@@ -321,7 +321,7 @@ public class Translator implements Visitor {
 			Translator instTranslator = new Translator(originalToAlloy, postOldSyntax);
 			inst.accept(instTranslator);
 			int size = instTranslator.getResult().size();
-			System.out.println("SIZE : "+ size);
+//			System.out.println("SIZE : "+ size);
 			assert (instTranslator.getResult().size() == 2);
 			this.resultMap.put(instTranslator.getResult().get(0), instTranslator.getResult().get(1));
 
@@ -467,9 +467,27 @@ public class Translator implements Visitor {
 		exp.getLeftExpr().accept(lhsTrans);
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
+		boolean refersToOLD = false;
+		for (String res : lhsTrans.result) {
+			if (res.contains(this.fieldName)) {
+				refersToOLD = true;
+			}
+		}
+		for (String res : rhsTrans.result) {
+			if (res.contains(this.fieldName)) {
+				refersToOLD = true;
+			}
+		}
+		if (refersToOLD) {
+			this.result.add(this.postOldSyntax);
+		}
 		this.result.addAll(lhsTrans.getResult());
+		
 		this.result.add(" < ");
 		this.result.addAll(rhsTrans.getResult());
+		if (refersToOLD) {
+			this.result.add("} ");
+		}
 	}
 
 	@Override
@@ -620,9 +638,11 @@ public class Translator implements Visitor {
 		exp.getLeftExpr().accept(lhsTrans);
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
+		this.result.add(" ( ");
 		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" or ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" ) ");
 	}
 
 	@Override
@@ -670,9 +690,11 @@ public class Translator implements Visitor {
 		exp.getLeftExpr().accept(lhsTrans);
 		Translator rhsTrans = new Translator(originalToAlloy, postOldSyntax);
 		exp.getRightExpr().accept(rhsTrans);
+		this.result.add(" ( ");
 		this.result.addAll(lhsTrans.getResult());
 		this.result.add(" and ");
 		this.result.addAll(rhsTrans.getResult());
+		this.result.add(" ) ");
 	}
 
 	@Override

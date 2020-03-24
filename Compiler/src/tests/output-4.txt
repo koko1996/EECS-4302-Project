@@ -1,0 +1,19 @@
+sig state0{
+	arg1:Int,
+	arg2:Int
+}
+
+fun funStatement0 (parg1:Int,parg2:Int) : state0 {
+	{ n : state0 | 
+		n.arg1 = (parg1 > 0 => parg1 else parg1 )
+		 and n.arg2 = (parg1 > 0 => 1 else ( parg1 = 0 ) => 0  else -1 )
+		 
+	}
+}
+
+assert assertStatement0 {
+	 all n: state0 | (n.arg1 < 0) => ( ( all field: funStatement0 [n.arg1,n.arg2] | { field.arg2 = -1}  and all field: funStatement0 [n.arg1,n.arg2] | { field.arg1 < 0}  ) )
+}
+
+check assertStatement0
+

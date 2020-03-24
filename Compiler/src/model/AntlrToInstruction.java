@@ -8,6 +8,7 @@ import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Arithmetic;
 import model.statement.assignment.expression.Logical;
+import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.logical.*;
@@ -272,9 +273,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitNegationIntegerConstant(ExprParser.NegationIntegerConstantContext ctx) {
-		String numText = ctx.getChild(0).getText();
-		int num = Integer.parseInt(numText);
-		num = num * (-1);
+		StringBuilder numTextSB = new StringBuilder();
+		ctx.children.forEach(numTextSB::append);
+		String numText = numTextSB.toString();
+		int num = Integer.parseInt(numText); // negative sign is in the string
 		return new IntegerConstant(num);
 	}
 
@@ -422,6 +424,21 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	@Override
 	public Instruction visitElseConditional(ExprParser.ElseConditionalContext ctx) {
 		return new IfElseIfStatement(new BooleanConstant(true), visit(ctx.getChild(2)), new ArrayList<>(),null);
+	}
+	
+	@Override
+	public Instruction visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
+		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
+	}
+
+	@Override
+	public Instruction visitParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx) {
+		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
+	}
+
+	@Override
+	public Instruction visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx) {
+		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
 	}
 
 }

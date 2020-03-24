@@ -1,0 +1,17 @@
+sig state0{
+	arg1:Int
+}
+
+fun funStatement0 (parg1:Int) : state0 {
+	{ n : state0 | 
+		n.arg1 = (parg1 > 0 => 2 else parg1 )
+		 
+	}
+}
+
+assert assertStatement0 {
+	 all n: state0 | (n.arg1 = 1) => ( ( all field: funStatement0 [n.arg1] | { field.arg1 > 0}  and all field: funStatement0 [n.arg1] | { field.arg1 = 2}  ) )
+}
+
+check assertStatement0
+

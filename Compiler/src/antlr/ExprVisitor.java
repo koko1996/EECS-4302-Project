@@ -20,6 +20,12 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(ExprParser.ProgramContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatement(ExprParser.StatementContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code VariableDeclaration}
 	 * labeled alternative in {@link ExprParser#declaration}.
 	 * @param ctx the parse tree
@@ -40,12 +46,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStatement(ExprParser.StatementContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
@@ -159,6 +159,13 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMultiplicationArithmetic(ExprParser.MultiplicationArithmeticContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code ParanthesesArithmetic}
+	 * labeled alternative in {@link ExprParser#arithmeticOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code NegationIntegerConstant}
 	 * labeled alternative in {@link ExprParser#arithmeticOp}.
 	 * @param ctx the parse tree
@@ -186,6 +193,13 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIntegerConstant(ExprParser.IntegerConstantContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ParanthesesRelational}
+	 * labeled alternative in {@link ExprParser#relationalOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code LessRelational}
 	 * labeled alternative in {@link ExprParser#relationalOp}.
@@ -270,6 +284,13 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitConjunctionLogical(ExprParser.ConjunctionLogicalContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ParanthesesLogical}
+	 * labeled alternative in {@link ExprParser#logicalOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code BooleanConstant}
 	 * labeled alternative in {@link ExprParser#logicalOp}.

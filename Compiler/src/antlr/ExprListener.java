@@ -22,6 +22,16 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitProgram(ExprParser.ProgramContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterStatement(ExprParser.StatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitStatement(ExprParser.StatementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code VariableDeclaration}
 	 * labeled alternative in {@link ExprParser#declaration}.
 	 * @param ctx the parse tree
@@ -57,16 +67,6 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterStatement(ExprParser.StatementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ExprParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitStatement(ExprParser.StatementContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
@@ -260,6 +260,18 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitMultiplicationArithmetic(ExprParser.MultiplicationArithmeticContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code ParanthesesArithmetic}
+	 * labeled alternative in {@link ExprParser#arithmeticOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ParanthesesArithmetic}
+	 * labeled alternative in {@link ExprParser#arithmeticOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code NegationIntegerConstant}
 	 * labeled alternative in {@link ExprParser#arithmeticOp}.
 	 * @param ctx the parse tree
@@ -307,6 +319,18 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIntegerConstant(ExprParser.IntegerConstantContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ParanthesesRelational}
+	 * labeled alternative in {@link ExprParser#relationalOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ParanthesesRelational}
+	 * labeled alternative in {@link ExprParser#relationalOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code LessRelational}
 	 * labeled alternative in {@link ExprParser#relationalOp}.
@@ -451,6 +475,18 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitConjunctionLogical(ExprParser.ConjunctionLogicalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ParanthesesLogical}
+	 * labeled alternative in {@link ExprParser#logicalOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ParanthesesLogical}
+	 * labeled alternative in {@link ExprParser#logicalOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code BooleanConstant}
 	 * labeled alternative in {@link ExprParser#logicalOp}.

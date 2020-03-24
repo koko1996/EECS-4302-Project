@@ -30,9 +30,9 @@ public class InstructionProcessor {
 	 */
 	public List<String> getEvaluationResults() {
 		List<String> evaluations = new ArrayList<String>();
+		Translator tr = new Translator();
 		for (Instruction inst : instructions) {
 			if(inst instanceof AssertedConditional){
-				Translator tr = new Translator();
 				inst.accept(tr);
 				evaluations.add(tr.getFinalResult());				
 			}
