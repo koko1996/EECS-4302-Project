@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import model.statement.MultiAssignment;
+import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
@@ -74,15 +75,6 @@ public class Translator implements Visitor {
 		this.originalToAlloy = originalToAlloy;
 	}
 
-	// no re-assignment in ensure
-	// ((x>y) and (x_new == x+2+3+1 and y_new==y) and (z = z_old)) or ((x<=y)
-	// and (x = x_old and y = y_old+1)))
-	// (not(x==x_old) or (x == x_old+2+3+1 and y==y_old)) or ((x<=y) and (x =
-	// x_old and y = y_old+1)))
-	// ((n.arg1 > n.arg2 and
-	// addOneConditionalEnsure[n.arg1,n.arg2,n.arg1.add[1],n.arg2]) or (n.arg1
-	// <= n.arg2 and
-	// addOneConditionalEnsure[n.arg1,n.arg2,n.arg1,n.arg2.add[1]]))
 
 	/**
 	 * @return the statementsTranslated
@@ -162,10 +154,13 @@ public class Translator implements Visitor {
 
 		int counter = 1;
 		for (String each : vars.keySet()) {
-			String alloyVar = "arg" + (counter);
-			String originalVar = each;						
-			preOriginalToAlloy.put(originalVar, alloyVar);
-			counter++;
+			if(!each.contains("_old")){
+				String alloyVar = "arg" + (counter);
+				String originalVar = each;						
+				preOriginalToAlloy.put(originalVar, alloyVar);
+				System.out.println("// " + originalVar + " => " +alloyVar );
+				counter++;				
+			}
 		}
 		
 
@@ -183,11 +178,18 @@ public class Translator implements Visitor {
 		StringBuilder functionSB = new StringBuilder();
 		functionTranslated.forEach(functionSB::append);
 		String functionTranslatedString = functionSB.toString();
-		
 
-//		System.out.println("originalToAlloy Update Values: " + functionTranslator.getResultMap().toString());
-//		System.out.println("postOriginalToAlloy    Values: " + postOriginalToAlloy.toString());
-		Translator postcondTranslator = new Translator(functionTranslator.getResultMap());
+		
+		for(String key: functionTranslator.getResultMap().keySet() ){
+			postOriginalToAlloy.put(key + "_old", preOriginalToAlloy.get(key));
+			postOriginalToAlloy.put(key , functionTranslator.getResultMap().get(key));
+		}
+		
+		System.out.println("originalToAlloy Update Values: " + functionTranslator.getResultMap().toString());
+		System.out.println("preOriginalToAlloy    Values: " + preOriginalToAlloy.toString());
+		System.out.println("postOriginalToAlloy    Values: " + postOriginalToAlloy.toString());
+		
+		Translator postcondTranslator = new Translator(postOriginalToAlloy);
 		exp.getPostCond().accept(postcondTranslator);
 		List<String> postcondTranslated = postcondTranslator.getResult();
 		StringBuilder postcondSB = new StringBuilder();
@@ -216,9 +218,6 @@ public class Translator implements Visitor {
 			for(String each : remainingVars){
 				predInputParamSB.append(each).append(",");
 			}
-			
-//			postOriginalToAlloy.put(originalVar + "_old", alloyVar);
-//			postOriginalToAlloy.put(originalVar , alloyPostVar);
 
 		}
 		
@@ -382,6 +381,11 @@ public class Translator implements Visitor {
 			rhsOfUpdates.put(key,originalToAlloy.get(key));
 		}
 		for (Instruction inst : exp.getAssignments()) {
+			if (inst instanceof Expression){
+				// Skip non assignments as they don't mean anything in Alloy
+				// This translation will be converted to be a fact in Alloy due to "and"ing
+				continue;
+			}
 			Translator instTranslator = new Translator(originalToOriginal);
 			inst.accept(instTranslator);
 			

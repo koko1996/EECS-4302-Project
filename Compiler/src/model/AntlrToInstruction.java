@@ -1,5 +1,10 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.antlr.v4.runtime.Token;
+
 import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
 import model.declaration.VariableInitialization;
@@ -10,16 +15,29 @@ import model.statement.assignment.expression.Arithmetic;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
-import model.statement.assignment.expression.arithmetic.*;
-import model.statement.assignment.expression.logical.*;
-import model.statement.assignment.expression.relational.*;
+import model.statement.assignment.expression.arithmetic.Addition;
+import model.statement.assignment.expression.arithmetic.Division;
+import model.statement.assignment.expression.arithmetic.IntegerConstant;
+import model.statement.assignment.expression.arithmetic.IntegerVariable;
+import model.statement.assignment.expression.arithmetic.Modulo;
+import model.statement.assignment.expression.arithmetic.Multiplication;
+import model.statement.assignment.expression.arithmetic.Subtraction;
+import model.statement.assignment.expression.logical.BooleanConstant;
+import model.statement.assignment.expression.logical.BooleanVariable;
+import model.statement.assignment.expression.logical.Conjunction;
+import model.statement.assignment.expression.logical.Disjunction;
+import model.statement.assignment.expression.logical.Equivalence;
+import model.statement.assignment.expression.logical.Implication;
+import model.statement.assignment.expression.logical.Negation;
+import model.statement.assignment.expression.relational.Equality;
+import model.statement.assignment.expression.relational.GreaterThan;
+import model.statement.assignment.expression.relational.GreaterThanOrEqual;
+import model.statement.assignment.expression.relational.Inequality;
+import model.statement.assignment.expression.relational.LessThan;
+import model.statement.assignment.expression.relational.LessThanOrEqual;
 import model.statement.conditional.AssertedConditional;
 import model.statement.conditional.ElseIfStatement;
 import model.statement.conditional.IfElseIfStatement;
-import org.antlr.v4.runtime.Token;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private Values values; // Symbol table for storing values of
@@ -27,6 +45,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private List<String> semanticErrors; // 1. duplicate declaration 2.
 	// reference to undeclared variable
 	// Note that semantic errors are different from syntax errors.
+
+	private String oldSyntax;
+
+	private boolean isEnsure;
 
 	/*
 	 * Constructor
@@ -36,6 +58,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	public AntlrToInstruction(List<String> semanticErrors) {
 		values = Values.getInstance();
 		this.semanticErrors = semanticErrors;
+		this.oldSyntax = "_old";
+		this.isEnsure = false;
 	}
 
 	private boolean checkDefined(String id, int line, int column) {
@@ -49,6 +73,15 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private boolean checkNotDefined(String id, int line, int column) {
 		if (values.containsKey(id)) {
 			semanticErrors.add("Error: variable " + id + " has already been declared (" + line + ", " + column + ")");
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkNotOLD(String id, int line, int column) {
+		if (id.contains(this.oldSyntax)) {
+			semanticErrors.add("Error: variable name not allowed to have the substring " + this.oldSyntax + " (" + line
+					+ ", " + column + ")");
 			return false;
 		}
 		return true;
@@ -75,6 +108,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		type = type.substring(0, 1).toUpperCase() + type.substring(1);
 		String id = ctx.ID().getText();
 
+		checkNotOLD(id, line, column);
+
 		Value value = null;
 		if (type.equals("Bool")) {
 			value = new Value(new BooleanConstant(false), type);
@@ -95,6 +130,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String id = ctx.ID().getText();
 		String type = ctx.VARIABLE().getText();
 		type = type.substring(0, 1).toUpperCase() + type.substring(1);
+		checkNotOLD(id, line, column);
 		checkNotDefined(id, line, column);
 
 		Instruction rhs = visit(ctx.expression());
@@ -111,13 +147,14 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitVariableInitializationConstantCopy(
-		ExprParser.VariableInitializationConstantCopyContext ctx) {
+			ExprParser.VariableInitializationConstantCopyContext ctx) {
 		Token lhsIDToken = ctx.ID().get(0).getSymbol();
 		int lhsIDLine = lhsIDToken.getLine();
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
 		String lhsID = ctx.ID().get(0).getText();
 		String lhsType = ctx.VARIABLE().getText();
 		lhsType = lhsType.substring(0, 1).toUpperCase() + lhsType.substring(1);
+		checkNotOLD(lhsID, lhsIDLine, lhsColumnLine);
 		checkNotDefined(lhsID, lhsIDLine, lhsColumnLine);
 
 		Token rhsIDToken = ctx.ID().get(1).getSymbol();
@@ -157,23 +194,23 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int lhsIDLine = lhsIDToken.getLine();
 		int lhsColumnLine = lhsIDToken.getCharPositionInLine() + 1;
 		String lhsID = ctx.ID().get(0).getText();
-		System.out.println("visitIDAssignment: "+lhsIDLine);
+		System.out.println("visitIDAssignment: " + lhsIDLine);
 		Token rhsIDToken = ctx.ID().get(1).getSymbol();
 		int rhsIDLine = rhsIDToken.getLine();
 		int rhsColumnLine = rhsIDToken.getCharPositionInLine() + 1;
 		String rhsID = ctx.ID().get(1).getText();
 		Value newValue = null;
-		
+
 		if (checkDefined(lhsID, lhsIDLine, lhsColumnLine) & (checkDefined(rhsID, rhsIDLine, rhsColumnLine))) {
 			String lhsType = this.values.getType(lhsID);
 			String rhsType = this.values.getType(rhsID);
 			if (!rhsType.equals(lhsType)) {
 				semanticErrors.add("Error: Right hand side of expression at line " + rhsIDLine + " has type " + rhsType
 						+ " but the left hand side has type " + lhsType);
-			} else if(lhsType.equals("Int")){
-				newValue = new Value(new IntegerVariable(rhsID, values.getValue(rhsID).getValue().clone()),lhsType);	
-			} else if(lhsType.equals("Bool")){
-				newValue = new Value(new BooleanVariable(rhsID, values.getValue(rhsID).getValue().clone()),lhsType);
+			} else if (lhsType.equals("Int")) {
+				newValue = new Value(new IntegerVariable(rhsID, values.getValue(rhsID).getValue().clone()), lhsType);
+			} else if (lhsType.equals("Bool")) {
+				newValue = new Value(new BooleanVariable(rhsID, values.getValue(rhsID).getValue().clone()), lhsType);
 			}
 		}
 
@@ -206,7 +243,12 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 						+ "(" + line + ", " + column + ")");
 			}
 		} else {
-			throw new IllegalArgumentException("You probably should not get this exception."); // We  will delete this branch later.
+			throw new IllegalArgumentException("You probably should not get this exception."); // We
+																								// will
+																								// delete
+																								// this
+																								// branch
+																								// later.
 		}
 
 		Value newValue = new Value(exp, oldValue.getType());
@@ -248,13 +290,18 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
 
-		String id = ctx.ID().getText();
+		String idOrig = ctx.ID().getText();
+		String id = idOrig;
+
+		if (id.contains(this.oldSyntax)) {
+			id = id.substring(0, id.length() - this.oldSyntax.length());
+		}
 
 		if (checkDefined(id, line, column) && !values.getType(id).equals("Int")) {
 			semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
 					+ "int" + "(" + line + ", " + column + ")");
 		}
-		return new IntegerVariable(ctx.ID().getText(), values.getValue(ctx.ID().getText()).getValue());
+		return new IntegerVariable(idOrig, values.getValue(id).getValue());
 	}
 
 	@Override
@@ -363,12 +410,18 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
 
-		String id = ctx.ID().getText();
+		String idOrig = ctx.ID().getText();
+		String id = idOrig;
+
+		if (id.contains(this.oldSyntax)) {
+			id = id.substring(0, id.length() - this.oldSyntax.length());
+		}
+
 		if (checkDefined(id, line, column) && !values.getType(id).equals("Bool")) {
 			semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
 					+ "bool" + "(" + line + ", " + column + ")");
 		}
-		return new BooleanVariable(id, values.getValue(ctx.ID().getText()).getValue());
+		return new BooleanVariable(idOrig, values.getValue(id).getValue());
 	}
 
 	@Override
@@ -399,21 +452,25 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitConditionalAssertionStatement(ExprParser.ConditionalAssertionStatementContext ctx) {
-		return new AssertedConditional(visit(ctx.getChild(2)), visit(ctx.getChild(7)), visit(ctx.getChild(4)));
+		this.isEnsure = true;
+		Instruction inst = visit(ctx.getChild(7));
+		this.isEnsure = false;
+
+		return new AssertedConditional(visit(ctx.getChild(2)), inst, visit(ctx.getChild(4)));
 	}
 
 	@Override
 	public Instruction visitIfConditional(ExprParser.IfConditionalContext ctx) {
-		
+
 		Instruction ifStatement = visit(ctx.getChild(5));
 		List<Instruction> elseIfStatments = new ArrayList<>();
 		ctx.elseIf().forEach(each -> elseIfStatments.add(visit(each)));
 		Instruction finalElse = null;
-		if(ctx.finaElse() != null ){
+		if (ctx.finaElse() != null) {
 			finalElse = visit(ctx.finaElse());
 		}
-		
-		return new IfElseIfStatement(visit(ctx.getChild(2)),ifStatement ,elseIfStatments,finalElse);
+
+		return new IfElseIfStatement(visit(ctx.getChild(2)), ifStatement, elseIfStatments, finalElse);
 	}
 
 	@Override
@@ -423,9 +480,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitElseConditional(ExprParser.ElseConditionalContext ctx) {
-		return new IfElseIfStatement(new BooleanConstant(true), visit(ctx.getChild(2)), new ArrayList<>(),null);
+		return new IfElseIfStatement(new BooleanConstant(true), visit(ctx.getChild(2)), new ArrayList<>(), null);
 	}
-	
+
 	@Override
 	public Instruction visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
 		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
