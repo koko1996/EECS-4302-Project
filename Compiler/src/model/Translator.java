@@ -309,7 +309,7 @@ public class Translator implements Visitor {
 		this.result.add(") in True)");
 		this.result.add(" => ");
 		this.result.add("\n\t\t");
-		this.result.add(" (2.add[1] = 3) ");
+		this.result.add(" (("+ trueInAlloy +") in True)");
 		for (String key : ifTranslator.getResultMap().keySet()) {
 			this.result.add(" and ");
 			this.result.add(key);
@@ -326,7 +326,7 @@ public class Translator implements Visitor {
 			this.result.add(" ) in True) ");
 			this.result.add(" => ");
 			this.result.add("\n\t\t");
-			this.result.add(" (2.add[1] = 3) ");
+			this.result.add(" (("+ trueInAlloy +") in True)");
 			for (String key : elseIfAssignments.get(i).keySet()) {
 				this.result.add(" and ");
 				this.result.add(key);

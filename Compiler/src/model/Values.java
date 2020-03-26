@@ -15,7 +15,7 @@ import java.util.Map;
 public class Values {
     private static Values singletonInstance;
     private Map<String, Value> values;
-
+    
     private Values() {
         this.values = new HashMap<>();
     }
