@@ -1,7 +1,10 @@
 int x = 1
 bool y = x
+bool k
 z = x
 z = 55
 // z = true + 55
 y = 123
+k = 123
+x = true
 int a = true && false

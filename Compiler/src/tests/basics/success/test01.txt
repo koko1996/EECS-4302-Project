@@ -1,0 +1,10 @@
+// Testing bool without any Alloy input
+
+bool x = true
+bool y = false
+bool z
+true && false
+x && y
+x || y
+x => y => x
+x <=> y <=> x

@@ -1,0 +1,15 @@
+
+int x = 10  
+int y = 9
+bool z = true
+if_require(x==10 )
+if(x>0){
+	x=y
+} 
+if_ensure(x >= 9)
+
+if_require(x==10)
+if(x>0){
+	x=9
+} 
+if_ensure(x >= 9)

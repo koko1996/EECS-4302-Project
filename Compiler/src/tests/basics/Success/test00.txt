@@ -1,0 +1,29 @@
+// Testing basic parsing without any Alloy input
+
+int x = 1
+x=-1
+x=x-1
+x=x+3
+x=x*3
+x=x/3
+int y=0
+y=x
+x=y+x
+x=y*x
+x=y/x
+x=y%x
+x=y+x+x+y
+int z=x
+x>0&&y<0
+x<=0||y>=0
+x==0 => y!=0
+!(x<10) <=> !(y!=0)
+if(x>0 && (y+5)>10){
+    x%y
+} else if(y>0) {
+	x+y
+ } else if((x+1)>y) {
+    x=x/y
+ } else {
+    y=x*y
+ }

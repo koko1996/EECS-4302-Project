@@ -1,7 +1,0 @@
-int x = 2
-int y = 3
-int z = x
-3 + 5
-8 * 4
-7 / 2
-true && false

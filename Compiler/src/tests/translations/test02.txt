@@ -1,0 +1,13 @@
+// No counter examples
+
+int x = 1
+int y=0
+if_require(y>0 && x>0)
+if(x>0){
+    x%y
+} else if(y>0) {
+	x+y
+} else {
+    y=x*y
+}
+if_require()
