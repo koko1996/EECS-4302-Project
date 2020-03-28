@@ -17,9 +17,9 @@ statement: declaration
          ;
 
 
-declaration: VARIABLE ID                   	# VariableDeclaration
-            | VARIABLE ID '=' ID            # VariableInitializationConstantCopy
-    		| VARIABLE ID '=' expression  	# VariableInitializationConstant
+declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
+            | VARIABLE ID '=' ID  SEMICOLON         	# VariableInitializationConstantCopy
+    		| VARIABLE ID '=' expression  SEMICOLON		# VariableInitializationConstant
     		;
 
 
@@ -39,9 +39,10 @@ finaElse:  'else' '{' multAssig '}'									# ElseConditional
 multAssig: (assignment)+			# MultipleAssignments
 		;
 
-assignment: expression				# AssignExpression
-		  | ID '=' ID  				# IDAssignment
-		  | ID '=' expression  		# AssignAssignment
+assignment: ID	SEMICOLON					# IDExpression
+		  | ID '=' ID  SEMICOLON			# IDAssignment			// must come first
+		  | ID '=' expression  SEMICOLON	# AssignAssignment
+		  | expression	SEMICOLON			# AssignExpression
 		  ;
 
 expression: arithmeticOp			# ArithmeticOperation
@@ -93,3 +94,5 @@ logicalOp: '(' logicalOp ')'                    # ParanthesesLogical
 	ID: [a-z][a-zA-Z0-9_]*;
 	COMMENT: '//' ~[\r\n]* -> skip;
 	WS : [ \t\n\r]+ -> skip ;
+	SEMICOLON: ';';
+	

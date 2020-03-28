@@ -1,11 +1,11 @@
 // Simple Example that satisfies the postcondition
 
-int x = 1  
-int y = 2
+int x = 1;  
+int y = 2;
 if_require(x==1)
 if(x>0){
-	x=3
+	x=3;
 } else {
-	x=y+2
+	x=y+2;
 }
 if_ensure(x>2)

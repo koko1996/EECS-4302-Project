@@ -1,8 +1,8 @@
 // Simple Example that satisfies the postcondition
 
-int x = 1
-if_require(x==1)
+int x = 1;
+if_require(true)
 if(x>0){
-	x=2
+	x=2;
 }
-if_ensure( x>0 && x==2)
+if_ensure(x>0 && x==2)

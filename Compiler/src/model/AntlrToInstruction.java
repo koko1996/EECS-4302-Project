@@ -122,9 +122,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		if (checkNotOLD(id, line, column)) {
 			if (checkNotDefined(id, line, column)) {
 				if (type.equals("Bool")) {
-					value = new Value(new BooleanConstant(false), type);
+					value = new Value(new BooleanVariable(id, new BooleanConstant(false)), type);
 				} else if (type.equals("Int")) {
-					value = new Value(new IntegerConstant(0), type);
+					value = new Value(new IntegerVariable(id,new IntegerConstant(0)), type);
 				} else {
 					throw new IllegalArgumentException("You probably should not get this exception.");
 				}
@@ -156,7 +156,13 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 							.add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
 									+ line + ", column:" + column + ")");
 				} else {
-					value = new Value((Expression) rhs, type);
+					if (type.equals("Bool")) {
+						value = new Value(new BooleanVariable(id, (Expression) rhs), type);
+					} else if (type.equals("Int")) {
+						value = new Value(new IntegerVariable(id, (Expression) rhs), type);
+					} else {
+						throw new IllegalArgumentException("You probably should not get this exception.");
+					}
 					values.put(id, value);
 				}
 			}
@@ -228,12 +234,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 						"Error: Right hand side of the expression has type " + rhsType + " but the left hand side has type "
 								+ lhsType + " (line:" + rhsIDLine + ", column:" + rhsColumnLine + ")");
 			} else {
-				Value newValue = null;
-				if (lhsType.equals("Int")) {
-					newValue = new Value(new IntegerVariable(rhsID, expr.clone()), lhsType);
-				} else if (lhsType.equals("Bool")) {
-					newValue = new Value(new BooleanVariable(rhsID, expr.clone()), lhsType);
-				}
+				Value newValue = new Value(values.getValue(rhsID));
 				values.put(lhsID, newValue);
 			}
 		}
@@ -260,10 +261,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			Value oldValue = values.getValue(id);
 
 			if ((exp instanceof Logical | exp instanceof Relational) && !lhsType.equals("Bool")) {
-				semanticErrors.add("Error: The given lhs ID has type " + lhsType + " but the expceted type is " + "bool"
+				semanticErrors.add("Error: 1 The given lhs ID has type " + lhsType + " but the expceted type is " + "bool"
 						+ "  (line:" + line + ", column:" + column + ")");
 			} else if ((exp instanceof Arithmetic) && !lhsType.equals("Int")) {
-				semanticErrors.add("Error: The given lhs ID has type " + lhsType + " but the expceted type is " + "int"
+				semanticErrors.add("Error: 2 The given lhs ID has type " + lhsType + " but the expceted type is " + "int"
 						+ "  (line:" + line + ", column:" + column + ")");
 			} else {
 				Value newValue = new Value(exp, oldValue.getType());
@@ -272,6 +273,26 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		}
 
 		return new ExpressionAssignment(id, exp);
+	}
+	
+	@Override 
+	public Instruction visitIDExpression(ExprParser.IDExpressionContext ctx) { 
+		String id = ctx.ID().getText();
+		Token idToken = ctx.ID().getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+	
+		if (checkDefined(id, line, column)) {
+			String lhsType = values.getType(id);
+			Expression expr = values.getValue(id).getValue();
+
+			if (lhsType.equals("Bool")) {
+				return new BooleanVariable(id, expr);
+			} else if (!lhsType.equals("Int")) {
+				return new IntegerVariable(id, expr);
+			} 
+		}
+		return new IntegerVariable(id, new IntegerConstant(0)); 
 	}
 
 	@Override
@@ -329,7 +350,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (checkDefined(id, "int", line, column)) {
 			if (!values.getType(id).equals("Int")) {
-				semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
+				semanticErrors.add("Error: 3 The given ID has type " + values.getType(id) + " but the expceted type is "
 						+ "int" + " (line:" + line + ", column:" + column + ")");
 			} else {
 				return new IntegerVariable(idOrig, values.getValue(id).getValue());
@@ -454,7 +475,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (checkDefined(id, "bool", line, column)) {
 			if (!values.getType(id).equals("Bool")) {
-				semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
+				semanticErrors.add("Error: 4 The given ID has type " + values.getType(id) + " but the expceted type is "
 						+ "bool" + " (line:" + line + ", column:" + column + ")");
 			} else {
 				return new BooleanVariable(idOrig, values.getValue(id).getValue());
@@ -513,6 +534,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
+//		Instruction temp = visit(ctx.getChild(6));
 		return new ElseIfStatement(visit(ctx.getChild(3)), visit(ctx.getChild(6)));
 	}
 

@@ -1,0 +1,8 @@
+bool x ;
+bool y ;
+
+if_require(x)
+if(x){
+	x=y;
+}
+if_ensure(x_old && (x<=>y_old) && (y<=>y_old))

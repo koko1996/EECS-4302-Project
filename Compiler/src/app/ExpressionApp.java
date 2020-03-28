@@ -57,6 +57,7 @@ public class ExpressionApp {
 				Program prog = progVisitor.visit(antlrAST);
 				if (progVisitor.semanticErrors.isEmpty()) {
 					InstructionProcessor ep = new InstructionProcessor(prog.getStatments(), prog.getVariables());
+					System.out.println("open logicFuncs\n"); // This imports our Alloy file for logical operations.
 					for (String evlauation : ep.getEvaluationResults()) {
 						System.out.println(evlauation);
 					}

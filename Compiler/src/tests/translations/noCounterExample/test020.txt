@@ -1,0 +1,9 @@
+bool x ;
+bool y ;
+bool z=false;
+if_require(x)
+if(x){
+	x=y;
+	y=z;
+}
+if_ensure(x_old && (x<=>y_old) && (y<=>z_old))

@@ -30,6 +30,7 @@ ConstantValue=29
 ID=30
 COMMENT=31
 WS=32
+SEMICOLON=33
 '='=1
 'if_require'=2
 '('=3
@@ -55,3 +56,4 @@ WS=32
 '||'=23
 '=>'=24
 '<=>'=25
+';'=33

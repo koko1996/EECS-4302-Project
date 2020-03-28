@@ -1,7 +1,0 @@
-int x = 1
-bool y = x
-bool z = x
-int z = x
-// z = true + 55
-y = 123
-int a = true && false

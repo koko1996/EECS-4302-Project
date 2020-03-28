@@ -39,19 +39,17 @@ import model.statement.conditional.PrecondStatement;
 
 public class Translator implements Visitor {
 
-	private int statementsTranslated;
+	private int ifStatementsTranslated;				// current number of if statements translated
 
-	private String finalResult;
+	private String finalResult;						// Contains the result of translation
 	
-	private List<String> result;
+	private List<String> result;					// Container to store the results after a visit
+	
+	private Map<String, String> resultMap;			// Container to store the results after a visit
 
-	private Map<String, String> resultMap;
-
-	private Map<String, String> originalToAlloy;
-
-	private final String fieldName = "field";
-
-	private String trueInAlloy;
+	private Map<String, String> originalToAlloy;	// container to hold the variable name mapping 
+													// from their original names to their alloy names 
+	private String trueInAlloy;						
 
 	private String falseInAlloy;
 
@@ -59,7 +57,7 @@ public class Translator implements Visitor {
 		finalResult = "";
 		falseInAlloy = "False";
 		trueInAlloy = "True";
-		statementsTranslated = 0;
+		ifStatementsTranslated = 0;
 		result = new ArrayList<>();
 		resultMap = new HashMap<>();
 		originalToAlloy = new HashMap<>();
@@ -69,7 +67,7 @@ public class Translator implements Visitor {
 		finalResult = "";
 		falseInAlloy = "False";
 		trueInAlloy = "True";
-		statementsTranslated = 0;
+		ifStatementsTranslated = 0;
 		result = new ArrayList<>();
 		resultMap = new HashMap<>();
 		this.originalToAlloy = originalToAlloy;
@@ -79,43 +77,36 @@ public class Translator implements Visitor {
 	/**
 	 * @return the statementsTranslated
 	 */
-	public void incrementStatementsTranslated() {
-		statementsTranslated++;
+	private void incrementStatementsTranslated() {
+		ifStatementsTranslated++;
 	}
 
 	/**
 	 * @return the statementsTranslated
 	 */
-	public int getStatementsTranslated() {
-		return statementsTranslated;
+	private int getStatementsTranslated() {
+		return ifStatementsTranslated;
 	}
 
 	/**
 	 * @return the result
 	 */
-	public List<String> getResult() {
+	private List<String> getResult() {
 		return result;
 	}
 
 	/**
 	 * @return the resultMap
 	 */
-	public Map<String, String> getResultMap() {
+	private Map<String, String> getResultMap() {
 		return resultMap;
 	}
 
 	/**
 	 * @return the originalToAlloy
 	 */
-	public Map<String, String> getOriginalToAlloy() {
+	private Map<String, String> getOriginalToAlloy() {
 		return originalToAlloy;
-	}
-
-	/**
-	 * @return the fieldName
-	 */
-	public String getFieldName() {
-		return fieldName;
 	}
 
 	/**
@@ -125,7 +116,19 @@ public class Translator implements Visitor {
 		return finalResult;
 	}
 	
-	private List<String> listOfVariablesUsed(String val, String largestVal){
+	/**
+	 * Helper function to get the names of all additional variables used in Alloy
+	 * that correspond to a specific variable in the input language it calculates
+	 * the result by finding all possible variable names between names of parameter
+	 * val and parameter largestVal
+	 * @param val String representing the initial corresponding name for a variable
+	 * @param largestVal representing the final version of the name for the 
+	 * corresponding variable
+	 * @return List of String that represent the names of the variables in Alloy
+	 * 
+	 * For Example: val="arg1", largestVal="arg1'''" return=["arg1'","arg1''","arg1'''"] 
+	**/
+	public List<String> listOfVariablesUsed(String val, String largestVal){
 		List<String> result = new ArrayList<>();
 		if (largestVal.equals(val)){
 			return result;
@@ -140,8 +143,8 @@ public class Translator implements Visitor {
 
 	@Override
 	public void visitConditionalAssertionStatement(AssertedConditional exp) {
-		String predName = "predStatement";
-		String assertName = "assertStatement";
+		String predName = "predIfStatement";
+		String assertName = "assertIfStatement";
 		Map<String, Value> vars = exp.getVariables();
 
 		StringBuilder predParamSB = new StringBuilder();
@@ -163,7 +166,6 @@ public class Translator implements Visitor {
 			}
 		}
 		
-
 		Translator precondTranslator = new Translator(preOriginalToAlloy);
 		exp.getPreCond().accept(precondTranslator);
 		List<String> precondTranslated = precondTranslator.getResult();
@@ -176,7 +178,7 @@ public class Translator implements Visitor {
 		String precondTranslatedString = precondSB.toString();
 
 		
-		Translator functionTranslator = new Translator(new HashMap<String, String>(preOriginalToAlloy)); // might change map values
+		Translator functionTranslator = new Translator(preOriginalToAlloy); // might change map values
 		exp.getIfStatment().accept(functionTranslator);
 		List<String> functionTranslated = functionTranslator.getResult();
 		StringBuilder functionSB = new StringBuilder();
@@ -238,28 +240,37 @@ public class Translator implements Visitor {
 		
 		
 		StringBuilder predSignitureSB = new StringBuilder();
-		predSignitureSB.append("pred ").append(predName).append(statementsTranslated);
+		predSignitureSB.append("pred ").append(predName).append(ifStatementsTranslated);
 		predSignitureSB.append(" [").append(predParamSB).append("] {\n");
 		predSignitureSB.append("\t").append(functionTranslatedString).append(" \n\t");
 		predSignitureSB.append(postcondTranslatedString).append("\t\t\t // post condition\n}\n\n");
 		
-		this.finalResult = "open logicFuncs\n"; // This imports our Alloy file for logical operations.
-		this.finalResult += predSignitureSB.toString();
+		
+		this.finalResult = predSignitureSB.toString();
 		
 		StringBuilder assertSB = new StringBuilder();
-		assertSB.append("check ").append(assertName).append(statementsTranslated).append(" {\n");
+		assertSB.append("check ").append(assertName).append(ifStatementsTranslated).append(" {\n");
 		assertSB.append("\t { all ").append(forAllParamSB).append(" |  ");
 		if (forSomeParamSB.length()>0){
 			assertSB.append("some ").append(forSomeParamSB).append(" | ");	
 		}
-		assertSB.append(precondTranslatedString).append(" => ").append(predName).append(statementsTranslated).append("[");
-		assertSB.append(predInputParamSB).append("] }").append("\n}");
-
-		this.incrementStatementsTranslated();
+		assertSB.append(precondTranslatedString).append(" => ").append(predName).append(ifStatementsTranslated).append("[");
+		assertSB.append(predInputParamSB).append("] }").append("\n}\n");
 
 		this.finalResult += assertSB.toString();
+		
+		this.incrementStatementsTranslated();
 	}
 	
+	/**
+	 * Helper function to update the values in the given map. It goes through all the keys until it
+	 * finds a key with a value that is a prefix of the given newValue and replaces that value with
+	 * the newValue 
+	 * @param originalToAlloy Map<String,String>  maps the original names to their alloy counterparts
+	 * @param newValue String representing the new value to replace the original value  
+	 * 
+	 * For Example: originalToAlloy={"x":"arg1","y":"arg2"} newValue="arg2'''" => Map={"x":"arg1","y":"arg2'''"}  
+	**/
 	private void originalToAlloyUpdateValues (Map<String, String> originalToAlloy, String newValue) {
 		for(String key:originalToAlloy.keySet()){
 			if(newValue.startsWith(originalToAlloy.get(key))){
@@ -268,14 +279,60 @@ public class Translator implements Visitor {
 			}
 		}
 	}
+	
+
+	/**
+	 * Helper function to update the value of the keys in the givenMapping map based
+	 * on their largest updated values in the newMapping map  
+	 * @param givenMapping Map<String,String> the values of which will be updated   
+	 * @param newMapping Map<String,String> that contains the new values for mapping
+	 * 
+	 * For Example: givenMapping={"x":"arg1","y":"arg2"}, newMapping={"arg1'":"3",
+	 * "arg1''":"5","arg2'":"13","arg2''":"1","arg2'''":"31"} 
+	 * => (After updateMapping is done) givenMapping={"x":"arg1''","y":"arg2'''"}
+	**/
+	public void updateToLargestMapping(Map<String, String> givenMapping, Map<String, String> newMapping) {
+		for (String key : newMapping.keySet()) {
+			originalToAlloyUpdateValues(givenMapping, key);
+		}
+	}
+	
+	/**
+	 * Helper function that returns a map containing the missing assignments for variables
+	 * used in the postcondition statement  
+	 * @param originalToAlloy Map<String,String> maps the original names to their alloy counterparts
+	 * @param alloyAssignments Map<String,String> maps the original names to their alloy counterparts
+	 * used in a specific multiassignment body
+	 * @param originalToLargesAlloy Map<String,String> maps the original names to their alloy counterparts
+	 * in the all if/elseif/els statement bodies (for a specific if statement)   
+	 * 
+	 * For Example: originalToAlloy={"x":"arg1","y":"arg2"}, alloyAssignments={"arg1'":"3",
+	 * ,"arg2'":"13"} and originalToLargesAlloy = {"x":"arg1'","y":"arg2'''"}
+	 * => result = {"arg1'''","arg1'"}
+	**/
+	public Map<String, String> largestValueMap(Map<String, String> originalToAlloy, Map<String, String> alloyAssignments, Map<String, String> originalToLargesAlloy) {
+		Map<String, String> result = new HashMap<>();
+		for (String key : originalToAlloy.keySet()) {
+			String alloyValue = originalToAlloy.get(key);
+			String largestAlloyRunning = alloyValue;
+			for(String newAlloyValue : alloyAssignments.keySet()){
+				if (newAlloyValue.startsWith(alloyValue) && newAlloyValue.length()>largestAlloyRunning.length()){
+					largestAlloyRunning = newAlloyValue;
+				}
+			}
+			if(originalToLargesAlloy.get(key).compareTo(largestAlloyRunning)>0){
+				result.put(originalToLargesAlloy.get(key),largestAlloyRunning);
+			}
+		}
+		return result;
+	}
+	
 
 	@Override
 	public void visitIfConditional(IfElseIfStatement exp) {
 		Translator conditionTranslator = new Translator(originalToAlloy);
 		exp.getCondition().accept(conditionTranslator);
 
-		resultMap.putAll(originalToAlloy);
-		
 		Translator ifTranslator = new Translator(originalToAlloy);
 		exp.getAssignments().accept(ifTranslator);
 				
@@ -295,13 +352,23 @@ public class Translator implements Visitor {
 			exp.getElseStatment().getAssignments().accept(elseTranslator);
 		}
 
+		this.resultMap.putAll(originalToAlloy);
+		
 		System.out.println("getOriginalToAlloy: " + this.getOriginalToAlloy().toString());
 		System.out.println("If Updates: " + ifTranslator.resultMap.toString());
 		System.out.println("ElseIf conditions: " + elseIfConditions.toString());
 		System.out.println("ElseIf  Updates: " + elseIfAssignments.toString());
 		System.out.println("Else Updates: " + elseTranslator.resultMap.toString());
 
+		updateToLargestMapping(this.resultMap,ifTranslator.getResultMap());
+		for(int i=0;i<elseIfAssignments.size();i++){
+			updateToLargestMapping(this.resultMap,elseIfAssignments.get(i));
+		}
+		updateToLargestMapping(this.resultMap,elseTranslator.getResultMap());
 
+		System.out.println("in if ToAlloy Update Values: " + this.resultMap.toString());
+
+		
 		this.result.add("((");
 		this.result.addAll(conditionTranslator.getResult());
 		this.result.add(") in True)");
@@ -313,9 +380,15 @@ public class Translator implements Visitor {
 			this.result.add(key);
 			this.result.add("=");
 			this.result.add(ifTranslator.getResultMap().get(key));
-			originalToAlloyUpdateValues(originalToAlloy, key);
 		}
-		
+		Map<String,String> missingAssignments = largestValueMap(this.originalToAlloy,ifTranslator.getResultMap(),this.resultMap);
+		System.out.println("If missingAssignments: " + missingAssignments.toString());
+		for (String key:missingAssignments.keySet()){
+			this.result.add(" and ");
+			this.result.add(key);
+			this.result.add("=");
+			this.result.add(missingAssignments.get(key));
+		}
 		
 		for(int i=0;i<elseIfConditions.size();i++){
 			this.result.add("\n\telse");
@@ -330,24 +403,37 @@ public class Translator implements Visitor {
 				this.result.add(key);
 				this.result.add("=");
 				this.result.add(elseIfAssignments.get(i).get(key));
-				originalToAlloyUpdateValues(originalToAlloy, key);
+			}
+			missingAssignments = largestValueMap(this.originalToAlloy,elseIfAssignments.get(i),this.resultMap);
+			System.out.println("else If missingAssignments: " + missingAssignments.toString());
+			for (String key:missingAssignments.keySet()){
+				this.result.add(" and ");
+				this.result.add(key);
+				this.result.add("=");
+				this.result.add(missingAssignments.get(key));
 			}
 		}		
 		
 		if(exp.getElseStatment() != null){
-			this.result.add("\n\telse \n");
+			this.result.add("\n\telse \n\t\t");
 			for (String key : elseTranslator.getResultMap().keySet()) {
-				this.result.add("\t\t");
 				this.result.add(key);
 				this.result.add("=");
 				this.result.add(elseTranslator.getResultMap().get(key));
-				originalToAlloyUpdateValues(originalToAlloy, key);
 				this.result.add(" and ");
 			}
+			
+			missingAssignments = largestValueMap(this.originalToAlloy,elseTranslator.getResultMap(),this.resultMap);
+			System.out.println("else missingAssignments: " + missingAssignments.toString());
+			for (String key:missingAssignments.keySet()){
+				this.result.add(key);
+				this.result.add("=");
+				this.result.add(missingAssignments.get(key));
+				this.result.add(" and ");
+			}
+			
 			this.result.remove(this.result.size()-1);
 		}
-		this.resultMap = originalToAlloy;
-		System.out.println("in if ToAlloy Update Values: " + originalToAlloy.toString());
 	}
 
 	@Override
@@ -361,6 +447,16 @@ public class Translator implements Visitor {
 		this.resultMap.putAll(assignmentTranslator.getResultMap());
 	}
 	
+	/**
+	 * Helper function to update the values in the given list with their corresponding 
+	 * keys (which represent their updated values) in the given map and converts it to
+	 * string
+	 * @param origOutput list of strings to be updated
+	 * @param updates Map<String,String> that maps keys to their corresponding new values
+	 * 
+	 * For Example: origOutput=["x","+","y","-","5"]   updates={"x":"arg1'",y="arg2''"}
+	 * result = "arg1'+arg2''-5" 
+	**/
 	private String updateToString(List<String> origOutput, Map<String,String> updates){
 		StringBuilder result = new StringBuilder();
 		for(String str:origOutput){
@@ -369,7 +465,6 @@ public class Translator implements Visitor {
 			} else {
 				result.append(str);
 			}
-			
 		}
 		return result.toString();
 	}
@@ -380,6 +475,7 @@ public class Translator implements Visitor {
 		Map<String,String> originalToOriginal = new HashMap<>();
 		Map<String,String> lhsOfUpdates = new HashMap<>();
 		Map<String,String> rhsOfUpdates = new HashMap<>();
+		
 		for(String key:originalToAlloy.keySet()){
 			originalToOriginal.put(key,key);
 		}
@@ -392,7 +488,8 @@ public class Translator implements Visitor {
 		for (Instruction inst : exp.getAssignments()) {
 			if (inst instanceof Expression){
 				// Skip non assignments as they don't mean anything in Alloy
-				// This translation will be converted to be a fact in Alloy due to "and"ing
+				// if not skipped then this translation will be converted to 
+				// be a fact in Alloy due to "and"ing
 				continue;
 			}
 			Translator instTranslator = new Translator(originalToOriginal);
@@ -404,6 +501,7 @@ public class Translator implements Visitor {
 			for(int i=1;i<instTranslator.getResult().size();i++){
 				rhsList.add(instTranslator.getResult().get(i));	
 			}
+			assert(lhsList.size()==1);
 			
 //			System.out.println("lhs List: " + lhsList.toString());
 //			System.out.println("lhs Updates: " + lhsOfUpdates.toString());
@@ -430,26 +528,6 @@ public class Translator implements Visitor {
 	}
 
 	@Override
-	public void visitAssignAssignment(Instruction exp) {
-
-	}
-
-	@Override
-	public void visitArithmeticOperation(Instruction exp) {
-
-	}
-
-	@Override
-	public void visitRelationalOperation(Relational exp) {
-
-	}
-
-	@Override
-	public void visitLogicalOpteration(Logical exp) {
-
-	}
-
-	@Override
 	public void visitParanthesesExpression(ParanthesesExpression exp) {
 		Translator innerTranslator = new Translator(originalToAlloy);
 		exp.getExpression().accept(innerTranslator);
@@ -470,10 +548,6 @@ public class Translator implements Visitor {
 		result.add("]");
 	}
 
-	@Override
-	public void visitVariableArithmetic(Instruction exp) {
-
-	}
 
 	@Override
 	public void visitModuloArithmetic(Modulo exp) {
@@ -723,11 +797,6 @@ public class Translator implements Visitor {
 	}
 
 	@Override
-	public void visitRelationalOpLogical(Instruction exp) {
-
-	}
-
-	@Override
 	public void visitPrecondStatement(PrecondStatement exp) {
 		Logical precondLogical = (Logical) exp.getLogicalCondition();
 		Translator tr = new Translator();
@@ -743,4 +812,34 @@ public class Translator implements Visitor {
 		result = tr.getResult();
 	}
 
+	@Override
+	public void visitVariableArithmetic(Instruction exp) {
+		System.out.println("Visting visitVariableArithmetic which is not supposed to happen");
+	}
+	
+	@Override
+	public void visitRelationalOpLogical(Instruction exp) {
+		System.out.println("Visting visitRelationalOpLogical which is not supposed to happen");
+	}
+	
+	@Override
+	public void visitAssignAssignment(Instruction exp) {
+		System.out.println("Visting visitAssignAssignment which is not supposed to happen");
+	}
+
+	@Override
+	public void visitArithmeticOperation(Instruction exp) {
+		System.out.println("Visting visitArithmeticOperation which is not supposed to happen");
+	}
+
+	@Override
+	public void visitRelationalOperation(Relational exp) {
+		System.out.println("Visting visitRelationalOperation which is not supposed to happen");
+	}
+
+	@Override
+	public void visitLogicalOpteration(Logical exp) {
+		System.out.println("Visting visitLogicalOpteration which is not supposed to happen");
+
+	}
 }

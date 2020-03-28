@@ -1,0 +1,15 @@
+// No counter examples 
+
+int x = 1;
+int y=0;
+if_require(true)
+if(x>0){
+    x%y;
+} else if(y>0) {
+	y = x;
+	y = x+1;
+} else {
+    x=3;
+    x=x+1;
+}
+if_ensure ( ((x_old>0) && (x_old==x) && (y_old==y)) || ((x_old <= 0) && (y_old>0) && (y==x_old+1) && (x_old==x)) || ((x_old <= 0) && (y_old <= 0) && (x==4) && (y_old==y)) )    

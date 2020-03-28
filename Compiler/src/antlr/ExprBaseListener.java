@@ -138,13 +138,13 @@ public class ExprBaseListener implements ExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAssignExpression(ExprParser.AssignExpressionContext ctx) { }
+	@Override public void enterIDExpression(ExprParser.IDExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAssignExpression(ExprParser.AssignExpressionContext ctx) { }
+	@Override public void exitIDExpression(ExprParser.IDExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -169,6 +169,18 @@ public class ExprBaseListener implements ExprListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAssignAssignment(ExprParser.AssignAssignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssignExpression(ExprParser.AssignExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssignExpression(ExprParser.AssignExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

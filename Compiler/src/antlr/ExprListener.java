@@ -128,17 +128,17 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code AssignExpression}
+	 * Enter a parse tree produced by the {@code IDExpression}
 	 * labeled alternative in {@link ExprParser#assignment}.
 	 * @param ctx the parse tree
 	 */
-	void enterAssignExpression(ExprParser.AssignExpressionContext ctx);
+	void enterIDExpression(ExprParser.IDExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code AssignExpression}
+	 * Exit a parse tree produced by the {@code IDExpression}
 	 * labeled alternative in {@link ExprParser#assignment}.
 	 * @param ctx the parse tree
 	 */
-	void exitAssignExpression(ExprParser.AssignExpressionContext ctx);
+	void exitIDExpression(ExprParser.IDExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code IDAssignment}
 	 * labeled alternative in {@link ExprParser#assignment}.
@@ -163,6 +163,18 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssignAssignment(ExprParser.AssignAssignmentContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AssignExpression}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignExpression(ExprParser.AssignExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AssignExpression}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignExpression(ExprParser.AssignExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ArithmeticOperation}
 	 * labeled alternative in {@link ExprParser#expression}.

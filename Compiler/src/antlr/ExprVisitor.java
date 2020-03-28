@@ -82,12 +82,12 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code AssignExpression}
+	 * Visit a parse tree produced by the {@code IDExpression}
 	 * labeled alternative in {@link ExprParser#assignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAssignExpression(ExprParser.AssignExpressionContext ctx);
+	T visitIDExpression(ExprParser.IDExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code IDAssignment}
 	 * labeled alternative in {@link ExprParser#assignment}.
@@ -102,6 +102,13 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAssignAssignment(ExprParser.AssignAssignmentContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code AssignExpression}
+	 * labeled alternative in {@link ExprParser#assignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignExpression(ExprParser.AssignExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ArithmeticOperation}
 	 * labeled alternative in {@link ExprParser#expression}.

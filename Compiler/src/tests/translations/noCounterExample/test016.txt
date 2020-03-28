@@ -1,0 +1,18 @@
+int x;  
+int y;
+bool z = true;
+bool b;
+if_require( (z<=>true) && b)
+if(x>0){
+	y= x-1;
+	y= y%x;
+	b= !(z&&b);			// false
+}  else if (x==0){
+	y= x+1;
+	y= y*x;
+	b= !(z||b)			// false
+}else {
+	z=!z;		// false
+	b=b||z;		// true
+}
+if_ensure( ( x_old >0  && b<=>false ) || ( x_old==0  && b<=>false )  || (x_old<0 && b && !z) )

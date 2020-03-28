@@ -1,0 +1,8 @@
+// No counter examples
+
+int x = 0;
+if_require(true)
+if(x>=0){
+    x=x-1;
+}
+if_ensure ( (x_old>=0 && x==x_old-1) || (x==x_old) )    

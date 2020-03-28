@@ -1,0 +1,17 @@
+bool z = true;
+bool b;
+bool a;
+int x;
+if_require( (z<=>true) && b)
+if(x>0){
+	b= !(z&&b);			// false
+	a = b&&z;
+} else if (x==0){
+	b= !(z||b);			// false
+	z= !b;
+} else {
+	z=!z;		// false
+	b=b||z	;	// true
+	a=z&&b;
+}
+if_ensure( ( x_old >0  && b<=>false ) || ( x_old==0  && b<=>false )  || (x_old<0 && b && !z) )

@@ -1,8 +1,8 @@
-int x = 2
+int x = 2;
 if(true){
-x=5
+x=5;
 } else {
-x=4
+x=4;
 }
-int y = x
-bool a = true && false
+int y = x;
+bool a = true && false;

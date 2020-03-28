@@ -1,0 +1,14 @@
+// Simple Example that satisfies the postcondition
+
+int x = 1;
+int x1 = x;
+bool y = false;
+if_require(y)
+if(x>0){
+	x=2;
+	y=(3>2)&&true;
+	x1;
+	x;
+	y;
+}
+if_ensure(x>0 && x==2)
