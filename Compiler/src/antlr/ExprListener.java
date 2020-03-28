@@ -68,6 +68,18 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code functionConditional}
+	 * labeled alternative in {@link ExprParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionConditional(ExprParser.FunctionConditionalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code functionConditional}
+	 * labeled alternative in {@link ExprParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionConditional(ExprParser.FunctionConditionalContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
 	 * @param ctx the parse tree

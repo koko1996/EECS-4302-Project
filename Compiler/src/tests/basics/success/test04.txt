@@ -1,0 +1,6 @@
+fun bool test(){
+	fun_require(true)
+		true;
+		return true;	
+	fun_ensure(true)
+}

@@ -1,0 +1,15 @@
+//fun returnType name(paramenterName parameterType){
+//fun_require(logicalStatement)
+//
+//fun_ensure(logicalStatement)
+//}
+
+fun int test(){
+	fun_require(true)
+		true;
+	return true;
+	fun_ensure(true)
+}
+
+
+

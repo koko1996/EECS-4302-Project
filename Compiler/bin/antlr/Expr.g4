@@ -14,6 +14,7 @@ statement: declaration
          | assignment
          | conditional
          | assertedConditional
+         | function
          ;
 
 
@@ -22,6 +23,12 @@ declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
     		| VARIABLE ID '=' expression  SEMICOLON		# VariableInitializationConstant
     		;
 
+// function can't have empty bodies
+// function can have zero or more arguments
+// function has to have a return type (it makes sense because there are no objects and everything is pass by value)
+// maybe add capability to declare local variables later
+function: 'fun' VARIABLE ID '(' ((VARIABLE ID COMMA)* VARIABLE ID)? ')' '{' 'fun_require' '(' logicalOp ')' multAssig  'return' (ID|arithmeticOp|logicalOp)';' 'fun_ensure' '(' logicalOp ')' '}' 	# FunctionConditional
+		   ;
 
 assertedConditional: 'if_require' '(' logicalOp ')' conditional 'if_ensure' '(' logicalOp ')' # ConditionalAssertionStatement
 		;
@@ -95,4 +102,5 @@ logicalOp: '(' logicalOp ')'                    # ParanthesesLogical
 	COMMENT: '//' ~[\r\n]* -> skip;
 	WS : [ \t\n\r]+ -> skip ;
 	SEMICOLON: ';';
+	COMMA: ',';
 	

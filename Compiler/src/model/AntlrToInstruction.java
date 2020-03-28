@@ -543,6 +543,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return new IfElseIfStatement(new BooleanConstant(true), visit(ctx.getChild(2)), new ArrayList<>(), null);
 	}
 
+	@Override 
+	public Instruction visitFunctionConditional(ExprParser.FunctionConditionalContext ctx) { return visitChildren(ctx); }
+	
+	
 	@Override
 	public Instruction visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
 		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));

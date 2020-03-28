@@ -47,6 +47,13 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code functionConditional}
+	 * labeled alternative in {@link ExprParser#function}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionConditional(ExprParser.FunctionConditionalContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
 	 * @param ctx the parse tree
