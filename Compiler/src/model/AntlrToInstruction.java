@@ -5,6 +5,7 @@ import java.util.List;
 
 import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
+import model.statement.assignment.expression.lambda.ForAll;
 import org.antlr.v4.runtime.Token;
 
 import model.declaration.VariableInitialization;
@@ -88,19 +89,37 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitForAllArray(ExprParser.ForAllArrayContext ctx) {
-		return super.visitForAllArray(ctx);
+		return new ForAll(visit(ctx.getChild(2)));
 	}
 
 	@Override
 	public Instruction visitAssignProperty(ExprParser.AssignPropertyContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitAssignProperty(ctx);
+		return visit(ctx.getChild(2));
 	}
 
 	@Override
 	public Instruction visitAddToArray(ExprParser.AddToArrayContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitAddToArray(ctx);
+		Token idToken = ctx.getParent().getToken(0, 0).getSymbol();
+		String lhsID = idToken.getText();
+		int lhsIDLine = idToken.getLine();
+		int lhsColumnLine = idToken.getCharPositionInLine() + 1;
+		String lhsType = values.getPrimitiveType(lhsID);
+
+		Instruction inside = visit(ctx.getChild(3));
+
+
+		if (checkNotDefined(lhsID, lhsIDLine, lhsColumnLine)) {
+			String insideType = (inside instanceof BooleanConstant) ? "Bool" : "Int";
+			if (!insideType.equals(lhsType)) {
+				semanticErrors.add("Error: Inside constant of the expression has type " + insideType
+						+ " but the array has type" + lhsType + " (line:" + lhsIDLine + ", column:"
+						+ lhsColumnLine + ")");
+			} else {
+				values.getValue(lhsID).addValue((Expression) inside);
+			}
+		}
+
+
 	}
 
 	private boolean checkDefined(String id, int line, int column) {

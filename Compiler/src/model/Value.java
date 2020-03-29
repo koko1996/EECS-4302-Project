@@ -67,11 +67,24 @@ public class Value {
         return type.substring(0, 1).toUpperCase() + type.substring(1) + (this.isArray ? "[]" : "");
     }
 
+    public String getPrimitiveType() {
+        return type.substring(0, 1).toUpperCase() + type.substring(1);
+    }
+
     public void setType(String type) {
         this.type = type;
     }
 
     public boolean isArray() {
         return isArray;
+    }
+
+    public void addValue(Expression value) {
+        if (!this.isArray) {
+            throw new IllegalStateException("This is not an array!");
+        } else {
+            this.value.add(value);
+        }
+
     }
 }

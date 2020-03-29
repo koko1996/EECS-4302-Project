@@ -38,13 +38,17 @@ public class Values {
     public boolean containsKey(String id) {
         return this.values.containsKey(id);
     }
-    
+
     public void put(String id, Value val) {
-        values.put(id,val);
+        values.put(id, val);
     }
 
     public String getType(String id) {
         return this.values.get(id).getType();
+    }
+
+    public String getPrimitiveType(String id) {
+        return this.values.get(id).getPrimitiveType();
     }
 
 }

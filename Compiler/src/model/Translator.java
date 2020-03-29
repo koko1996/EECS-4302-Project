@@ -845,6 +845,6 @@ public class Translator implements Visitor {
 
 	@Override
 	public void visitForAllLambda(ForAll exp) {
-		//TODO
-	}
+
+    }
 }
