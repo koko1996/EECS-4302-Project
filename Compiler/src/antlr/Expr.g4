@@ -43,12 +43,11 @@ multAssig: (assignment)+			# MultipleAssignments
 assignment: ID	SEMICOLON					# IDExpression
 		  | ID '=' ID  SEMICOLON			# IDAssignment			// must come first
 		  | ID '=' expression  SEMICOLON	# AssignAssignment
-		  | ID '.' expression SEMICOLON		# AssignProperty
+		  | ID '.' arrayOp SEMICOLON		# AssignProperty
 		  | expression	SEMICOLON			# AssignExpression
 		  ;
 
-expression: arrayOp					# ArrayOperation
-		  | arithmeticOp			# ArithmeticOperation
+expression: arithmeticOp			# ArithmeticOperation
 		  | relationalOp			# RelationalOperation
 		  | logicalOp				# LogicalOpteration
 		  | lambdaOp                # LambdaOperation

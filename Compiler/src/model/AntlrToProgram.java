@@ -3,9 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.ExprBaseVisitor;
-import antlr.ExprParser.ProgramContext;
-
 /*
  * AntlrToProgram class to represent the input file in internal structure
  */

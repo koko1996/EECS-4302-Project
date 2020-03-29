@@ -98,11 +98,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	}
 
 	@Override
-	public Instruction visitArrayOperation(ExprParser.ArrayOperationContext ctx) {
-		return visit(ctx.getChild(0));
-	}
-
-	@Override
 	public Instruction visitAddToArray(ExprParser.AddToArrayContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitAddToArray(ctx);

@@ -18,6 +18,7 @@ import model.statement.assignment.expression.arithmetic.IntegerVariable;
 import model.statement.assignment.expression.arithmetic.Modulo;
 import model.statement.assignment.expression.arithmetic.Multiplication;
 import model.statement.assignment.expression.arithmetic.Subtraction;
+import model.statement.assignment.expression.lambda.ForAll;
 import model.statement.assignment.expression.logical.BooleanConstant;
 import model.statement.assignment.expression.logical.BooleanVariable;
 import model.statement.assignment.expression.logical.Conjunction;
@@ -840,6 +841,10 @@ public class Translator implements Visitor {
 	@Override
 	public void visitLogicalOpteration(Logical exp) {
 		System.out.println("Visting visitLogicalOpteration which is not supposed to happen");
+	}
 
+	@Override
+	public void visitForAllLambda(ForAll exp) {
+		//TODO
 	}
 }

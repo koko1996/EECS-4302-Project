@@ -6,6 +6,7 @@ import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.lambda.ForAll;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
@@ -87,4 +88,6 @@ public interface Visitor {
     void visitPostcondStatement(PostcondStatement exp);
 
 	void visitMultipleAssignments(MultiAssignment exp);
+
+	void visitForAllLambda(ForAll exp);
 }
