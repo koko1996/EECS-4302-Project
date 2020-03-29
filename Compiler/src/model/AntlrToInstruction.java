@@ -3,10 +3,10 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
 import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
+import org.antlr.v4.runtime.Token;
+
 import model.declaration.VariableInitialization;
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
@@ -60,6 +60,52 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		this.semanticErrors = semanticErrors;
 		this.oldSyntax = "_old";
 		this.isEnsure = false;
+	}
+
+	@Override
+	public Instruction visitVariableArrayDeclaration(ExprParser.VariableArrayDeclarationContext ctx) {
+		Token idToken = ctx.ID().getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+		String type = ctx.VARIABLE().getText();
+		type = type.substring(0, 1).toUpperCase() + type.substring(1);
+		String id = ctx.ID().getText();
+		Value value = null;
+
+		if(checkNotOLD(id, line, column)) {
+			if(checkNotDefined(id, line, column)) {
+				value = new Value(new ArrayList<>(), type);
+				values.put(id, value);
+			}
+		}
+		return new VariableInitialization(id, type, value);
+	}
+
+	@Override
+	public Instruction visitLambdaOperation(ExprParser.LambdaOperationContext ctx) {
+		return visit(ctx.getChild(0));
+	}
+
+	@Override
+	public Instruction visitForAllArray(ExprParser.ForAllArrayContext ctx) {
+		return super.visitForAllArray(ctx);
+	}
+
+	@Override
+	public Instruction visitAssignProperty(ExprParser.AssignPropertyContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitAssignProperty(ctx);
+	}
+
+	@Override
+	public Instruction visitArrayOperation(ExprParser.ArrayOperationContext ctx) {
+		return visit(ctx.getChild(0));
+	}
+
+	@Override
+	public Instruction visitAddToArray(ExprParser.AddToArrayContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitAddToArray(ctx);
 	}
 
 	private boolean checkDefined(String id, int line, int column) {
