@@ -12,11 +12,13 @@ import java.util.Map;
 
 public class Array extends ArrayOperations {
     private String id;
+    private String type;
     private List<Expression> value;
 
-    public Array(String id, List<Expression> value) {
+    public Array(String id, String type, List<Expression> value) {
         this.id = id;
         this.value = value;
+        this.type = type;
     }
 
     public String getID() {
@@ -32,7 +34,7 @@ public class Array extends ArrayOperations {
     public Expression clone() {
         List<Expression> clonedExpressions = new ArrayList<>();
         value.forEach(each -> clonedExpressions.add(each.clone()));
-        return new Array(id, clonedExpressions);
+        return new Array(id, type, clonedExpressions);
     }
 
     @Override
@@ -44,6 +46,8 @@ public class Array extends ArrayOperations {
     public Map<String, Value> getVariables() {
         Map<String, Value> result = new HashMap<>();
         value.forEach(each -> result.putAll(each.getVariables()));
+        Value val = new Value(value, type);
+        result.put(id, val);
         return result;
     }
 }

@@ -79,7 +79,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
         int lhsColumnLine = idToken.getCharPositionInLine() + 1;
         String lhsType = values.getPrimitiveType(lhsID);
 
-        Instruction array = new Array(lhsID, values.getValue(lhsID).getValues());
+        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
         Instruction inside = visit(ctx.getChild(2));
 
         if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
@@ -108,7 +108,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
         int lhsColumnLine = idToken.getCharPositionInLine() + 1;
         String lhsType = values.getPrimitiveType(lhsID);
 
-        Instruction array = new Array(lhsID, values.getValue(lhsID).getValues());
+        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
         Instruction inside = visit(ctx.getChild(2));
 
         if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
