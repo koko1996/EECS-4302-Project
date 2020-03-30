@@ -6,14 +6,12 @@ import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
 import model.statement.assignment.expression.arithmetic.*;
-import model.statement.assignment.expression.lambda.ForAll;
+import model.statement.assignment.expression.array.AddToArray;
+import model.statement.assignment.expression.array.Array;
+import model.statement.assignment.expression.array.ForAll;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
-import model.statement.conditional.AssertedConditional;
-import model.statement.conditional.ElseIfStatement;
-import model.statement.conditional.IfElseIfStatement;
-import model.statement.conditional.PostcondStatement;
-import model.statement.conditional.PrecondStatement;
+import model.statement.conditional.*;
 
 public interface Visitor {
 
@@ -78,7 +76,7 @@ public interface Visitor {
     void visitConjunctionLogical(Conjunction exp);
 
     void visitBooleanConstant(BooleanConstant exp);
-    
+
     void visitBooleanVariable(BooleanVariable exp);
 
     void visitRelationalOpLogical(Instruction exp); //TODO
@@ -87,7 +85,11 @@ public interface Visitor {
 
     void visitPostcondStatement(PostcondStatement exp);
 
-	void visitMultipleAssignments(MultiAssignment exp);
+    void visitMultipleAssignments(MultiAssignment exp);
 
-	void visitForAllLambda(ForAll exp);
+    void visitForAll(ForAll exp);
+
+    void visitAddToArray(AddToArray exp);
+
+    void visitArray(Array exp);
 }

@@ -24,14 +24,14 @@ declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
     		;
 
 
-assertedConditional: 'if_require' '(' logicalOp ')' conditional 'if_ensure' '(' logicalOp ')' # ConditionalAssertionStatement
+assertedConditional: 'if_require' '(' (logicalOp) ')' conditional 'if_ensure' '(' (logicalOp)')' # ConditionalAssertionStatement
 		;
 
 // if and else statements can't have empty bodies
-conditional: 'if' '(' logicalOp ')' '{' multAssig '}' (elseIf)*	(finaElse)?				# IfConditional
+conditional: 'if' '(' (logicalOp)  ')' '{' multAssig '}' (elseIf)*	(finaElse)?				# IfConditional
 		   ;
 
-elseIf: 'else' 'if' '(' logicalOp ')' '{' multAssig '}'				# ElseIfConditional
+elseIf: 'else' 'if' '(' (logicalOp) ')' '{' multAssig '}'				# ElseIfConditional
 	  ;	  
 
 finaElse:  'else' '{' multAssig '}'									# ElseConditional
@@ -57,24 +57,23 @@ expression: arithmeticOp			# ArithmeticOperation
 
 lambdaOp: relationalOp | logicalOp;
 
+// We might want to consider separating these operations later.
+arrayOp: 'add' '(' constant ')'                   # AddToArray
+       | 'all' '(' lambdaOp ')'                   # ForAllArray
+	    ;
 
-arrayOp: '.' 'add' '(' (BoolConstant|IntConstant) ')' # AddToArray
-       | '.' 'all' '(' lambdaOp ')' # ForAllArray
-		;
-
-arithmeticOp: '(' arithmeticOp ')'               # ParanthesesArithmetic
+arithmeticOp: '(' arithmeticOp ')'              # ParanthesesArithmetic
             | arithmeticOp '*' arithmeticOp		# MultiplicationArithmetic
 			| arithmeticOp '/' arithmeticOp		# DivisionArithmetic
 			| arithmeticOp '%' arithmeticOp		# ModuloArithmetic
 			| arithmeticOp '+' arithmeticOp 	# AdditionArithmetic
 			| arithmeticOp '-' arithmeticOp		# SubtractionArithmetic
+			| 'each'                            # EachArithmetic
 			| ID								# VariableArithmetic
-			| IntConstant						# IntegerConstant
-			| '-' IntConstant					# NegationIntegerConstant
+			| constant                          # ConstantArithmetic
 			;
 
-relationalOp: 'each'                                # EachRelational
-            |'(' relationalOp ')'                   # ParanthesesRelational
+relationalOp: '(' relationalOp ')'                  # ParanthesesRelational
             | arithmeticOp '<' arithmeticOp			# LessRelational
 			| arithmeticOp '<=' arithmeticOp		# LessEqualRelational
 			| arithmeticOp '>' arithmeticOp			# GreaterRelational
@@ -83,21 +82,27 @@ relationalOp: 'each'                                # EachRelational
 			| arithmeticOp '!=' arithmeticOp		# InequivalenceRelational
 			;
 
-logicalOp: 'each'                               # EachLogical
-         | '(' logicalOp ')'                    # ParanthesesLogical
+logicalOp: '(' logicalOp ')'                    # ParanthesesLogical
          | '!' logicalOp						# NegationLogical
 		 | logicalOp '&&' logicalOp				# ConjunctionLogical
 		 | logicalOp '||' logicalOp				# DisjunctionLogical
 		 | logicalOp '=>' logicalOp				# ImplicationLogical
 		 | logicalOp '<=>' logicalOp			# EquivalenceLogical
 		 | relationalOp							# RelationalOpLogical
+		 | ID '.' arrayOp                       # ArrayOpLogical
+		 | 'each'                               # EachLogical
 		 | ID									# VariableLogical
-		 | BoolConstant							# BooleanConstant
+		 | constant                             # ConstantLogical
 		 ;
+
+constant: IntConstant                           # IntegerConstant
+        | '-' IntConstant                       # NegationIntegerConstant
+        | BoolConstant                          # BooleanConstant
+        ;
 
 // WE NEED TO RESERVE WORD EACH
 VARIABLE: 'int' | 'bool';
-IntConstant : [0-9]+;
+IntConstant : '-' [1-9][0-9]* | [0-9]+;
 BoolConstant: 'true' | 'false';
 ConstantValue: IntConstant | BoolConstant;
 ID: [a-z][a-zA-Z0-9_]*;

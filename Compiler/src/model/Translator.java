@@ -1,42 +1,23 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
-import model.statement.assignment.expression.arithmetic.Addition;
-import model.statement.assignment.expression.arithmetic.Division;
-import model.statement.assignment.expression.arithmetic.IntegerConstant;
-import model.statement.assignment.expression.arithmetic.IntegerVariable;
-import model.statement.assignment.expression.arithmetic.Modulo;
-import model.statement.assignment.expression.arithmetic.Multiplication;
-import model.statement.assignment.expression.arithmetic.Subtraction;
-import model.statement.assignment.expression.lambda.ForAll;
-import model.statement.assignment.expression.logical.BooleanConstant;
-import model.statement.assignment.expression.logical.BooleanVariable;
-import model.statement.assignment.expression.logical.Conjunction;
-import model.statement.assignment.expression.logical.Disjunction;
-import model.statement.assignment.expression.logical.Equivalence;
-import model.statement.assignment.expression.logical.Implication;
-import model.statement.assignment.expression.logical.Negation;
-import model.statement.assignment.expression.relational.Equality;
-import model.statement.assignment.expression.relational.GreaterThan;
-import model.statement.assignment.expression.relational.GreaterThanOrEqual;
-import model.statement.assignment.expression.relational.Inequality;
-import model.statement.assignment.expression.relational.LessThan;
-import model.statement.assignment.expression.relational.LessThanOrEqual;
-import model.statement.conditional.AssertedConditional;
-import model.statement.conditional.ElseIfStatement;
-import model.statement.conditional.IfElseIfStatement;
-import model.statement.conditional.PostcondStatement;
-import model.statement.conditional.PrecondStatement;
+import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.array.AddToArray;
+import model.statement.assignment.expression.array.Array;
+import model.statement.assignment.expression.array.ForAll;
+import model.statement.assignment.expression.logical.*;
+import model.statement.assignment.expression.relational.*;
+import model.statement.conditional.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Translator implements Visitor {
 
@@ -778,11 +759,9 @@ public class Translator implements Visitor {
 	public void visitBooleanConstant(BooleanConstant exp) {
 		boolean value = exp.getValue();
 		if (value) {
-//			result.add("(2.add[1] = 3)");
 			result.add(this.trueInAlloy);
 		} else {
 			result.add(this.falseInAlloy);
-//			result.add("(2 = 3)");
 		}
 
 	}
@@ -791,10 +770,12 @@ public class Translator implements Visitor {
 	public void visitBooleanVariable(BooleanVariable exp) {
 		String alloyVarName = this.originalToAlloy.get(exp.getID());
 		result.add(alloyVarName);
-//		String origName = exp.getID();
-//		Translator trans = new Translator(originalToAlloy);
-//		Values.getInstance().getValue(origName).getValue().accept(trans);
-//		result.addAll(trans.getResult());
+	}
+
+	@Override
+	public void visitArray(Array exp) {
+		String alloyVarName = this.originalToAlloy.get(exp.getID());
+		result.add(alloyVarName);
 	}
 
 	@Override
@@ -844,7 +825,12 @@ public class Translator implements Visitor {
 	}
 
 	@Override
-	public void visitForAllLambda(ForAll exp) {
+	public void visitForAll(ForAll exp) {
 
-    }
+	}
+
+	@Override
+	public void visitAddToArray(AddToArray exp) {
+
+	}
 }

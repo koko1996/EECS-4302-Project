@@ -1,5 +1,8 @@
 package model;
 
+import antlr.ExprBaseVisitor;
+import antlr.ExprParser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,11 +15,11 @@ public class AntlrToProgram extends ExprBaseVisitor<Program> {
 
 	/*
 	 * visitor function for ProgramContext
-	 * 
+	 *
 	 * @param ctx representing ProgramContext
 	 */
 	@Override
-	public Program visitProgram(ProgramContext ctx) {
+	public Program visitProgram(ExprParser.ProgramContext ctx) {
 		Program prog = new Program();
 		this.semanticErrors = new ArrayList<>();
 		// a helper visitor for transforming each subtree into an Instruction
