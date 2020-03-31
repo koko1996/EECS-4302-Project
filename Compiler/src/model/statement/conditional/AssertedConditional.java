@@ -1,12 +1,11 @@
 package model.statement.conditional;
 
+import java.util.Map;
+
 import model.Instruction;
 import model.Statement;
-import model.Value;
 import model.Visitor;
-import model.statement.assignment.Expression;
-
-import java.util.Map;
+import model.values.Value;
 
 public class AssertedConditional extends Statement {
 	private	Instruction preCond;

@@ -3,7 +3,6 @@ package model.statement.assignment.expression.logical;
 import model.Instruction;
 import model.Visitor;
 import model.statement.assignment.Expression;
-import model.statement.assignment.expression.arithmetic.Subtraction;
 
 /*
  * Conjunction Class that represents conjunction expression

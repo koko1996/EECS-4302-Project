@@ -12,6 +12,8 @@ import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.Arithmetic;
+import model.statement.assignment.expression.FunctionCall;
+import model.statement.assignment.expression.FunctionConditional;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
@@ -38,6 +40,10 @@ import model.statement.assignment.expression.relational.LessThanOrEqual;
 import model.statement.conditional.AssertedConditional;
 import model.statement.conditional.ElseIfStatement;
 import model.statement.conditional.IfElseIfStatement;
+import model.values.Value;
+import model.values.Values;
+import model.values.ValuesGlobal;
+import model.values.ValuesLocal;
 
 public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private Values values; // Symbol table for storing values of
@@ -56,7 +62,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	 * @param semanticErrors list of semantic errors observed in the input file
 	 */
 	public AntlrToInstruction(List<String> semanticErrors) {
-		values = Values.getInstance();
+		values = ValuesGlobal.getInstance();
 		this.semanticErrors = semanticErrors;
 		this.oldSyntax = "_old";
 		this.isEnsure = false;
@@ -83,12 +89,13 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private boolean checkNotDefined(String id, int line, int column) {
 		if (values.containsKey(id)) {
 			semanticErrors.add(
-					"Error: variable " + id + " has already been declared (line:" + line + ", column:" + column + ")");
+					"Error: variable or function with name " + id + " has already been declared (line:" + line + ", column:" + column + ")");
 			return false;
 		}
 		return true;
 	}
 
+	
 	private boolean checkNotOLD(String id, int line, int column) {
 		if (id.contains(this.oldSyntax)) {
 			semanticErrors.add("Error: variable name not allowed to have the substring " + this.oldSyntax + " (line:"
@@ -350,7 +357,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (checkDefined(id, "int", line, column)) {
 			if (!values.getType(id).equals("Int")) {
-				semanticErrors.add("Error: 3 The given ID has type " + values.getType(id) + " but the expceted type is "
+				semanticErrors.add("Error 3: The given ID has type " + values.getType(id) + " but the expceted type is "
 						+ "int" + " (line:" + line + ", column:" + column + ")");
 			} else {
 				return new IntegerVariable(idOrig, values.getValue(id).getValue());
@@ -475,7 +482,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (checkDefined(id, "bool", line, column)) {
 			if (!values.getType(id).equals("Bool")) {
-				semanticErrors.add("Error: 4 The given ID has type " + values.getType(id) + " but the expceted type is "
+				semanticErrors.add("Error 5: The given ID has type " + values.getType(id) + " but the expceted type is "
 						+ "bool" + " (line:" + line + ", column:" + column + ")");
 			} else {
 				return new BooleanVariable(idOrig, values.getValue(id).getValue());
@@ -516,7 +523,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		this.isEnsure = true;
 		Instruction inst = visit(ctx.getChild(7));
 		this.isEnsure = false;
-
 		return new AssertedConditional(visit(ctx.getChild(2)), inst, visit(ctx.getChild(4)));
 	}
 
@@ -534,7 +540,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx) {
-//		Instruction temp = visit(ctx.getChild(6));
 		return new ElseIfStatement(visit(ctx.getChild(3)), visit(ctx.getChild(6)));
 	}
 
@@ -543,8 +548,122 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return new IfElseIfStatement(new BooleanConstant(true), visit(ctx.getChild(2)), new ArrayList<>(), null);
 	}
 
+	
 	@Override 
-	public Instruction visitFunctionConditional(ExprParser.FunctionConditionalContext ctx) { return visitChildren(ctx); }
+	public Instruction visitParameterArgumentVariable(ExprParser.ParameterArgumentVariableContext ctx) { 
+		Token idToken = ctx.ID().getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+		String type = ctx.VARIABLE().getText();
+		type = type.substring(0, 1).toUpperCase() + type.substring(1);
+		String id = ctx.ID().getText();
+		Value value = null;
+
+		if (checkNotOLD(id, line, column)) {
+			if (checkNotDefined(id, line, column)) {
+				if (type.equals("Bool")) {
+					value = new Value(new BooleanVariable(id, new BooleanConstant(false)), type);
+				} else if (type.equals("Int")) {
+					value = new Value(new IntegerVariable(id,new IntegerConstant(0)), type);
+				} else {
+					throw new IllegalArgumentException("You probably should not get this exception.");
+				}
+				values.put(id, value);
+			}
+		}
+
+		return new VariableInitialization(id, type, value);
+	}
+
+	
+	@Override 
+	public Instruction visitFunctionConditional(ExprParser.FunctionConditionalContext ctx) { 
+		Token idToken = ctx.ID(0).getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+
+		Expression result = null;
+		Instruction preCond = null;
+		Instruction postCond = null;
+		Instruction assignments = null;
+		String returnVariable = null;
+		List<Instruction> parameters = new ArrayList<>(); // somehow call visitDeclaration
+		
+		String name = ctx.getChild(2).getText();
+		String returnType = ctx.getChild(1).getText();
+		returnType = returnType.substring(0, 1).toUpperCase() + returnType.substring(1);
+		
+		this.values = new ValuesLocal();
+		if(checkNotDefined(name,line,column)){
+			for(int i=0; i<ctx.getChild(4).getChildCount();i++){
+				Instruction instr = visit(ctx.getChild(4).getChild(i));
+				if(instr !=null){
+					parameters.add(instr);	
+				}
+			}
+			preCond = visit(ctx.logicalOp(0));
+			this.isEnsure = true;
+			postCond = visit(ctx.logicalOp(1));
+			this.isEnsure = false;
+			assignments =  visit(ctx.multAssig());
+			returnVariable = ctx.ID(1).getText();
+			
+			Token returnToken = ctx.ID(1).getSymbol();
+			int returnline = returnToken.getLine();
+			int returncolumn = returnToken.getCharPositionInLine() + 1;
+			
+			if(checkDefined(returnVariable, returnline, returncolumn)){
+				if( (returnType.equals("int") && !(values.getType(returnVariable).equals("Int"))) || (returnType.equals("bool") && !(values.getType(returnVariable).equals("Bool")) ) ){
+					semanticErrors.add("Error: return type of function " + name + " does not match the returned expression (line:" + returnline + ", column:" + returncolumn + ")");
+				}
+			}			
+		}
+		
+		this.values = ValuesGlobal.getInstance();
+		result = new FunctionConditional(name, returnType, parameters, preCond, postCond, assignments, returnVariable);
+		Value value = new Value(result , returnType);
+		values.put(name, value);
+		
+		return result; 
+	}
+
+
+	
+	@Override 
+	public Instruction visitFunctionCallStatment(ExprParser.FunctionCallStatmentContext ctx) { 
+		Token idToken = ctx.ID().getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+
+		String id = ctx.ID().getText();
+		Instruction result = null;
+		List<Instruction> parameters = new ArrayList<>(); // somehow call visitDeclaration
+		
+
+		if(checkDefined(id,line,column)){
+			for(int i=0; i<ctx.getChild(2).getChildCount();i++){
+				Instruction instr = null;
+				if(ctx.getChild(2).getChild(i) instanceof ExprParser.SingleParameterIDContext ){
+					String varName =ctx.getChild(2).getChild(i).getChild(0).getText();
+					if(checkDefined(varName, line, column)){
+						instr = this.values.getValue(varName).getValue();	
+					}
+				} else {
+					instr = visit(ctx.getChild(2).getChild(i));
+				}
+				if(instr !=null){
+					parameters.add(instr);	
+				}
+			}
+		}
+		
+		result = new FunctionCall(id, parameters);
+		
+		return result; 
+	}
+
+
+
 	
 	
 	@Override

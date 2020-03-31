@@ -7,7 +7,7 @@ import java.util.Map;
 
 import model.Instruction;
 import model.Statement;
-import model.Value;
+import model.values.Value;
 import model.Visitor;
 import model.statement.MultiAssignment;
 

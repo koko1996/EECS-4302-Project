@@ -1,14 +1,13 @@
 package model.statement.assignment.expression.logical;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import model.Instruction;
-import model.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;
-import model.statement.assignment.expression.ParanthesesExpression;
-
-import java.util.HashMap;
-import java.util.Map;
+import model.values.Value;
 
 
 public class Negation extends Logical {

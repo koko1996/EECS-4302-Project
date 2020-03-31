@@ -1,8 +1,9 @@
 package model;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import model.values.Value;
 
 public abstract class Instruction {
 

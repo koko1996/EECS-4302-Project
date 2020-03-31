@@ -1,7 +1,7 @@
 package model.statement.assignment;
 
-import model.Value;
-import model.Values;
+import model.values.Value;
+import model.values.ValuesGlobal;
 import model.Visitor;
 import model.statement.Assignment;
 
@@ -44,7 +44,7 @@ public class ExpressionAssignment extends Assignment {
 	public Map<String, Value> getVariables() {
 		Map<String, Value> result = new HashMap<>();
 		// TODO
-		Value temp = new Value(expr, Values.getInstance().getType(id));
+		Value temp = new Value(expr, ValuesGlobal.getInstance().getType(id));
 		result.put(id, temp);
 		result.putAll(expr.getVariables());
 		return result;

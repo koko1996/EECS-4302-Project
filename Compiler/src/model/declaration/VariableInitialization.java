@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import model.Declaration;
-import model.Value;
+import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.expression.arithmetic.IntegerConstant;
 import model.statement.assignment.expression.logical.BooleanConstant;

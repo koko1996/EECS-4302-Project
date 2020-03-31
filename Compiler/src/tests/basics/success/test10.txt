@@ -1,0 +1,7 @@
+fun int test(int x, int y, bool z){
+	fun_require(true)
+			x = y+1;
+			z=true;
+			return x;	
+	fun_ensure(z)
+}

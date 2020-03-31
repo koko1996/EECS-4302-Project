@@ -2,7 +2,7 @@ package model.statement.assignment.expression.logical;
 import java.util.HashMap;
 import java.util.Map;
 
-import model.Value;
+import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;
@@ -46,4 +46,9 @@ public class BooleanConstant extends Logical{
 	public Expression clone() {
 		return new BooleanConstant(value);
 	}
+	
+    @Override
+    public String toString() {
+		return Boolean.toString(value);
+    }
 }

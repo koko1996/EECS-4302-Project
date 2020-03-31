@@ -3,7 +3,7 @@ package model.statement.assignment.expression.arithmetic;
 import java.util.HashMap;
 import java.util.Map;
 
-import model.Value;
+import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Arithmetic;
@@ -46,5 +46,10 @@ public class IntegerConstant extends Arithmetic {
 	public Expression clone() {
 		return new IntegerConstant(value);
 	}
+    
+    @Override
+    public String toString() {
+		return Integer.toString(value);
+    }
 }
 

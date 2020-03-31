@@ -19,7 +19,7 @@ statement: declaration
 
 
 declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
-            | VARIABLE ID '=' ID  SEMICOLON         	# VariableInitializationConstantCopy
+            | VARIABLE ID '=' ID  SEMICOLON         	# VariableInitializationConstantCopy 	// singleParameter can be used here
     		| VARIABLE ID '=' expression  SEMICOLON		# VariableInitializationConstant
     		;
 
@@ -27,8 +27,27 @@ declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
 // function can have zero or more arguments
 // function has to have a return type (it makes sense because there are no objects and everything is pass by value)
 // maybe add capability to declare local variables later
-function: 'fun' VARIABLE ID '(' ((VARIABLE ID COMMA)* VARIABLE ID)? ')' '{' 'fun_require' '(' logicalOp ')' multAssig  'return' (ID|arithmeticOp|logicalOp)';' 'fun_ensure' '(' logicalOp ')' '}' 	# FunctionConditional
+function: 'fun' VARIABLE ID '(' parameters ')' '{' 'fun_require' '(' logicalOp ')' multAssig  'return' ID ';' 'fun_ensure' '(' logicalOp ')' '}' 	# FunctionConditional
 		   ;
+
+parameters: (parameterVariable COMMA)* parameterVariable # ParameterArguments
+		|									#ParameterEmpty
+		;
+
+parameterVariable: VARIABLE ID # ParameterArgumentVariable
+	;
+	
+// funName(parameters)
+functionCall: ID '(' functionCallParameter ')'  # FunctionCallStatment
+	;
+	
+functionCallParameter: ( (singleParameter COMMA)* singleParameter )		# functionCallParameters 
+					  |													# functionCallParametersEpsilon 
+					  ; 
+
+singleParameter: ID					#SingleParameterID
+				| expression 		#SingleParameterExpression
+				; 
 
 assertedConditional: 'if_require' '(' logicalOp ')' conditional 'if_ensure' '(' logicalOp ')' # ConditionalAssertionStatement
 		;
@@ -47,15 +66,16 @@ multAssig: (assignment)+			# MultipleAssignments
 		;
 
 assignment: ID	SEMICOLON					# IDExpression
-		  | ID '=' ID  SEMICOLON			# IDAssignment			// must come first
+		  | ID '=' ID  SEMICOLON			# IDAssignment			// singleParameter can be used here
 		  | ID '=' expression  SEMICOLON	# AssignAssignment
 		  | expression	SEMICOLON			# AssignExpression
 		  ;
 
 expression: arithmeticOp			# ArithmeticOperation
-		  | relationalOp			# RelationalOperation
 		  | logicalOp				# LogicalOpteration
-		  | '(' expression ')'		# ParanthesesExpression
+		  | relationalOp			# RelationalOperation
+		  | functionCall			# FunctionReturnOperation
+		  | '(' expression ')'		# ParanthesesExpression // remove this
 		  ;
 
 arithmeticOp: '(' arithmeticOp ')'              # ParanthesesArithmetic

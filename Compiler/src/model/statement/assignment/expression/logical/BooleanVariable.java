@@ -1,6 +1,6 @@
 package model.statement.assignment.expression.logical;
 
-import model.Value;
+import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import model.Instruction;
-import model.Value;
+import model.values.Value;
 import model.statement.assignment.Expression;
 
 public abstract class Relational extends Expression {

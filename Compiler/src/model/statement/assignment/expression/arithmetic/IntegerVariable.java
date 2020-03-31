@@ -1,6 +1,6 @@
 package model.statement.assignment.expression.arithmetic;
 
-import model.Value;
+import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Arithmetic;

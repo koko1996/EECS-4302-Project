@@ -1,4 +1,4 @@
-package model;
+package model.values;
 
 import model.statement.assignment.Expression;
 

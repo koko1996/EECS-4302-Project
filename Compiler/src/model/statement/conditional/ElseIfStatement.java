@@ -1,15 +1,11 @@
 package model.statement.conditional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import model.Instruction;
 import model.Statement;
-import model.Value;
 import model.Visitor;
-import model.statement.MultiAssignment;
+import model.values.Value;
 
 public class ElseIfStatement extends Statement {
 	private Instruction logicalCondition;

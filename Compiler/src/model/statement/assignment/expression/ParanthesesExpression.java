@@ -1,12 +1,11 @@
 package model.statement.assignment.expression;
 
-import model.Value;
-import model.Visitor;
-import model.statement.assignment.Expression;
-import model.statement.assignment.expression.relational.LessThanOrEqual;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import model.Visitor;
+import model.statement.assignment.Expression;
+import model.values.Value;
 
 public class ParanthesesExpression extends Expression {
 	private Expression expr;

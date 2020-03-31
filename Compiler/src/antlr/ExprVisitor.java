@@ -47,12 +47,68 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code functionConditional}
+	 * Visit a parse tree produced by the {@code FunctionConditional}
 	 * labeled alternative in {@link ExprParser#function}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFunctionConditional(ExprParser.FunctionConditionalContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ParameterArguments}
+	 * labeled alternative in {@link ExprParser#parameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameterArguments(ExprParser.ParameterArgumentsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ParameterEmpty}
+	 * labeled alternative in {@link ExprParser#parameters}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameterEmpty(ExprParser.ParameterEmptyContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ParameterArgumentVariable}
+	 * labeled alternative in {@link ExprParser#parameterVariable}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameterArgumentVariable(ExprParser.ParameterArgumentVariableContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FunctionCallStatment}
+	 * labeled alternative in {@link ExprParser#functionCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallStatment(ExprParser.FunctionCallStatmentContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code functionCallParameters}
+	 * labeled alternative in {@link ExprParser#functionCallParameter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallParameters(ExprParser.FunctionCallParametersContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code functionCallParametersEpsilon}
+	 * labeled alternative in {@link ExprParser#functionCallParameter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallParametersEpsilon(ExprParser.FunctionCallParametersEpsilonContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code SingleParameterID}
+	 * labeled alternative in {@link ExprParser#singleParameter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSingleParameterID(ExprParser.SingleParameterIDContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code SingleParameterExpression}
+	 * labeled alternative in {@link ExprParser#singleParameter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSingleParameterExpression(ExprParser.SingleParameterExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
@@ -124,6 +180,13 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code LogicalOpteration}
+	 * labeled alternative in {@link ExprParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLogicalOpteration(ExprParser.LogicalOpterationContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code RelationalOperation}
 	 * labeled alternative in {@link ExprParser#expression}.
 	 * @param ctx the parse tree
@@ -131,12 +194,12 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitRelationalOperation(ExprParser.RelationalOperationContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code LogicalOpteration}
+	 * Visit a parse tree produced by the {@code FunctionReturnOperation}
 	 * labeled alternative in {@link ExprParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLogicalOpteration(ExprParser.LogicalOpterationContext ctx);
+	T visitFunctionReturnOperation(ExprParser.FunctionReturnOperationContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ParanthesesExpression}
 	 * labeled alternative in {@link ExprParser#expression}.

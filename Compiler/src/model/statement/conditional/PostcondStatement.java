@@ -2,7 +2,7 @@ package model.statement.conditional;
 
 import model.Instruction;
 import model.Statement;
-import model.Value;
+import model.values.Value;
 import model.Visitor;
 
 import java.util.Map;

@@ -1,4 +1,4 @@
-package model.statement;
+package model.statement.assignment.expression;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,17 +6,18 @@ import java.util.Map;
 
 import model.Instruction;
 import model.Statement;
-import model.Value;
+import model.values.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 
-public class FunctionConditional extends Statement{
+public class FunctionConditional extends Expression{
 	private String name; 
 	private String returnType;
 	private List<Instruction> parameters;
 	private	Instruction preCond;
 	private	Instruction postCond;
 	private Instruction assignments;
-	private Instruction returnExpression;
+	private String returnVariable;
 	
 	
 	/*
@@ -24,14 +25,14 @@ public class FunctionConditional extends Statement{
 	 * @param postCond
 	 * @param ifStatment
 	 */
-	public FunctionConditional(String name, String returnType, List<Instruction> parameters,Instruction preCond, Instruction postCond,Instruction assignments, Instruction returnExpression){   
+	public FunctionConditional(String name, String returnType, List<Instruction> parameters,Instruction preCond, Instruction postCond,Instruction assignments, String returnVariable){   
 		this.name= name;
 		this.returnType= returnType;
 		this.parameters = parameters;
 		this.preCond = preCond;
 		this.postCond = postCond;
 		this.assignments =assignments;
-		this.returnExpression = returnExpression;
+		this.returnVariable = returnVariable;
 	}
 
 
@@ -93,25 +94,33 @@ public class FunctionConditional extends Statement{
 	/**
 	 * @return the returnExpression
 	 */
-	public Instruction getReturnExpression() {
-		return returnExpression;
+	public String getReturnVariable() {
+		return returnVariable;
 	}
 
 
 
 	@Override
 	public void accept(Visitor visitor) {
-		
+		visitor.visitFucntionConditional(this);
 	}
 
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String, Value> result = new HashMap<>();
 		for(int i=0;i<parameters.size();i++){
-			this.combineVariables(result,parameters.get(i).getVariables());
+			result = this.combineVariables(result,parameters.get(i).getVariables());
 		}
 				
 		return result;
+	}
+
+
+
+	@Override
+	public Expression clone() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

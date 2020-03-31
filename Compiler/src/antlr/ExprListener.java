@@ -68,17 +68,113 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code functionConditional}
+	 * Enter a parse tree produced by the {@code FunctionConditional}
 	 * labeled alternative in {@link ExprParser#function}.
 	 * @param ctx the parse tree
 	 */
 	void enterFunctionConditional(ExprParser.FunctionConditionalContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code functionConditional}
+	 * Exit a parse tree produced by the {@code FunctionConditional}
 	 * labeled alternative in {@link ExprParser#function}.
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionConditional(ExprParser.FunctionConditionalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ParameterArguments}
+	 * labeled alternative in {@link ExprParser#parameters}.
+	 * @param ctx the parse tree
+	 */
+	void enterParameterArguments(ExprParser.ParameterArgumentsContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ParameterArguments}
+	 * labeled alternative in {@link ExprParser#parameters}.
+	 * @param ctx the parse tree
+	 */
+	void exitParameterArguments(ExprParser.ParameterArgumentsContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ParameterEmpty}
+	 * labeled alternative in {@link ExprParser#parameters}.
+	 * @param ctx the parse tree
+	 */
+	void enterParameterEmpty(ExprParser.ParameterEmptyContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ParameterEmpty}
+	 * labeled alternative in {@link ExprParser#parameters}.
+	 * @param ctx the parse tree
+	 */
+	void exitParameterEmpty(ExprParser.ParameterEmptyContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ParameterArgumentVariable}
+	 * labeled alternative in {@link ExprParser#parameterVariable}.
+	 * @param ctx the parse tree
+	 */
+	void enterParameterArgumentVariable(ExprParser.ParameterArgumentVariableContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ParameterArgumentVariable}
+	 * labeled alternative in {@link ExprParser#parameterVariable}.
+	 * @param ctx the parse tree
+	 */
+	void exitParameterArgumentVariable(ExprParser.ParameterArgumentVariableContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code FunctionCallStatment}
+	 * labeled alternative in {@link ExprParser#functionCall}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCallStatment(ExprParser.FunctionCallStatmentContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code FunctionCallStatment}
+	 * labeled alternative in {@link ExprParser#functionCall}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCallStatment(ExprParser.FunctionCallStatmentContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code functionCallParameters}
+	 * labeled alternative in {@link ExprParser#functionCallParameter}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCallParameters(ExprParser.FunctionCallParametersContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code functionCallParameters}
+	 * labeled alternative in {@link ExprParser#functionCallParameter}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCallParameters(ExprParser.FunctionCallParametersContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code functionCallParametersEpsilon}
+	 * labeled alternative in {@link ExprParser#functionCallParameter}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCallParametersEpsilon(ExprParser.FunctionCallParametersEpsilonContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code functionCallParametersEpsilon}
+	 * labeled alternative in {@link ExprParser#functionCallParameter}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCallParametersEpsilon(ExprParser.FunctionCallParametersEpsilonContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code SingleParameterID}
+	 * labeled alternative in {@link ExprParser#singleParameter}.
+	 * @param ctx the parse tree
+	 */
+	void enterSingleParameterID(ExprParser.SingleParameterIDContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code SingleParameterID}
+	 * labeled alternative in {@link ExprParser#singleParameter}.
+	 * @param ctx the parse tree
+	 */
+	void exitSingleParameterID(ExprParser.SingleParameterIDContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code SingleParameterExpression}
+	 * labeled alternative in {@link ExprParser#singleParameter}.
+	 * @param ctx the parse tree
+	 */
+	void enterSingleParameterExpression(ExprParser.SingleParameterExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code SingleParameterExpression}
+	 * labeled alternative in {@link ExprParser#singleParameter}.
+	 * @param ctx the parse tree
+	 */
+	void exitSingleParameterExpression(ExprParser.SingleParameterExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ConditionalAssertionStatement}
 	 * labeled alternative in {@link ExprParser#assertedConditional}.
@@ -200,6 +296,18 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitArithmeticOperation(ExprParser.ArithmeticOperationContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code LogicalOpteration}
+	 * labeled alternative in {@link ExprParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLogicalOpteration(ExprParser.LogicalOpterationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code LogicalOpteration}
+	 * labeled alternative in {@link ExprParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLogicalOpteration(ExprParser.LogicalOpterationContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code RelationalOperation}
 	 * labeled alternative in {@link ExprParser#expression}.
 	 * @param ctx the parse tree
@@ -212,17 +320,17 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitRelationalOperation(ExprParser.RelationalOperationContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code LogicalOpteration}
+	 * Enter a parse tree produced by the {@code FunctionReturnOperation}
 	 * labeled alternative in {@link ExprParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterLogicalOpteration(ExprParser.LogicalOpterationContext ctx);
+	void enterFunctionReturnOperation(ExprParser.FunctionReturnOperationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code LogicalOpteration}
+	 * Exit a parse tree produced by the {@code FunctionReturnOperation}
 	 * labeled alternative in {@link ExprParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitLogicalOpteration(ExprParser.LogicalOpterationContext ctx);
+	void exitFunctionReturnOperation(ExprParser.FunctionReturnOperationContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ParanthesesExpression}
 	 * labeled alternative in {@link ExprParser#expression}.

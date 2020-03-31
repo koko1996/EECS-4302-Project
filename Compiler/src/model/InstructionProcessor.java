@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.statement.assignment.expression.FunctionConditional;
 import model.statement.conditional.AssertedConditional;
 
 /*
@@ -10,7 +11,6 @@ import model.statement.conditional.AssertedConditional;
  */
 public class InstructionProcessor {
 	private List<Instruction> instructions; // list of statements
-	private List<String> vars; // list of variables
 
 	/*
 	 * Constructor
@@ -21,7 +21,6 @@ public class InstructionProcessor {
 	 */
 	public InstructionProcessor(List<Instruction> instructions, List<String> vars) {
 		this.instructions = instructions;
-		this.vars = vars;
 	}
 
 
@@ -35,7 +34,10 @@ public class InstructionProcessor {
 			if(inst instanceof AssertedConditional){
 				inst.accept(tr);
 				evaluations.add(tr.getFinalResult());				
-			}
+		 	} else if (inst instanceof FunctionConditional) {
+				inst.accept(tr);
+				evaluations.add(tr.getFinalResult());		 		
+		 	}
 		}
 		return evaluations;
 	}
