@@ -15,7 +15,7 @@ public class Each extends Expression {
 
     @Override
     public void accept(Visitor visitor) {
-        //TODO
+        visitor.visitEach(this);
     }
 
     @Override

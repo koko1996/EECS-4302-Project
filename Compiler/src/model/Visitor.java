@@ -2,6 +2,7 @@ package model;
 
 import model.statement.MultiAssignment;
 import model.statement.assignment.ExpressionAssignment;
+import model.statement.assignment.expression.Each;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
@@ -9,6 +10,7 @@ import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.array.AddToArray;
 import model.statement.assignment.expression.array.Array;
 import model.statement.assignment.expression.array.ForAll;
+import model.statement.assignment.expression.array.ForSome;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.*;
@@ -88,6 +90,10 @@ public interface Visitor {
     void visitMultipleAssignments(MultiAssignment exp);
 
     void visitForAll(ForAll exp);
+
+    void visitForSome(ForSome exp);
+
+    void visitEach(Each exp);
 
     void visitAddToArray(AddToArray exp);
 

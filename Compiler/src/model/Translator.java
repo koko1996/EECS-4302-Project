@@ -3,6 +3,7 @@ package model;
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
+import model.statement.assignment.expression.Each;
 import model.statement.assignment.expression.Logical;
 import model.statement.assignment.expression.ParanthesesExpression;
 import model.statement.assignment.expression.Relational;
@@ -10,6 +11,7 @@ import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.array.AddToArray;
 import model.statement.assignment.expression.array.Array;
 import model.statement.assignment.expression.array.ForAll;
+import model.statement.assignment.expression.array.ForSome;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.*;
@@ -24,16 +26,18 @@ public class Translator implements Visitor {
 	private int ifStatementsTranslated;				// current number of if statements translated
 
 	private String finalResult;						// Contains the result of translation
-	
-	private List<String> result;					// Container to store the results after a visit
-	
-	private Map<String, String> resultMap;			// Container to store the results after a visit
 
-	private Map<String, String> originalToAlloy;	// container to hold the variable name mapping 
-													// from their original names to their alloy names 
-	private String trueInAlloy;						
+	private List<String> result;                    // Container to store the results after a visit
+
+	private Map<String, String> resultMap;            // Container to store the results after a visit
+
+	private Map<String, String> originalToAlloy;    // container to hold the variable name mapping
+	// from their original names to their alloy names
+	private String trueInAlloy;
 
 	private String falseInAlloy;
+
+	private Values values;
 
 	public Translator() {
 		finalResult = "";
@@ -43,6 +47,7 @@ public class Translator implements Visitor {
 		result = new ArrayList<>();
 		resultMap = new HashMap<>();
 		originalToAlloy = new HashMap<>();
+		values = Values.getInstance();
 	}
 
 	public Translator(Map<String, String> originalToAlloy) {
@@ -53,6 +58,7 @@ public class Translator implements Visitor {
 		result = new ArrayList<>();
 		resultMap = new HashMap<>();
 		this.originalToAlloy = originalToAlloy;
+		values = Values.getInstance();
 	}
 
 
@@ -192,17 +198,17 @@ public class Translator implements Visitor {
 		for (String key : preOriginalToAlloy.keySet()) {
 			String originalVar = key;
 			String alloyVar = preOriginalToAlloy.get(key);
-			String varType = vars.get(originalVar).getType();
-			List<String> remainingVars = listOfVariablesUsed(alloyVar,functionTranslator.getResultMap().get(key));
-			
+			String varType = vars.get(originalVar).getAlloyType();
+			List<String> remainingVars = listOfVariablesUsed(alloyVar, functionTranslator.getResultMap().get(key));
+
 			predParamSB.append(alloyVar);
-			for(String each : remainingVars){
+			for (String each : remainingVars) {
 				predParamSB.append(",").append(each);
 			}
 			predParamSB.append(":").append(varType).append(",");
-			
+
 			forAllParamSB.append(alloyVar).append(":").append(varType).append(",");
-			for(String each : remainingVars){
+			for (String each : remainingVars) {
 				forSomeParamSB.append(each).append(":").append(varType).append(",");
 			}
 			
@@ -826,11 +832,93 @@ public class Translator implements Visitor {
 
 	@Override
 	public void visitForAll(ForAll exp) {
+		Translator tr = new Translator(this.originalToAlloy);
+		Instruction inside = exp.getInside();
+		inside.accept(tr);
+
+		StringBuilder insideTranslationSB = new StringBuilder();
+		insideTranslationSB.append("(");
+		tr.result.forEach(insideTranslationSB::append);
+		insideTranslationSB.append(" in True").append(")");
+		String insideTranslation = insideTranslationSB.toString();
+
+		Array array = (Array) exp.getArray();
+		String arrayNameOriginal = array.getID();
+		String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+		String lambdaType = values.getPrimitiveType(arrayNameOriginal);
+
+		result.add("(");
+		result.add("(");
+		result.add("all ");
+		result.add("arrayElems: ");
+		result.add(arrayNameInAlloy);
+		result.add(".elems ");
+		result.add("| ");
+		result.add("arrayElems ");
+		result.add("= ");
+		result.add("{");
+		result.add("each: ");
+		result.add(lambdaType);
+		result.add(" | ");
+		result.add(insideTranslation);
+		result.add("}");
+		result.add(")");
+		result.add("=> True else False");
+		result.add(")");
 
 	}
 
 	@Override
+	public void visitForSome(ForSome exp) {
+		Translator tr = new Translator(this.originalToAlloy);
+		Instruction inside = exp.getInside();
+		inside.accept(tr);
+
+		StringBuilder insideTranslationSB = new StringBuilder();
+		insideTranslationSB.append("(");
+		tr.result.forEach(insideTranslationSB::append);
+		insideTranslationSB.append(" in True").append(")");
+		String insideTranslation = insideTranslationSB.toString();
+
+		Array array = (Array) exp.getArray();
+		String arrayNameOriginal = array.getID();
+		String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+		String lambdaType = values.getPrimitiveType(arrayNameOriginal);
+
+		result.add("(");
+		result.add("(");
+		result.add("all ");
+		result.add("arrayElems: ");
+		result.add(arrayNameInAlloy);
+		result.add(".elems ");
+		result.add("| ");
+		result.add("arrayElems ");
+		result.add("in ");
+		result.add("{");
+		result.add("each: ");
+		result.add(lambdaType);
+		result.add(" | ");
+		result.add(insideTranslation);
+		result.add("}");
+		result.add(")");
+		result.add("=> True else False");
+		result.add(")");
+
+	}
+
+	// TODO :
+	// - FIX ALL SOME
+	// - FIX THE ISSUE WHEN PARSING INT Y = X - 1
+	// - IMPLEMENT ARRAY METHODS
+
+
+	@Override //TODO
 	public void visitAddToArray(AddToArray exp) {
 
+	}
+
+	@Override
+	public void visitEach(Each exp) {
+		result.add("each");
 	}
 }

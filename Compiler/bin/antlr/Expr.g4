@@ -60,6 +60,7 @@ lambdaOp: relationalOp | logicalOp;
 // We might want to consider separating these operations later.
 arrayOp: 'add' '(' constant ')'                   # AddToArray
        | 'all' '(' lambdaOp ')'                   # ForAllArray
+       | 'some' '(' lambdaOp ')'                  # ForSomeArray
 	    ;
 
 arithmeticOp: '(' arithmeticOp ')'              # ParanthesesArithmetic

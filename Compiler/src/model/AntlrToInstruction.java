@@ -11,6 +11,7 @@ import model.statement.assignment.expression.arithmetic.*;
 import model.statement.assignment.expression.array.AddToArray;
 import model.statement.assignment.expression.array.Array;
 import model.statement.assignment.expression.array.ForAll;
+import model.statement.assignment.expression.array.ForSome;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
@@ -92,6 +93,29 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
         }
 
         return new ForAll(array, inside);
+    }
+
+    @Override
+    public Instruction visitForSomeArray(ExprParser.ForSomeArrayContext ctx) {
+        Token idToken = this.arrayToken;
+        String lhsID = idToken.getText();
+        int lhsIDLine = idToken.getLine();
+        int lhsColumnLine = idToken.getCharPositionInLine() + 1;
+        String lhsType = values.getPrimitiveType(lhsID);
+
+        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
+        Instruction inside = visit(ctx.getChild(2));
+
+        if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
+            if ((inside instanceof Logical && !lhsType.equals("Bool"))
+                    | (inside instanceof Arithmetic && !lhsType.equals("Int"))) {
+                semanticErrors
+                        .add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
+                                + lhsIDLine + ", column:" + lhsColumnLine + ")");
+            }
+        }
+
+        return new ForSome(array, inside);
     }
 
     @Override

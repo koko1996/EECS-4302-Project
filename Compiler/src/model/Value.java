@@ -71,6 +71,10 @@ public class Value {
         return type.substring(0, 1).toUpperCase() + type.substring(1);
     }
 
+    public String getAlloyType() {
+        return (this.isArray() ? "seq " : "") + this.getPrimitiveType();
+    }
+
     public void setType(String type) {
         this.type = type;
     }
