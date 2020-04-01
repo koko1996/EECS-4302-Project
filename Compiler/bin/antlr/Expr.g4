@@ -59,6 +59,7 @@ lambdaOp: relationalOp | logicalOp;
 
 // We might want to consider separating these operations later.
 arrayOp: 'add' '(' constant ')'                   # AddToArray
+       | 'remove' '(' constant ')'                # RemoveFromArray
        | 'all' '(' lambdaOp ')'                   # ForAllArray
        | 'some' '(' lambdaOp ')'                  # ForSomeArray
 	    ;

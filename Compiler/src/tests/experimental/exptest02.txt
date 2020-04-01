@@ -1,11 +1,15 @@
 int[] x;
-                                x.add(1);
-                                x.add(2);
-                                x.add(3);
-                                x.add(0);
+x.add(1);
+x.add(2);
+x.add(3);
+x.add(0);
 
-                                if_require((!x.all(each > 0)) && (x.some(each <= 0)))
-                                if(x.all(each > 0)) {
-                                    x.add(-1);
-                                }
-                                if_ensure(!(x.some(each == -1)))
+if_require(x.all(each > 0))
+if(x.all(each > 0)) {
+    x.add(-1);
+}
+if_ensure(x.some(each == -1))
+
+// This test throws an error in Alloy saying existential quantifier cannot be skolemized.
+// The syntax looks good, this rather seems like a limitation in Alloy.
+// Check 6.2 at https://books.google.ca/books?id=b6RaDwAAQBAJ&pg=PA82&lpg=PA82&dq=Analysis+cannot+be+performed+since+it+requires+higher-orderquantification+that+could+not+be+skolemized.&source=bl&ots=tGesvMS_Tb&sig=ACfU3U3MP8Vh2KJOVSW48WAHUNUVtkg9nA&hl=en&sa=X&ved=2ahUKEwjM54u_qcboAhVMdt8KHc7HAtgQ6AEwBHoECAsQKA#v=onepage&q=Analysis%20cannot%20be%20performed%20since%20it%20requires%20higher-orderquantification%20that%20could%20not%20be%20skolemized.&f=false

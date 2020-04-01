@@ -3,20 +3,25 @@ package model.statement.assignment.expression.array;
 import model.Instruction;
 import model.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ForSome extends ArrayComposite {
+public class RemoveFromArray extends ArrayComposite {
 
-    public ForSome(Instruction array, Instruction inside) {
+    public RemoveFromArray(Instruction array, Instruction inside) {
         super(array, inside);
     }
 
+    @Override
+    public Expression clone() {
+        return new RemoveFromArray(((Expression) array).clone(), ((Expression) inside).clone());
+    }
 
     @Override
     public void accept(Visitor visitor) {
-        visitor.visitForSome(this);
+        visitor.visitRemoveFromArray(this);
     }
 
     @Override

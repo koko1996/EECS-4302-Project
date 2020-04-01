@@ -8,10 +8,7 @@ import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.*;
 import model.statement.assignment.expression.arithmetic.*;
-import model.statement.assignment.expression.array.AddToArray;
-import model.statement.assignment.expression.array.Array;
-import model.statement.assignment.expression.array.ForAll;
-import model.statement.assignment.expression.array.ForSome;
+import model.statement.assignment.expression.array.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
@@ -46,126 +43,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
         this.semanticErrors = semanticErrors;
         this.oldSyntax = "_old";
         this.isEnsure = false;
-    }
-
-    @Override
-    public Instruction visitVariableArrayDeclaration(ExprParser.VariableArrayDeclarationContext ctx) {
-        Token idToken = ctx.ID().getSymbol();
-        int line = idToken.getLine();
-        int column = idToken.getCharPositionInLine() + 1;
-        String type = ctx.VARIABLE().getText();
-        type = type.substring(0, 1).toUpperCase() + type.substring(1);
-        String id = ctx.ID().getText();
-        Value value = null;
-
-        if (checkNotOLD(id, line, column)) {
-            if (checkNotDefined(id, line, column)) {
-                value = new Value(new ArrayList<>(), type);
-                values.put(id, value);
-            }
-        }
-        return new VariableInitialization(id, type, value);
-    }
-
-    @Override
-    public Instruction visitLambdaOperation(ExprParser.LambdaOperationContext ctx) {
-        return visit(ctx.getChild(0));
-    }
-
-    @Override
-    public Instruction visitForAllArray(ExprParser.ForAllArrayContext ctx) {
-        Token idToken = this.arrayToken;
-        String lhsID = idToken.getText();
-        int lhsIDLine = idToken.getLine();
-        int lhsColumnLine = idToken.getCharPositionInLine() + 1;
-        String lhsType = values.getPrimitiveType(lhsID);
-
-        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
-        Instruction inside = visit(ctx.getChild(2));
-
-        if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
-            if ((inside instanceof Logical && !lhsType.equals("Bool"))
-                    | (inside instanceof Arithmetic && !lhsType.equals("Int"))) {
-                semanticErrors
-                        .add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
-                                + lhsIDLine + ", column:" + lhsColumnLine + ")");
-            }
-        }
-
-        return new ForAll(array, inside);
-    }
-
-    @Override
-    public Instruction visitForSomeArray(ExprParser.ForSomeArrayContext ctx) {
-        Token idToken = this.arrayToken;
-        String lhsID = idToken.getText();
-        int lhsIDLine = idToken.getLine();
-        int lhsColumnLine = idToken.getCharPositionInLine() + 1;
-        String lhsType = values.getPrimitiveType(lhsID);
-
-        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
-        Instruction inside = visit(ctx.getChild(2));
-
-        if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
-            if ((inside instanceof Logical && !lhsType.equals("Bool"))
-                    | (inside instanceof Arithmetic && !lhsType.equals("Int"))) {
-                semanticErrors
-                        .add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
-                                + lhsIDLine + ", column:" + lhsColumnLine + ")");
-            }
-        }
-
-        return new ForSome(array, inside);
-    }
-
-    @Override
-    public Instruction visitAssignProperty(ExprParser.AssignPropertyContext ctx) {
-        this.arrayToken = ctx.ID().getSymbol();
-        return visit(ctx.getChild(2));
-    }
-
-    @Override
-    public Instruction visitAddToArray(ExprParser.AddToArrayContext ctx) {
-        Token idToken = this.arrayToken;
-        String lhsID = idToken.getText();
-        int lhsIDLine = idToken.getLine();
-        int lhsColumnLine = idToken.getCharPositionInLine() + 1;
-        String lhsType = values.getPrimitiveType(lhsID);
-
-        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
-        Instruction inside = visit(ctx.getChild(2));
-
-        if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
-            String insideType = (inside instanceof BooleanConstant) ? "Bool" : "Int";
-            if (!insideType.equals(lhsType)) {
-                semanticErrors.add("Error: Inside constant of the expression has type " + insideType
-                        + " but the array has type" + lhsType + " (line:" + lhsIDLine + ", column:"
-                        + lhsColumnLine + ")");
-            } else {
-                values.getValue(lhsID).addValue((Expression) inside);
-            }
-        }
-        return new AddToArray(array, inside);
-    }
-
-    @Override
-    public Instruction visitConstantArithmetic(ExprParser.ConstantArithmeticContext ctx) {
-        return visit(ctx.getChild(0));
-    }
-
-    @Override
-    public Instruction visitConstantLogical(ExprParser.ConstantLogicalContext ctx) {
-        return visit(ctx.getChild(0));
-    }
-
-    @Override
-    public Instruction visitEachArithmetic(ExprParser.EachArithmeticContext ctx) {
-        return new Each();
-    }
-
-    @Override
-    public Instruction visitEachLogical(ExprParser.EachLogicalContext ctx) {
-        return new Each();
     }
 
     private boolean checkDefined(String id, int line, int column) {
@@ -661,6 +538,153 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
     @Override
     public Instruction visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx) {
         return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
+    }
+
+    @Override
+    public Instruction visitVariableArrayDeclaration(ExprParser.VariableArrayDeclarationContext ctx) {
+        Token idToken = ctx.ID().getSymbol();
+        int line = idToken.getLine();
+        int column = idToken.getCharPositionInLine() + 1;
+        String type = ctx.VARIABLE().getText();
+        type = type.substring(0, 1).toUpperCase() + type.substring(1);
+        String id = ctx.ID().getText();
+        Value value = null;
+
+        if (checkNotOLD(id, line, column)) {
+            if (checkNotDefined(id, line, column)) {
+                value = new Value(new ArrayList<>(), type);
+                values.put(id, value);
+            }
+        }
+        return new VariableInitialization(id, type, value);
+    }
+
+    @Override
+    public Instruction visitLambdaOperation(ExprParser.LambdaOperationContext ctx) {
+        return visit(ctx.getChild(0));
+    }
+
+    @Override
+    public Instruction visitForAllArray(ExprParser.ForAllArrayContext ctx) {
+        Token idToken = this.arrayToken;
+        String lhsID = idToken.getText();
+        int lhsIDLine = idToken.getLine();
+        int lhsColumnLine = idToken.getCharPositionInLine() + 1;
+        String lhsType = values.getPrimitiveType(lhsID);
+
+        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
+        Instruction inside = visit(ctx.getChild(2));
+
+        if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
+            if ((inside instanceof Logical && !lhsType.equals("Bool"))
+                    | (inside instanceof Arithmetic && !lhsType.equals("Int"))) {
+                semanticErrors
+                        .add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
+                                + lhsIDLine + ", column:" + lhsColumnLine + ")");
+            }
+        }
+
+        return new ForAll(array, inside);
+    }
+
+    @Override
+    public Instruction visitForSomeArray(ExprParser.ForSomeArrayContext ctx) {
+        Token idToken = this.arrayToken;
+        String lhsID = idToken.getText();
+        int lhsIDLine = idToken.getLine();
+        int lhsColumnLine = idToken.getCharPositionInLine() + 1;
+        String lhsType = values.getPrimitiveType(lhsID);
+
+        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
+        Instruction inside = visit(ctx.getChild(2));
+
+        if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
+            if ((inside instanceof Logical && !lhsType.equals("Bool"))
+                    | (inside instanceof Arithmetic && !lhsType.equals("Int"))) {
+                semanticErrors
+                        .add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
+                                + lhsIDLine + ", column:" + lhsColumnLine + ")");
+            }
+        }
+
+        return new ForSome(array, inside);
+    }
+
+    @Override
+    public Instruction visitAssignProperty(ExprParser.AssignPropertyContext ctx) {
+        this.arrayToken = ctx.ID().getSymbol();
+        return visit(ctx.getChild(2));
+    }
+
+    @Override
+    public Instruction visitAddToArray(ExprParser.AddToArrayContext ctx) {
+        Token idToken = this.arrayToken;
+        String lhsID = idToken.getText();
+        int lhsIDLine = idToken.getLine();
+        int lhsColumnLine = idToken.getCharPositionInLine() + 1;
+        String lhsType = values.getPrimitiveType(lhsID);
+
+        Instruction array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
+        Instruction inside = visit(ctx.getChild(2));
+
+        if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
+            String insideType = (inside instanceof BooleanConstant) ? "Bool" : "Int";
+            if (!insideType.equals(lhsType)) {
+                semanticErrors.add("Error: Inside constant of the expression has type " + insideType
+                        + " but the array has type" + lhsType + " (line:" + lhsIDLine + ", column:"
+                        + lhsColumnLine + ")");
+            } else {
+                values.getValue(lhsID).addValue((Expression) inside);
+            }
+        }
+        return new AddToArray(array, inside);
+    }
+
+    @Override
+    public Instruction visitRemoveFromArray(ExprParser.RemoveFromArrayContext ctx) {
+        Token idToken = this.arrayToken;
+        String lhsID = idToken.getText();
+        int lhsIDLine = idToken.getLine();
+        int lhsColumnLine = idToken.getCharPositionInLine() + 1;
+        String lhsType = values.getPrimitiveType(lhsID);
+
+        Array array = new Array(lhsID, lhsType, values.getValue(lhsID).getValues());
+        Instruction inside = visit(ctx.getChild(2));
+
+        if (!checkDefined(lhsID, lhsIDLine, lhsColumnLine)) {
+            String insideType = (inside instanceof BooleanConstant) ? "Bool" : "Int";
+            if (!insideType.equals(lhsType)) {
+                semanticErrors.add("Error: Inside constant of the expression has type " + insideType
+                        + " but the array has type" + lhsType + " (line:" + lhsIDLine + ", column:"
+                        + lhsColumnLine + ")");
+            } else {
+                boolean didDelete = values.getValue(lhsID).removeValue((Expression) inside);
+                if (!didDelete) {
+                    semanticErrors.add("Error: The item you are trying to remove does not exist in array " + lhsID + " (line:" + lhsIDLine + ")");
+                }
+            }
+        }
+        return new RemoveFromArray(array, inside);
+    }
+
+    @Override
+    public Instruction visitConstantArithmetic(ExprParser.ConstantArithmeticContext ctx) {
+        return visit(ctx.getChild(0));
+    }
+
+    @Override
+    public Instruction visitConstantLogical(ExprParser.ConstantLogicalContext ctx) {
+        return visit(ctx.getChild(0));
+    }
+
+    @Override
+    public Instruction visitEachArithmetic(ExprParser.EachArithmeticContext ctx) {
+        return new Each();
+    }
+
+    @Override
+    public Instruction visitEachLogical(ExprParser.EachLogicalContext ctx) {
+        return new Each();
     }
 
 }

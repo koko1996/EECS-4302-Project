@@ -1,21 +1,23 @@
 package model.statement.assignment.expression.logical;
-import java.util.HashMap;
-import java.util.Map;
 
 import model.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;
 
-public class BooleanConstant extends Logical{
-	private boolean value;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-	/*
-	 * Constructor
-	 * 
-	 * @param value the assigned value of the variable in the expression
-	 */
-	public BooleanConstant(boolean value) {
+public class BooleanConstant extends Logical {
+    private boolean value;
+
+    /*
+     * Constructor
+     *
+     * @param value the assigned value of the variable in the expression
+     */
+    public BooleanConstant(boolean value) {
 		this.value = value;
 	}
 
@@ -36,14 +38,27 @@ public class BooleanConstant extends Logical{
 
 
 	@Override
-	public Map<String, Value> getVariables() {
-		Map<String,Value> result = new HashMap<>();
-		return result;
-	}
+    public Map<String, Value> getVariables() {
+        Map<String, Value> result = new HashMap<>();
+        return result;
+    }
 
 
-	@Override
-	public Expression clone() {
-		return new BooleanConstant(value);
-	}
+    @Override
+    public Expression clone() {
+        return new BooleanConstant(value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BooleanConstant that = (BooleanConstant) o;
+        return value == that.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }

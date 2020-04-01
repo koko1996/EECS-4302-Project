@@ -29,7 +29,6 @@ public class Array extends ArrayOperations {
         return value;
     }
 
-
     @Override
     public Expression clone() {
         List<Expression> clonedExpressions = new ArrayList<>();

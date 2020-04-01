@@ -89,6 +89,17 @@ public class Value {
         } else {
             this.value.add(value);
         }
-
     }
+
+    public boolean removeValue(Expression value) {
+        if (!this.isArray) {
+            throw new IllegalStateException("This is not an array!");
+        } else {
+            boolean result = this.value.contains(value);
+            this.value.remove(value);
+            return result;
+        }
+    }
+
+
 }

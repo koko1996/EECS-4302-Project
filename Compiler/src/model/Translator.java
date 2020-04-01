@@ -3,15 +3,9 @@ package model;
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
-import model.statement.assignment.expression.Each;
-import model.statement.assignment.expression.Logical;
-import model.statement.assignment.expression.ParanthesesExpression;
-import model.statement.assignment.expression.Relational;
+import model.statement.assignment.expression.*;
 import model.statement.assignment.expression.arithmetic.*;
-import model.statement.assignment.expression.array.AddToArray;
-import model.statement.assignment.expression.array.Array;
-import model.statement.assignment.expression.array.ForAll;
-import model.statement.assignment.expression.array.ForSome;
+import model.statement.assignment.expression.array.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.*;
@@ -474,29 +468,31 @@ public class Translator implements Visitor {
 			rhsOfUpdates.put(key,originalToAlloy.get(key));
 		}
 		for (Instruction inst : exp.getAssignments()) {
-			if (inst instanceof Expression){
-				// Skip non assignments as they don't mean anything in Alloy
-				// if not skipped then this translation will be converted to 
-				// be a fact in Alloy due to "and"ing
-				continue;
-			}
-			Translator instTranslator = new Translator(originalToOriginal);
-			inst.accept(instTranslator);
-			
-			List<String> lhsList = new ArrayList<>();
-			lhsList.add(instTranslator.getResult().get(0));
-			List<String> rhsList = new ArrayList<>();
-			for(int i=1;i<instTranslator.getResult().size();i++){
-				rhsList.add(instTranslator.getResult().get(i));	
-			}
-			assert(lhsList.size()==1);
-			
+            if (!(inst instanceof ArrayOperations) && inst instanceof Expression) {
+                // Skip non assignments as they don't mean anything in Alloy
+                // if not skipped then this translation will be converted to
+                // be a fact in Alloy due to "and"ing
+                continue;
+            }
+            Translator instTranslator = new Translator(originalToOriginal);
+            inst.accept(instTranslator);
+
+            List<String> lhsList = new ArrayList<>();
+            lhsList.add(instTranslator.getResult().get(0));
+            List<String> rhsList = new ArrayList<>();
+
+            // This loop invariant change allows array name to be included.
+            for (int i = inst instanceof ArrayOperations ? 0 : 1; i < instTranslator.getResult().size(); i++) {
+                rhsList.add(instTranslator.getResult().get(i));
+            }
+            assert (lhsList.size() == 1);
+
 //			System.out.println("lhs List: " + lhsList.toString());
 //			System.out.println("lhs Updates: " + lhsOfUpdates.toString());
 //			System.out.println("rhs List: " + rhsList.toString());
 //			System.out.println("rhs Updates: " + rhsOfUpdates.toString());
-			
-			String lhs = updateToString(lhsList, lhsOfUpdates);
+
+            String lhs = updateToString(lhsList, lhsOfUpdates);
 			String rhs = updateToString(rhsList, rhsOfUpdates);
 //			System.out.println("Lhs String: " + lhs);
 //			System.out.println("rhs String: " + rhs);
@@ -845,26 +841,26 @@ public class Translator implements Visitor {
 		Array array = (Array) exp.getArray();
 		String arrayNameOriginal = array.getID();
 		String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
-		String lambdaType = values.getPrimitiveType(arrayNameOriginal);
+        String lambdaType = values.getPrimitiveType(arrayNameOriginal);
 
-		result.add("(");
-		result.add("(");
-		result.add("all ");
-		result.add("arrayElems: ");
-		result.add(arrayNameInAlloy);
-		result.add(".elems ");
-		result.add("| ");
-		result.add("arrayElems ");
-		result.add("= ");
-		result.add("{");
-		result.add("each: ");
-		result.add(lambdaType);
-		result.add(" | ");
-		result.add(insideTranslation);
-		result.add("}");
-		result.add(")");
-		result.add("=> True else False");
-		result.add(")");
+        result.add("(");
+        result.add("(");
+        result.add("all ");
+        result.add("arrayElems: ");
+        result.add(arrayNameInAlloy);
+        result.add(".elems ");
+        result.add("| ");
+        result.add("arrayElems ");
+        result.add(" in ");
+        result.add("{");
+        result.add("each: ");
+        result.add(lambdaType);
+        result.add(" | ");
+        result.add(insideTranslation);
+        result.add("}");
+        result.add(")");
+        result.add("=> True else False");
+        result.add(")");
 
 	}
 
@@ -877,45 +873,87 @@ public class Translator implements Visitor {
 		StringBuilder insideTranslationSB = new StringBuilder();
 		insideTranslationSB.append("(");
 		tr.result.forEach(insideTranslationSB::append);
-		insideTranslationSB.append(" in True").append(")");
-		String insideTranslation = insideTranslationSB.toString();
+        insideTranslationSB.append(" in True").append(")");
+        String insideTranslation = insideTranslationSB.toString();
 
-		Array array = (Array) exp.getArray();
-		String arrayNameOriginal = array.getID();
-		String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
-		String lambdaType = values.getPrimitiveType(arrayNameOriginal);
+        Array array = (Array) exp.getArray();
+        String arrayNameOriginal = array.getID();
+        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+        String lambdaType = values.getPrimitiveType(arrayNameOriginal);
 
-		result.add("(");
-		result.add("(");
-		result.add("all ");
-		result.add("arrayElems: ");
-		result.add(arrayNameInAlloy);
-		result.add(".elems ");
-		result.add("| ");
-		result.add("arrayElems ");
-		result.add("in ");
-		result.add("{");
-		result.add("each: ");
-		result.add(lambdaType);
-		result.add(" | ");
+        result.add("(");
+        result.add("(");
+        result.add("some ");
+        result.add("arrayElems: ");
+        result.add(arrayNameInAlloy);
+        result.add(".elems ");
+        result.add("| ");
+        result.add("arrayElems ");
+        result.add("in ");
+        result.add("{");
+        result.add("each: ");
+        result.add(lambdaType);
+        result.add(" | ");
 		result.add(insideTranslation);
-		result.add("}");
-		result.add(")");
-		result.add("=> True else False");
-		result.add(")");
+        result.add("}");
+        result.add(")");
+        result.add("=> True else False");
+        result.add(")");
 
-	}
+    }
 
-	// TODO :
-	// - FIX ALL SOME
-	// - FIX THE ISSUE WHEN PARSING INT Y = X - 1
-	// - IMPLEMENT ARRAY METHODS
+    // TODO :
+    // - FIX THE ISSUE WHEN PARSING INT Y = X - 1
+    // - IMPLEMENT ARRAY METHODS
+    // https://stackoverflow.com/questions/52690845/alloy-define-relation-to-only-positive-integers
 
 
-	@Override //TODO
-	public void visitAddToArray(AddToArray exp) {
+    @Override //TODO
+    public void visitAddToArray(AddToArray exp) {
+        Translator tr = new Translator(this.originalToAlloy);
+        Instruction inside = exp.getInside();
+        inside.accept(tr);
 
-	}
+        StringBuilder insideTranslationSB = new StringBuilder();
+        tr.result.forEach(insideTranslationSB::append);
+        String insideTranslation = insideTranslationSB.toString();
+
+        Array array = (Array) exp.getArray();
+        String arrayNameOriginal = array.getID();
+        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+
+//		result.add("(");
+        result.add(arrayNameInAlloy);
+        result.add(".add[");
+        result.add(insideTranslation);
+        result.add("]");
+//		result.add(")");
+    }
+
+    @Override //TODO
+    public void visitRemoveFromArray(RemoveFromArray exp) {
+        Translator tr = new Translator(this.originalToAlloy);
+        Instruction inside = exp.getInside();
+        inside.accept(tr);
+
+        StringBuilder insideTranslationSB = new StringBuilder();
+        tr.result.forEach(insideTranslationSB::append);
+        String insideTranslation = insideTranslationSB.toString();
+
+        Array array = (Array) exp.getArray();
+        String arrayNameOriginal = array.getID();
+        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+
+//		result.add("(");
+        result.add(arrayNameInAlloy);
+        result.add(".delete[");
+        result.add(arrayNameInAlloy);
+        result.add(".idxOf[");
+        result.add(insideTranslation);
+        result.add("]");
+        result.add("]");
+//		result.add(")");
+    }
 
 	@Override
 	public void visitEach(Each exp) {
