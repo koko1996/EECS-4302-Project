@@ -62,7 +62,7 @@ elseIf: 'else' 'if' '(' logicalOp ')' '{' multAssig '}'				# ElseIfConditional
 finaElse:  'else' '{' multAssig '}'									# ElseConditional
 	;
 
-multAssig: (assignment)+			# MultipleAssignments
+multAssig: (assignment|conditional)+			# MultipleAssignments
 		;
 
 assignment: ID	SEMICOLON					# IDExpression
