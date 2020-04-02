@@ -49,6 +49,7 @@ public class BooleanConstant extends Logical{
 	
     @Override
     public String toString() {
-		return Boolean.toString(value);
+    	String result = Boolean.toString(value);
+		return result.substring(0, 1).toUpperCase() + result.substring(1);
     }
 }

@@ -7,12 +7,8 @@ fun int test(int x, int y, bool z){
 }
 
 int x= 10;
-bool y;
 if_require(true)
 if(true){
-x = test(x,1,true);
-x = test(x,x,y);
-x=x+1;
-// x=x;
+x = test(5,x,true,true);
 }
 if_ensure(true)

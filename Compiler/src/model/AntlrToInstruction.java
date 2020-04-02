@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.Token;
 
@@ -71,15 +72,15 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private boolean checkDefined(String id, int line, int column) {
 		if (!values.containsKey(id)) {
 			semanticErrors
-					.add("Error: variable " + id + " has not been declared (line:" + line + ", column:" + column + ")");
+					.add("Error: variable or function with name " + id + " has not been declared (line:" + line + ", column:" + column + ")");
 			return false;
 		}
 		return true;
 	}
 
 	private boolean checkDefined(String id, String type, int line, int column) {
-		if (!values.containsKey(id)) {
-			semanticErrors.add("Error: variable " + id + " of type " + type + " has not been declared yet (line:" + line
+		if (!values.containsKey(id) || !values.getValue(id).getType().equals(type)) {
+			semanticErrors.add("Error: variable or function with name " + id + " of type " + type + " has not been declared yet (line:" + line
 					+ ", column:" + column + ")");
 			return false;
 		}
@@ -241,7 +242,14 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 						"Error: Right hand side of the expression has type " + rhsType + " but the left hand side has type "
 								+ lhsType + " (line:" + rhsIDLine + ", column:" + rhsColumnLine + ")");
 			} else {
-				Value newValue = new Value(values.getValue(rhsID));
+				 
+				if (rhsType.equals("Bool")){
+					expr = new BooleanVariable(rhsID, expr);
+				}else if (rhsType.equals("Int")){
+					expr = new IntegerVariable(rhsID, expr);
+				} 
+				
+				Value newValue = new Value(expr,rhsType);
 				values.put(lhsID, newValue);
 			}
 		}
@@ -258,9 +266,11 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		Expression exp = (Expression) visit(ctx.getChild(2));
 		String exprType ="";
 		if ((exp instanceof Logical | exp instanceof Relational)){
-			exprType = "bool";
+			exprType = "Bool";
 		} else if((exp instanceof Arithmetic)) {
-			exprType = "int";
+			exprType = "Int";
+		} else if((exp instanceof FunctionCall)) {
+			exprType = ((FunctionCall) exp ).getType();
 		}
 
 		if (checkDefined(id, exprType, line, column)) {
@@ -355,7 +365,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			id = id.substring(0, id.length() - this.oldSyntax.length());
 		}
 
-		if (checkDefined(id, "int", line, column)) {
+		if (checkDefined(id, "Int", line, column)) {
 			if (!values.getType(id).equals("Int")) {
 				semanticErrors.add("Error 3: The given ID has type " + values.getType(id) + " but the expceted type is "
 						+ "int" + " (line:" + line + ", column:" + column + ")");
@@ -480,7 +490,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			id = id.substring(0, id.length() - this.oldSyntax.length());
 		}
 
-		if (checkDefined(id, "bool", line, column)) {
+		if (checkDefined(id, "Bool", line, column)) {
 			if (!values.getType(id).equals("Bool")) {
 				semanticErrors.add("Error 5: The given ID has type " + values.getType(id) + " but the expceted type is "
 						+ "bool" + " (line:" + line + ", column:" + column + ")");
@@ -636,28 +646,61 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int column = idToken.getCharPositionInLine() + 1;
 
 		String id = ctx.ID().getText();
+		String type = "Int";
 		Instruction result = null;
-		List<Instruction> parameters = new ArrayList<>(); // somehow call visitDeclaration
+		List<Instruction> parameters = new ArrayList<>(); 
 		
-
 		if(checkDefined(id,line,column)){
+			type = this.values.getType(ctx.ID().getText());
+			FunctionConditional actualFunction = (FunctionConditional) values.getValue(id).getValue();
+			List<Instruction> actualParameters = actualFunction.getParameters();
+			int actualParametersCounter =0;
 			for(int i=0; i<ctx.getChild(2).getChildCount();i++){
 				Instruction instr = null;
+				String expectedType = "";
+				String actualType = "";
 				if(ctx.getChild(2).getChild(i) instanceof ExprParser.SingleParameterIDContext ){
 					String varName =ctx.getChild(2).getChild(i).getChild(0).getText();
 					if(checkDefined(varName, line, column)){
-						instr = this.values.getValue(varName).getValue();	
+						actualType = this.values.getValue(varName).getType();
+						if (actualType.equals("Bool")){
+							instr = new BooleanVariable(varName, this.values.getValue(varName).getValue());
+						}else if (actualType.equals("Int")){
+							instr = new IntegerVariable(varName, this.values.getValue(varName).getValue());
+						} 
 					}
 				} else {
 					instr = visit(ctx.getChild(2).getChild(i));
+					if(instr instanceof Arithmetic){
+						actualType  = "Int";
+					} else if (instr instanceof Logical) {
+						actualType  = "Bool";
+					}
 				}
 				if(instr !=null){
-					parameters.add(instr);	
+					if (actualParametersCounter>=actualParameters.size()){
+						semanticErrors.add("Error 4: expected number of arguments does not match the given number of arguments (line:" + line + ", column:" + column + ")");
+					} else {
+						Map<String, Value> actualParam = actualParameters.get(actualParametersCounter).getVariables();
+						assert(actualParam.keySet().size()==1);
+						for(String name: actualParam.keySet()){
+							expectedType = actualParam.get(name).getType();
+						}
+						if(expectedType.equals(actualType)) {
+								parameters.add(instr);				
+						} else {
+							semanticErrors.add("Error: expected type of the argument does not match the given expression (line:" + line + ", column:" + column + ")");
+						}
+						actualParametersCounter++;						
+					}
 				}
+			}
+			if((actualParametersCounter)!=actualParameters.size()){
+				semanticErrors.add("Error 3: expected number of arguments does not match the given number of arguments (line:" + line + ", column:" + column + ")");
 			}
 		}
 		
-		result = new FunctionCall(id, parameters);
+		result = new FunctionCall(id, type, parameters);
 		
 		return result; 
 	}

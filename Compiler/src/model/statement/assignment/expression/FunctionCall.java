@@ -15,10 +15,12 @@ import model.values.Value;
 public class FunctionCall extends Expression{
 
 	private String id;
+	private String type;
 	private List<Instruction>  parameters;
 
-	public FunctionCall(String id, List<Instruction> parameters) {
+	public FunctionCall(String id, String type, List<Instruction> parameters) {
 		this.id = id;
+		this.type = type;
 		this.parameters = parameters;
 	}
 	
@@ -36,13 +38,20 @@ public class FunctionCall extends Expression{
 		return parameters;
 	}
 
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
 	@Override
 	public Expression clone() {
 		List<Instruction> copyParameters = new ArrayList<>();
 		for(Instruction expr: this.parameters){
 			copyParameters.add(((Expression) expr).clone());
 		}
-		return new FunctionCall(id,copyParameters);
+		return new FunctionCall(id,type,copyParameters);
 	}
 
 	@Override
