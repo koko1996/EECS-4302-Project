@@ -9,12 +9,13 @@ fun int test(int x, int y, bool z){
 }
 
 int x= 10;
+int z = 2;
 bool y;
 if_require(true)
 if(true){
-//x = test(x,1,true);
-x = test(x,x,y);
+x = test(x,1,true);
+x = test(z,x,y);
 x=x+2;
-// x=x;
+x=x;
 }
 if_ensure(true)

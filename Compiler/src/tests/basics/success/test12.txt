@@ -4,7 +4,10 @@ if(x==0){
 x=1;
 if(x>0){
 	x=2;
+	if(x==2){
+		x=3;
+	}
 }
 
 }
-if_ensure(true)
+if_ensure(x_old == x)

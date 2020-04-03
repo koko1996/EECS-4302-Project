@@ -117,6 +117,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return super.visitStatement(ctx);
 	}
 
+	
+	
 	@Override
 	public Instruction visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx) {
 		Token idToken = ctx.ID().getSymbol();
@@ -129,9 +131,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (checkNotOLD(id, line, column)) {
 			if (checkNotDefined(id, line, column)) {
-				if (type.equals("Bool")) {
+				if (type.equals("Bool")) { // default value is false
 					value = new Value(new BooleanVariable(id, new BooleanConstant(false)), type);
-				} else if (type.equals("Int")) {
+				} else if (type.equals("Int")) { // default value is 0
 					value = new Value(new IntegerVariable(id,new IntegerConstant(0)), type);
 				} else {
 					throw new IllegalArgumentException("You probably should not get this exception.");
@@ -154,8 +156,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		Value value = null;
 
-		if (checkNotOLD(id, line, column)) { // check that it's name does not
-												// have "_old" in it
+		if (checkNotOLD(id, line, column)) { // check that it's name does not have "_old" in it
 			if (checkNotDefined(id, line, column)) {
 				Instruction rhs = visit(ctx.expression());
 				if ((rhs instanceof Logical && !type.equals("Bool"))
@@ -200,10 +201,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			if (checkNotDefined(lhsID, lhsIDLine, lhsColumnLine)) {
 				if (checkDefined(rhsID, lhsType, rhsIDLine, rhsColumnLine)) {
 					String rhsType = this.values.getType(rhsID);
-					rhsType = rhsType.substring(0, 1).toUpperCase() + rhsType.substring(1); // should
-																							// be
-																							// true
-																							// anyway
 					if (!rhsType.equals(lhsType)) {
 						semanticErrors.add("Error: Right hand side of the expression has type " + rhsType
 								+ " but the left hand side has type " + lhsType + " (line:" + rhsIDLine + ", column:"
@@ -248,7 +245,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				}else if (rhsType.equals("Int")){
 					expr = new IntegerVariable(rhsID, expr);
 				} 
-				
 				Value newValue = new Value(expr,rhsType);
 				values.put(lhsID, newValue);
 			}
@@ -361,7 +357,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String idOrig = ctx.ID().getText();
 		String id = idOrig;
 
-		if (id.contains(this.oldSyntax)) {
+		if (this.isEnsure && id.contains(this.oldSyntax)) {
 			id = id.substring(0, id.length() - this.oldSyntax.length());
 		}
 
@@ -486,7 +482,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String idOrig = ctx.ID().getText();
 		String id = idOrig;
 
-		if (id.contains(this.oldSyntax)) {
+		if (this.isEnsure && id.contains(this.oldSyntax)) {
 			id = id.substring(0, id.length() - this.oldSyntax.length());
 		}
 
@@ -597,7 +593,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		Instruction postCond = null;
 		Instruction assignments = null;
 		String returnVariable = null;
-		List<Instruction> parameters = new ArrayList<>(); // somehow call visitDeclaration
+		List<Instruction> parameters = new ArrayList<>();
 		
 		String name = ctx.getChild(2).getText();
 		String returnType = ctx.getChild(1).getText();
@@ -623,7 +619,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			int returncolumn = returnToken.getCharPositionInLine() + 1;
 			
 			if(checkDefined(returnVariable, returnline, returncolumn)){
-				if( (returnType.equals("int") && !(values.getType(returnVariable).equals("Int"))) || (returnType.equals("bool") && !(values.getType(returnVariable).equals("Bool")) ) ){
+				if( (returnType.equals("Int") && !(values.getType(returnVariable).equals("Int"))) || (returnType.equals("Bool") && !(values.getType(returnVariable).equals("Bool")) ) ){
 					semanticErrors.add("Error: return type of function " + name + " does not match the returned expression (line:" + returnline + ", column:" + returncolumn + ")");
 				}
 			}			
