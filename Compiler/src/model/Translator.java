@@ -45,13 +45,17 @@ import model.values.Values;
 import model.values.ValuesGlobal;
 import utils.Pair;
 
+/*
+ * Translator visitor calls to translate from input language to Alloy
+ * Some functions are protected for TranslatorTest to be able to unit test them
+ */
 public class Translator implements Visitor {
 
 	private int functionsTranslated;				// current number of functions translated
 	
 	private int ifStatementsTranslated;				// current number of if statements translated
  
-	private Map<String,String> functionsDefined;	// Mapping from original function names to their  
+	protected Map<String,String> functionsDefined;	// Mapping from original function names to their  
 													// Alloy counterpart
 	private Map<String, String> originalToAlloy;	// container to hold the variable name mapping 
 													// from  original name to alloy name
@@ -161,31 +165,15 @@ public class Translator implements Visitor {
 		return resultMaxUsed;
 	}
 
-
-	/**
-	 * Helper function to get the names of all additional variables used in Alloy
-	 * that correspond to a specific variable in the input language it calculates
-	 * the result by finding all possible variable names between names of parameter
-	 * val and parameter largestVal
-	 * @param val String representing the initial corresponding name for a variable
-	 * @param largestVal representing the final version of the name for the 
-	 * corresponding variable
-	 * @return List of String that represent the names of the variables in Alloy
-	 * 
-	 * For Example: val="arg1", largestVal="arg1'''" return=["arg1'","arg1''","arg1'''"] 
-	**/
-	public List<String> listOfVariablesUsed(String val, String largestVal){
-		List<String> result = new ArrayList<>();
-		if (largestVal.equals(val)){
-			return result;
-		}
-		while(largestVal.startsWith(val) && !largestVal.equals(val)){
-			val += "'";
-			result.add(val);
-		}
-		return result;
-	}
 	
+	/**
+	 * Helper function to map the given names of variables to their alloy names
+	 * It skips the variables that contain "_old" in their original names 
+	 * @param vars Set of variable names (original names)
+	 * @return Map that maps original name to alloy name
+	 * 
+	 * For Example: vars={"x","x_old","y"}, return={"x":"arg1","y":"arg2"} 
+	**/
 	private Map<String, String> originalToAlloyCalculator(Set<String> vars) {
 		Map<String, String> result= new HashMap<>(); 
 		int counter = 1;
@@ -200,81 +188,46 @@ public class Translator implements Visitor {
 		return result;
 	}
 	
-	private Map<String, Integer> functionParamCount(FunctionConditional actualFunction){
-		Map<String, Value> vars = actualFunction.getVariables();
-		
-		Map<String, String> preOriginalToAlloy = originalToAlloyCalculator(vars.keySet());
-		Map<String, String> postOriginalToAlloy = new HashMap<>();
-		Map<String, Integer> originalParamCount = new HashMap<>();
-		
-		for(String each:preOriginalToAlloy.keySet() ){
-			originalParamCount.put(preOriginalToAlloy.get(each), 1);					
+	/**
+	 * Helper function that removes the last appearance of symbol in sb if there is any 
+	 * 
+	 * @param sb StringBuilder to remove from the symbol
+	 * @param symbol String representing the symbol to remove   
+	 * 
+	**/
+	private void removeLastAppearanceOfSymbol(StringBuilder sb, String symbol){
+		if(sb.lastIndexOf(symbol)!=-1){
+			sb.deleteCharAt(sb.lastIndexOf(symbol));
 		}
-		
-		Map<String,String> tmpLhsOfUpdates = new HashMap<>();
-		Map<String,String> tmpRhsOfUpdates = new HashMap<>();
-
-		for(String key:preOriginalToAlloy.keySet()){
-			tmpLhsOfUpdates.put(key,preOriginalToAlloy.get(key)+"'");
-		}
-		for(String key:preOriginalToAlloy.keySet()){
-			tmpRhsOfUpdates.put(key,preOriginalToAlloy.get(key));
-		}
-		Translator assignmentsTranslator = new Translator(preOriginalToAlloy, functionsDefined,tmpLhsOfUpdates,tmpRhsOfUpdates);
-		actualFunction.getAssignments().accept(assignmentsTranslator);
-		
-		postOriginalToAlloy.putAll(preOriginalToAlloy);
-		updateToLargestMapping(postOriginalToAlloy,assignmentsTranslator.getResultMaxUsed());
-		
-		for (String key : preOriginalToAlloy.keySet()) {
-			String alloyVar = preOriginalToAlloy.get(key);
-			List<String> remainingVars = listOfVariablesUsed(alloyVar,postOriginalToAlloy.get(key));	
-			for(String each : remainingVars){
-				originalParamCount.put(alloyVar, originalParamCount.get(alloyVar)+1);
-			}
-		}
-		
-		return originalParamCount;
-		
 	}
 	
-	@Override
-	public void visitFunctionCall(FunctionCall exp) {
-		FunctionConditional actualFunction = (FunctionConditional) values.getValue(exp.getId()).getValue();
-		List<Instruction> expectedParameters = actualFunction.getParameters();
-		List<Instruction> passedParameters = exp.getParameters();
-		Map<String, Instruction> actualFunctionTofunctionCall= new HashMap<>();
-		
-		for(int i=0;i<expectedParameters.size();i++){
-			actualFunctionTofunctionCall.put(((VariableInitialization) expectedParameters.get(i)).getID(),passedParameters.get(i));
-		}
-		
-		Map<String, String> preOriginalToAlloy = originalToAlloyCalculator(actualFunction.getVariables().keySet());
-		
-		Map<String, Integer> originalParamCount = functionParamCount(actualFunction);
-				
-		
-		this.result.add(exp.getId());
-		this.result.add("[");
-		
-		for (String key : preOriginalToAlloy.keySet()) {
-			String alloyVar = preOriginalToAlloy.get(key);			
-			for ( int i=0;i<originalParamCount.get(alloyVar);i++){
-				Instruction res = actualFunctionTofunctionCall.get(key);
-				Translator tr = new Translator(originalToAlloy, functionsDefined,lhsOfUpdates,rhsOfUpdates);
-				res.accept(tr);
-				this.result.addAll(tr.getResult());
-				this.result.add(",");
+	/**
+	 * Helper function to update the value of the keys in the givenMapping map based
+	 * on their largest updated values in the newMapping map  
+	 * @param resultMaxUsed Map<String,String> the map to be updates   
+	 * @param key the key for which the value will be updated
+	 * @param newValue the newValue 
+	 * 
+	 * For Example: resultMaxUsed={"x":"arg1","y":"arg2"}, key="x", newValue="arg1'''" 
+	 * => (After updateMaxUsed is done) resultMaxUsed={"x":"arg1'''","y":"arg2"}
+	**/
+	private void updateMaxUsed(Map<String,String> resultMaxUsed, String key, String newValue){
+		if(resultMaxUsed.containsKey(key)){
+			if(newValue.startsWith(resultMaxUsed.get(key)) && resultMaxUsed.get(key).length()<newValue.length()){
+				resultMaxUsed.put(key, newValue);
 			}
 		}
-		if (this.result.lastIndexOf(",") != -1){
-			this.result.remove(this.result.lastIndexOf(","));	
-		}
-
-		this.result.add("] ");
-				
 	}
 	
+	/**
+	 * Helper function to create a string builder object consisting of the 
+	 * assignments in the given assignments Map 
+	 * @param assignment Map that indicates assignments (i.e. key=value) 
+	 * @return StringBuilder which represents parsing of this assignments
+	 * 
+	 * For Example: assignments{"arg1'":"arg2.add[2]","arg2'":"1"}
+	 * return= "arg1'=arg2.add[2] and arg2'=1" 
+	**/
 	private StringBuilder assignmentsToString(Map<String,String> assignments){
 		StringBuilder result = new StringBuilder();		
 		result.append("(("+ trueInAlloy +") in True)");
@@ -289,7 +242,14 @@ public class Translator implements Visitor {
 		return result;
 	}
 	
-	
+	/**
+	 * Helper function to create a add the assignments in the given assignments
+	 * Map into the result array passed as an argument  
+	 * @param assignment Map that indicates assignments (i.e. key=value) 
+	 * 
+	 * For Example: assignments{"arg1'":"arg2.add[2]","arg2'":"1"}
+	 * result=result + ["arg1'", "=", "arg2.add[2]", " and ", "arg2'", "=", "1"] 
+	**/
 	private void assignmentsToString(List<String> result,Map<String,String> assignments){ 
 		for (String key : assignments.keySet()) {
 			this.result.add(" and ");
@@ -302,170 +262,18 @@ public class Translator implements Visitor {
 	}
 	
 	/**
-	 * Helper function to update the values in the given list with their corresponding 
-	 * keys (which represent their updated values) in the given map and converts it to
-	 * string
-	 * @param origOutput list of strings to be updated
-	 * @param updates Map<String,String> that maps keys to their corresponding new values
-	 * 
-	 * For Example: origOutput=["x","+","y","-","5"]   updates={"x":"arg1'",y="arg2''"}
-	 * result = "arg1'+arg2''-5" 
+	 * Helper function that updates the passed StringBuilders to contait parameters
+	 *  
+	 * @param preOriginalToAlloy Map<String,String> maps the original names to their alloy counterparts
+	 * before assignments
+	 * @param postOriginalToAlloy Map<String,String> maps the original names to their alloy counterparts
+	 * after the assignments
+	 * @param vars Map<String,Value> list variables to use
+	 * @param predParamSB StringBuilder that will contain the parameters for alloy predicate
+	 * @param forAllParamSB StringBuilder that will contain the parameters for alloy for all statement
+	 * @param forSomeParamSB StringBuilder that will contain the parameters for alloy for some statement
+	 * @param predInputParamSB StringBuilder that will contain the parameters for alloy predicate call (i.e. predParamSB)
 	**/
-	private String updateToString(List<String> origOutput, Map<String,String> updates, Map<String,String> otherUpdates, Map<String,String> resultMaxUsed){
-		StringBuilder result = new StringBuilder();
-		for(int i=0; i<origOutput.size();i++){
-			String str = origOutput.get(i);
-			if (this.functionsDefined.containsKey(str)){
-				result.append(this.functionsDefined.get(str));
-				i++;
-				List<String> parameters = new ArrayList<>();
-				while((i+1)<origOutput.size() && !origOutput.get(i).equals("]")){
-					parameters.add(origOutput.get(i));
-					i++;
-				}
-				parameters.add(origOutput.get(i));
-				result.append(updateFunctionParameters(str,parameters,updates, otherUpdates,resultMaxUsed));
-			}else if(updates.containsKey(str)){
-				result.append(updates.get(str));	
-			} else {
-				result.append(str);
-			}
-		}
-		return result.toString();
-	}
-	
-	
-	
-	private String updateFunctionParameters(String functionName, List<String> origOutput, Map<String,String> rhsOfUpdates, Map<String,String> lhsOfUpdates, Map<String,String> resultMaxUsed){				
-		FunctionConditional actualFunction = (FunctionConditional) values.getValue(functionName).getValue();
-		Map<String,Integer> functionParamCount = functionParamCount(actualFunction);
-		List<Integer> functionParamCounter = new ArrayList<>();
-		for (String key: functionParamCount.keySet()){
-			functionParamCounter.add(functionParamCount.get(key));
-		}
-		Pair<Integer,Integer> currIndex = new Pair<>(0,0); // Variable -> curIndex
-		
-		StringBuilder result = new StringBuilder();
-		
-		for(String str:origOutput){
-			if(rhsOfUpdates.containsKey(str)){
-				if (currIndex.getR()==0){
-					result.append(rhsOfUpdates.get(str));
-					updateMaxUsed(resultMaxUsed, str, rhsOfUpdates.get(str));
-				} else {	
-					result.append(lhsOfUpdates.get(str));
-					updateMaxUsed(resultMaxUsed, str, lhsOfUpdates.get(str));
-					lhsOfUpdates.put(str,lhsOfUpdates.get(str)+"'");
-				}
-				currIndex.setR(currIndex.getR()+1);
-				if (currIndex.getR() == functionParamCounter.get(currIndex.getL())){
-					currIndex.setL(currIndex.getL()+1);
-					currIndex.setR(0);	
-				}
-			} else {
-				result.append(str);
-			}
-		}
-		return result.toString();
-	}
-	
-	
-	private void updateMaxUsed(Map<String,String> resultMaxUsed, String key, String newValue){
-		if(resultMaxUsed.containsKey(key)){
-			if(newValue.startsWith(resultMaxUsed.get(key)) && resultMaxUsed.get(key).length()<newValue.length()){
-				resultMaxUsed.put(key, newValue);
-			}
-		}
-	}
-	
-	private void updateMaxUsed(Map<String,String> lhsResultMaxUsed, Map<String,String> rhsResultMaxUsed){
-		for(String key: lhsResultMaxUsed.keySet()){
-			if(rhsResultMaxUsed.containsKey(key)){
-				if(rhsResultMaxUsed.get(key).startsWith(lhsResultMaxUsed.get(key)) && lhsResultMaxUsed.get(key).length()<rhsResultMaxUsed.get(key).length()){
-					lhsResultMaxUsed.put(key, rhsResultMaxUsed.get(key));
-				}
-			} else {
-				System.out.println("I was not expecting this to happen");
-			}
-		}
-	}
-	
-	/**
-	 * Helper function to update the values in the given map. It goes through all the keys until it
-	 * finds a key with a value that is a prefix of the given newValue and replaces that value with
-	 * the newValue 
-	 * @param originalToAlloy Map<String,String>  maps the original names to their alloy counterparts
-	 * @param newValue String representing the new value to replace the original value  
-	 * 
-	 * For Example: originalToAlloy={"x":"arg1","y":"arg2"} newValue="arg2'''" => Map={"x":"arg1","y":"arg2'''"}  
-	**/
-	private void originalToAlloyUpdateValues (Map<String, String> originalToAlloy, String newValue) {
-		for(String key:originalToAlloy.keySet()){
-			if(newValue.startsWith(originalToAlloy.get(key))){
-				originalToAlloy.put(key, newValue);
-				break;
-			}
-		}
-	}
-	
-
-	/**
-	 * Helper function to update the value of the keys in the givenMapping map based
-	 * on their largest updated values in the newMapping map  
-	 * @param givenMapping Map<String,String> the values of which will be updated   
-	 * @param newMapping Map<String,String> that contains the new values for mapping
-	 * 
-	 * For Example: givenMapping={"x":"arg1","y":"arg2"}, newMapping={"arg1'":"3",
-	 * "arg1''":"5","arg2'":"13","arg2''":"1","arg2'''":"31"} 
-	 * => (After updateMapping is done) givenMapping={"x":"arg1''","y":"arg2'''"}
-	**/
-	public void updateToLargestMapping(Map<String, String> givenMapping, Map<String, String> newMapping) {
-		for (String key : givenMapping.keySet()) {
-			String newValue = newMapping.get(key);
-			if(newValue.startsWith(givenMapping.get(key))){
-				givenMapping.put(key, newValue);
-			}
-		}
-	}
-	
-	/**
-	 * Helper function that returns a map containing the missing assignments for variables
-	 * used in the postcondition statement  
-	 * @param originalToAlloy Map<String,String> maps the original names to their alloy counterparts
-	 * @param alloyAssignments Map<String,String> maps the original names to their alloy counterparts
-	 * used in a specific multiassignment body
-	 * @param originalToLargesAlloy Map<String,String> maps the original names to their alloy counterparts
-	 * in the all if/elseif/els statement bodies (for a specific if statement)   
-	 * 
-	 * For Example: originalToAlloy={"x":"arg1","y":"arg2"}, alloyAssignments={"arg1'":"3",
-	 * ,"arg2'":"13"} and originalToLargesAlloy = {"x":"arg1'","y":"arg2'''"}
-	 * => result = {"arg1'''","arg1'"}
-	**/
-	public Map<String, String> largestValueMap(Map<String, String> originalToAlloy, Map<String, String> alloyAssignments, Map<String, String> originalToLargesAlloy) {
-		Map<String, String> result = new HashMap<>();
-		for (String key : originalToAlloy.keySet()) {
-			String alloyValue = originalToAlloy.get(key);
-			String largestAlloyRunning = alloyValue;
-			for(String newAlloyValue : alloyAssignments.keySet()){
-				if(alloyAssignments.get(newAlloyValue)!= null){
-					if (newAlloyValue.startsWith(alloyValue) && newAlloyValue.length()>largestAlloyRunning.length()){
-						largestAlloyRunning = newAlloyValue;
-					}	
-				}
-			}
-			if(originalToLargesAlloy.get(key).compareTo(largestAlloyRunning)>0){
-				result.put(originalToLargesAlloy.get(key),largestAlloyRunning);
-			}
-		}
-		return result;
-	}
-	
-	private void removeLastAppearanceOfSymbol(StringBuilder sb, String symbol){
-		if(sb.lastIndexOf(symbol)>=0){
-			sb.deleteCharAt(sb.lastIndexOf(symbol));
-		}
-	}
-	
 	private void alloyParametersCalculator(Map<String,String> preOriginalToAlloy, Map<String,String> postOriginalToAlloy, Map<String,Value> vars, StringBuilder predParamSB,
 			StringBuilder forAllParamSB, StringBuilder forSomeParamSB, StringBuilder predInputParamSB){
 		for (String key : preOriginalToAlloy.keySet()) {
@@ -496,7 +304,273 @@ public class Translator implements Visitor {
 		removeLastAppearanceOfSymbol(forSomeParamSB,",");
 		removeLastAppearanceOfSymbol(predInputParamSB,",");
 	}
+	 
 	
+	/**
+	 * Helper function to get the names of all additional variables used in Alloy
+	 * that correspond to a specific variable in the input language it calculates
+	 * the result by finding all possible variable names between names of parameter
+	 * val and parameter largestVal
+	 * @param val String representing the initial corresponding name for a variable
+	 * @param largestVal representing the final version of the name for the 
+	 * corresponding variable
+	 * @return List of String that represent the names of the variables in Alloy
+	 * 
+	 * For Example: val="arg1", largestVal="arg1'''" return=["arg1'","arg1''","arg1'''"] 
+	**/
+	protected List<String> listOfVariablesUsed(String val, String largestVal){
+		List<String> result = new ArrayList<>();
+		if (largestVal.equals(val)){
+			return result;
+		}
+		while(largestVal.startsWith(val) && !largestVal.equals(val)){
+			val += "'";
+			result.add(val);
+		}
+		return result;
+	}
+
+	/**
+	 * formerly named updateMaxUsed
+	 * Helper function to update the values in the lhsResultMaxUsed
+	 * with values in rhsResultMaxUsed (if rhsResultMaxUsed has higher values)
+	 * @param lhsResultMaxUsed Map<String,String> to be updated   
+	 * @param rhsResultMaxUsed Map<String,String> to use the values for the update   
+	 * 
+	 * For Example: lhsResultMaxUsed={"x":"arg1","y":"arg2'"}, rhsResultMaxUsed={"x":"arg1''","y":"arg2"} 
+	 * => (After updateMaxUsed is done) lhsResultMaxUsed={"x":"arg1''","y":"arg2'"}
+	**/
+	
+	protected void updateToLargestMapping(Map<String,String> lhsResultMaxUsed, Map<String,String> rhsResultMaxUsed){
+		for(String key: lhsResultMaxUsed.keySet()){
+			if(rhsResultMaxUsed.containsKey(key)){
+				if(rhsResultMaxUsed.get(key).startsWith(lhsResultMaxUsed.get(key)) && lhsResultMaxUsed.get(key).length()<rhsResultMaxUsed.get(key).length()){
+					lhsResultMaxUsed.put(key, rhsResultMaxUsed.get(key));
+				}
+			}
+		}
+	}	
+	
+	/**
+	 * Helper function that returns a map containing the missing assignments for variables
+	 * used in the postcondition statement  
+	 * @param alloyAssignments Map<String,String> maps the original names to their alloy counterparts
+	 * used in a specific multiassignment body
+	 * @param originalToLargestAlloy Map<String,String> maps the original names to their largest alloy counterparts   
+	 * 
+	 * For Example: originalToAlloy={"x":"arg1","y":"arg2"}, alloyAssignments={"x":"arg1","y":"arg2'"}
+	 * and originalToLargestAlloy = {"x":"arg1","y":"arg2''"}
+	 * => result = {"arg2''","arg2'"}
+	**/
+	protected Map<String, String> largestValueMap(Map<String,String> lhsResultMaxUsed, Map<String,String> rhsResultMaxUsed){
+		Map<String, String> result = new HashMap<>();
+		for(String key: lhsResultMaxUsed.keySet()){
+			if(rhsResultMaxUsed.containsKey(key)){
+				if(rhsResultMaxUsed.get(key).startsWith(lhsResultMaxUsed.get(key)) && lhsResultMaxUsed.get(key).length()<rhsResultMaxUsed.get(key).length()){
+					result.put(rhsResultMaxUsed.get(key),lhsResultMaxUsed.get(key));
+				}
+			}
+		}	
+		return result;
+	}
+	
+	/**
+	 * Helper function to update the values in the given list origOutput with their 
+	 * corresponding keys (which represent their updated values) in the given map 
+	 * and converts it to string
+	 * @param origOutput list of strings to be updated
+	 * @param updates Map<String,String> that maps keys to their corresponding new values
+	 * @param otherUpdates Map<String,String> that maps keys to their corresponding new values
+	 * otherUpdates is only used as an argument to updateFunctionParameters
+	 * @param maxUsed Map<String,String> that maps keys to their corresponding maximum new values
+	 * resultMaxUsed is only used as an argument to updateFunctionParameters
+	 * 
+	 * For Example: origOutput=["x","+","y","-","5"]   updates={"x":"arg1'",y="arg2''"}
+	 * result = "arg1'+arg2''-5"
+	 *
+	 * Note: If origOutput contains a function call we handle it differently than regular
+	 * variables 
+	**/
+	protected String updateToString(List<String> origOutput, Map<String,String> updates, Map<String,String> otherUpdates, Map<String,String> resultMaxUsed){
+		StringBuilder result = new StringBuilder();
+		for(int i=0; i<origOutput.size();i++){
+			String str = origOutput.get(i);
+			// Special case if the str is a function name (i.e it is a function call)
+			if (this.functionsDefined.containsKey(str)){
+				result.append(this.functionsDefined.get(str));
+				i++;
+				// Get the parameters of this function call
+				// And update the values of this parameters
+				// using updateFunctionParameters helper function
+				List<String> parameters = new ArrayList<>();
+				// since we know that we are parsing a function call
+				// the parameters are everythin until we hit the first "]"
+				// example of a function call in originalOutput 
+				// is [ "test", "[", "x", "y", "z", "]" ]
+				while((i+1)<origOutput.size() && !origOutput.get(i).equals("]")){
+					parameters.add(origOutput.get(i));
+					i++;
+				}
+				parameters.add(origOutput.get(i)); // add the closing bracket "]"
+				result.append(updateFunctionParameters(str,parameters,updates, otherUpdates,resultMaxUsed));
+			}else if(updates.containsKey(str)){
+				result.append(updates.get(str));	
+			} else {
+				result.append(str);
+			}
+		}
+		return result.toString();
+	}
+	
+	
+	/**
+	 * Helper function to map the parameter names to the number of times they get
+	 * reassigned in the actualFunction body (i.e. sequential composition) 
+	 * @param actualFunction FunctionConditional object to count the parameters 
+	 * @return Map that maps the variable names to their counts
+	 * 
+	 * For Example: acutalFunction["x","x","y"], return={"x":2,"y":1} 
+	**/
+	protected Map<String, Integer> functionParamCount(FunctionConditional actualFunction){
+		Map<String, Value> vars = actualFunction.getVariables();
+		Map<String, String> preOriginalToAlloy = originalToAlloyCalculator(vars.keySet());
+		Map<String, String> postOriginalToAlloy = new HashMap<>();	// will hold the mapping after assignments
+		Map<String, Integer> originalParamCount = new HashMap<>();	// will hold the function parameter counts
+		
+		for(String each:preOriginalToAlloy.keySet() ){
+			originalParamCount.put(preOriginalToAlloy.get(each), 1);					
+		}
+		
+		Map<String,String> tmpLhsOfUpdates = new HashMap<>();
+		Map<String,String> tmpRhsOfUpdates = new HashMap<>();
+
+		for(String key:preOriginalToAlloy.keySet()){
+			tmpLhsOfUpdates.put(key,preOriginalToAlloy.get(key)+"'");
+		}
+		for(String key:preOriginalToAlloy.keySet()){
+			tmpRhsOfUpdates.put(key,preOriginalToAlloy.get(key));
+		}
+		// Visit the assignments of the actual function
+		Translator assignmentsTranslator = new Translator(preOriginalToAlloy, functionsDefined,tmpLhsOfUpdates,tmpRhsOfUpdates);
+		actualFunction.getAssignments().accept(assignmentsTranslator);
+		
+		// update the postOriginalToAlloy mapping
+		postOriginalToAlloy.putAll(preOriginalToAlloy);
+		updateToLargestMapping(postOriginalToAlloy,assignmentsTranslator.getResultMaxUsed());
+		
+		// calculate the number of times each parameter has been reassigned (i.e used) in the 
+		// body of the actual function
+		for (String key : preOriginalToAlloy.keySet()) {
+			String alloyVar = preOriginalToAlloy.get(key);
+			List<String> remainingVars = listOfVariablesUsed(alloyVar,postOriginalToAlloy.get(key));	
+			for(String each : remainingVars){
+				originalParamCount.put(alloyVar, originalParamCount.get(alloyVar)+1);
+			}
+		}
+		return originalParamCount;
+	}
+
+	
+	/**
+	 * Helper function to update the special case of mapping. Which is mapping  
+	 * a function call expression 
+	 * 
+	 * @param functionName represents the name of the function that is being called
+	 * @param origOutput list of strings to be updated (represents the paramters in a
+	 * function call)
+	 * @param rhsOfUpdates Map<String,String> that maps keys to their last used alloy name that
+	 * appeared on the lhs of an assignment
+	 * @param lhsOfUpdates Map<String,String> that maps keys to their next available alloy name
+	 * @param maxUsed Map<String,String> that maps keys to their maximum used alloy name 
+	 * 
+	 * 
+	 *
+	**/
+	protected String updateFunctionParameters(String functionName, List<String> origOutput, Map<String,String> rhsOfUpdates, Map<String,String> lhsOfUpdates, Map<String,String> resultMaxUsed){				
+		FunctionConditional actualFunction = (FunctionConditional) values.getValue(functionName).getValue();
+		Map<String,Integer> functionParamCount = functionParamCount(actualFunction);
+		
+		List<Integer> functionParamCounter = new ArrayList<>();  // Helper counter to know which parameter to update next
+		for (String key: functionParamCount.keySet()){
+			functionParamCounter.add(functionParamCount.get(key));
+		}
+		
+		Pair<Integer,Integer> currIndex = new Pair<>(0,0); // Pair left represent the current Variable ->
+														   // Pair right represents the curIndex in that variable
+		StringBuilder result = new StringBuilder();
+		
+		for(String str:origOutput){
+			if(rhsOfUpdates.containsKey(str)){
+				if (currIndex.getR()==0){		
+					// this is the first appearance of str variable
+					// therefore use the mapping in the rhsOfUpdates
+					// because this mapping will contain the alloy variable
+					// that will have a value assigned to it in alloy
+					result.append(rhsOfUpdates.get(str));
+					updateMaxUsed(resultMaxUsed, str, rhsOfUpdates.get(str));
+				} else {
+					// this is the not first appearance of str variable
+					// therefore use the mapping in the lhsOfUpdates
+					// because this mapping will contain the alloy variable
+					// that is available to use and no value is assigned to 
+					// it in alloy
+					result.append(lhsOfUpdates.get(str));
+					updateMaxUsed(resultMaxUsed, str, lhsOfUpdates.get(str));
+					// update the lhsOfUpdates to move on to the next available
+					// alloy variable name
+					lhsOfUpdates.put(str,lhsOfUpdates.get(str)+"'");
+				}
+				// update the index so that we know what we parsed so far
+				// and how to parse the next str in the origOutput
+				currIndex.setR(currIndex.getR()+1);
+				if (currIndex.getR() == functionParamCounter.get(currIndex.getL())){
+					currIndex.setL(currIndex.getL()+1);
+					currIndex.setR(0);	
+				}
+			} else {
+				result.append(str);
+			}
+		}
+		return result.toString();
+	}
+	
+	
+	@Override
+	public void visitFunctionCall(FunctionCall exp) {
+		FunctionConditional actualFunction = (FunctionConditional) values.getValue(exp.getId()).getValue();
+		List<Instruction> expectedParameters = actualFunction.getParameters();
+		List<Instruction> passedParameters = exp.getParameters();
+		Map<String, Instruction> actualFunctionTofunctionCall= new HashMap<>();
+		
+		for(int i=0;i<expectedParameters.size();i++){
+			actualFunctionTofunctionCall.put(((VariableInitialization) expectedParameters.get(i)).getID(),passedParameters.get(i));
+		}
+		
+		Map<String, String> preOriginalToAlloy = originalToAlloyCalculator(actualFunction.getVariables().keySet());
+		
+		Map<String, Integer> originalParamCount = functionParamCount(actualFunction);
+				
+		
+		this.result.add(exp.getId());
+		this.result.add("[");
+		
+		for (String key : preOriginalToAlloy.keySet()) {
+			String alloyVar = preOriginalToAlloy.get(key);			
+			Instruction res = actualFunctionTofunctionCall.get(key);
+			Translator tr = new Translator(originalToAlloy, functionsDefined,lhsOfUpdates,rhsOfUpdates);
+			res.accept(tr);
+			for ( int i=0;i<originalParamCount.get(alloyVar);i++){
+				this.result.addAll(tr.getResult());
+				this.result.add(",");
+			}
+		}
+		if (this.result.lastIndexOf(",") != -1){
+			this.result.remove(this.result.lastIndexOf(","));	
+		}
+
+		this.result.add("] ");
+				
+	}
 	
 	@Override
 	public void visitFucntionConditional(FunctionConditional exp){
@@ -544,7 +618,6 @@ public class Translator implements Visitor {
 		exp.getAssignments().accept(assignmentsTranslator);
 		this.resultMaxUsed.putAll(assignmentsTranslator.getResultMaxUsed());
 		assert(tmppreOriginalToAlloy.equals(preOriginalToAlloy));	
-//		postOriginalToAlloy.putAll(preOriginalToAlloy);
 		
 		// update the post OriginalToAlloy map so that we use the latest
 		// version of a variable in Alloy (i.e. use arg1' instead of arg1)
@@ -561,15 +634,15 @@ public class Translator implements Visitor {
 	
 		StringBuilder assignmentsOfFunctionInAlloySB = new StringBuilder();
 		assignmentsOfFunctionInAlloySB.append("\t{ ").append(returnVariableNameInAlloy).append(" : ").append(returnType);
-		assignmentsOfFunctionInAlloySB.append(" | ").append(assignmentsTranslatedString).append(" and \n");
+		assignmentsOfFunctionInAlloySB.append(" | ").append(assignmentsTranslatedString).append(" and ");
 		assignmentsOfFunctionInAlloySB.append(returnVariableNameInAlloy).append(" = ").append(postOriginalToAlloy.get(returnVariableName));
 		assignmentsOfFunctionInAlloySB.append("}\n");
 		String assignmentsOfFunctionInAlloyString = assignmentsOfFunctionInAlloySB.toString();
 		
 		
-		System.out.println("assignments: " + assignmentsTranslator.getResultMap().toString());
-		System.out.println("preOriginalToAlloy: " + preOriginalToAlloy.toString());
-		System.out.println("postOriginalToAlloy: " + postOriginalToAlloy.toString());
+//		System.out.println("assignments: " + assignmentsTranslator.getResultMap().toString());
+//		System.out.println("preOriginalToAlloy: " + preOriginalToAlloy.toString());
+//		System.out.println("postOriginalToAlloy: " + postOriginalToAlloy.toString());
 		
 		Translator postcondTranslator = new Translator(postOriginalToAlloy,functionsDefined,lhsOfUpdates,rhsOfUpdates);
 		exp.getPostCond().accept(postcondTranslator);
@@ -598,7 +671,7 @@ public class Translator implements Visitor {
 		funSignitureSB.append("fun ").append(functionName);
 		funSignitureSB.append(" [").append(predParamSB).append("] : ");
 		funSignitureSB.append(returnType).append(" {\n");
-		funSignitureSB.append("\t").append(assignmentsOfFunctionInAlloyString).append("\n");
+		funSignitureSB.append(assignmentsOfFunctionInAlloyString);
 		funSignitureSB.append("}\n\n");
 	
 		
@@ -651,7 +724,7 @@ public class Translator implements Visitor {
 		assert(tmppreOriginalToAlloy.equals(preOriginalToAlloy));
 		
 		this.resultMaxUsed.putAll(ifStatementTranslator.getResultMaxUsed());
-		for(String key: ifStatementTranslator.getResultMap().keySet() ){
+		for(String key: preOriginalToAlloy.keySet() ){
 			postOriginalToAlloy.put(key + "_old", preOriginalToAlloy.get(key));
 			postOriginalToAlloy.put(key , rhsOfUpdates.get(key));
 		}
@@ -662,9 +735,9 @@ public class Translator implements Visitor {
 		String ifStatementTranslatedString = ifStatementSB.toString();
 
 	
-		System.out.println("assignments: " + ifStatementTranslator.getResultMap().toString());
-		System.out.println("preOriginalToAlloy: " + preOriginalToAlloy.toString());
-		System.out.println("postOriginalToAlloy: " + postOriginalToAlloy.toString());
+//		System.out.println("assignments: " + ifStatementTranslator.getResultMap().toString());
+//		System.out.println("preOriginalToAlloy: " + preOriginalToAlloy.toString());
+//		System.out.println("postOriginalToAlloy: " + postOriginalToAlloy.toString());
 		
 		Translator postcondTranslator = new Translator(postOriginalToAlloy,functionsDefined,lhsOfUpdates,rhsOfUpdates);
 		exp.getPostCond().accept(postcondTranslator);
@@ -706,27 +779,37 @@ public class Translator implements Visitor {
 	public void visitIfConditional(IfElseIfStatement exp) {
 		Translator conditionTranslator = new Translator(originalToAlloy,functionsDefined,lhsOfUpdates,rhsOfUpdates);
 		exp.getCondition().accept(conditionTranslator);
-
-		Translator ifTranslator = new Translator(originalToAlloy,functionsDefined,lhsOfUpdates,rhsOfUpdates);
+		
+		Map<String,String> origRhsOfUpdates = new HashMap<>(rhsOfUpdates);
+		Map<String,String> ifRhsOfUpdates = new HashMap<>(origRhsOfUpdates);
+		Translator ifTranslator = new Translator(originalToAlloy,functionsDefined,lhsOfUpdates,ifRhsOfUpdates);
 		exp.getAssignments().accept(ifTranslator);
-		this.resultMaxUsed.putAll(ifTranslator.getResultMaxUsed());		
+		this.resultMaxUsed.putAll(ifTranslator.getResultMaxUsed());
+		updateToLargestMapping(rhsOfUpdates, ifRhsOfUpdates);
+		
 		
 		// Parse ElseIf if there is any 	
 		List<List<String>> elseIfConditions = new ArrayList<>();
 		List<Map<String,String>> elseIfAssignments = new ArrayList<>();
+		List<Map<String,String>> elsIfRhsOfUpdatesList = new ArrayList<>();
 		for ( ElseIfStatement stmt : exp.getElseIfStatments()){
-			Translator elseIfTranslator = new Translator(originalToAlloy,functionsDefined,lhsOfUpdates,rhsOfUpdates);
+			Map<String,String> elsIfRhsOfUpdates = new HashMap<>(origRhsOfUpdates);
+			Translator elseIfTranslator = new Translator(originalToAlloy,functionsDefined,lhsOfUpdates,elsIfRhsOfUpdates);
 			stmt.accept(elseIfTranslator);
 			elseIfConditions.add(elseIfTranslator.getResult());
 			elseIfAssignments.add(elseIfTranslator.getResultMap());
-			updateMaxUsed(this.resultMaxUsed,elseIfTranslator.getResultMaxUsed());
+			elsIfRhsOfUpdatesList.add(elsIfRhsOfUpdates);
+			updateToLargestMapping(this.resultMaxUsed,elseIfTranslator.getResultMaxUsed());
+			updateToLargestMapping(rhsOfUpdates, elsIfRhsOfUpdates);
 		}
 		assert(elseIfAssignments.size()==elseIfConditions.size());
 		
-		Translator elseTranslator = new Translator(originalToAlloy,functionsDefined,lhsOfUpdates,rhsOfUpdates);
+		Map<String,String> elseRhsOfUpdates = new HashMap<>(origRhsOfUpdates);
+		Translator elseTranslator = new Translator(originalToAlloy,functionsDefined,lhsOfUpdates,elseRhsOfUpdates);		
 		if (exp.getElseStatment() != null) {
 			exp.getElseStatment().getAssignments().accept(elseTranslator);
-			updateMaxUsed(this.resultMaxUsed,elseTranslator.getResultMaxUsed());
+			updateToLargestMapping(this.resultMaxUsed,elseTranslator.getResultMaxUsed());
+			updateToLargestMapping(rhsOfUpdates, elseRhsOfUpdates);
 		}
 
 		
@@ -736,22 +819,12 @@ public class Translator implements Visitor {
 //		System.out.println("ElseIf  Updates: " + elseIfAssignments.toString());
 //		System.out.println("Else Updates: " + elseTranslator.resultMap.toString());
 
-//		this.resultMap.putAll(originalToAlloy);
-//		updateToLargestMapping(this.resultMap,ifTranslator.getResultMap());
-//		for(int i=0;i<elseIfAssignments.size();i++){
-//			updateToLargestMapping(this.resultMap,elseIfAssignments.get(i));
-//		}
-//		updateToLargestMapping(this.resultMap,elseTranslator.getResultMap());
-//
-//		System.out.println("in if ToAlloy Update Values: " + this.resultMap.toString());
-
-		
 		this.result.add("((");
 		this.result.addAll(conditionTranslator.getResult());
 		this.result.add(") in True) => \n\t\t");
 		this.result.add(" (("+ trueInAlloy +") in True)");
 		assignmentsToString(this.result,ifTranslator.getResultMap());
-		Map<String,String> missingAssignments = largestValueMap(this.originalToAlloy,ifTranslator.getResultMap(),rhsOfUpdates);
+		Map<String,String> missingAssignments = largestValueMap(ifRhsOfUpdates,rhsOfUpdates);
 //		System.out.println("If missingAssignments: " + missingAssignments.toString());
 		assignmentsToString(this.result,missingAssignments);
 		
@@ -761,7 +834,7 @@ public class Translator implements Visitor {
 			this.result.add(" ) in True) => \n\t\t");
 			this.result.add(" (("+ trueInAlloy +") in True)");
 			assignmentsToString(this.result,elseIfAssignments.get(i));
-			missingAssignments = largestValueMap(this.originalToAlloy,elseIfAssignments.get(i),rhsOfUpdates);
+			missingAssignments = largestValueMap(elsIfRhsOfUpdatesList.get(i),rhsOfUpdates);
 //			System.out.println("else If missingAssignments: " + missingAssignments.toString());
 			assignmentsToString(this.result,missingAssignments);
 		}		
@@ -771,7 +844,7 @@ public class Translator implements Visitor {
 			this.result.add(" (("+ trueInAlloy +") in True)");
 			assignmentsToString(this.result,elseTranslator.getResultMap());
 			
-			missingAssignments = largestValueMap(this.originalToAlloy,elseTranslator.getResultMap(),rhsOfUpdates);
+			missingAssignments = largestValueMap(elseRhsOfUpdates,rhsOfUpdates);
 //			System.out.println("else missingAssignments: " + missingAssignments.toString());
 			assignmentsToString(this.result,missingAssignments);
 		}
@@ -798,7 +871,7 @@ public class Translator implements Visitor {
 		// because for assignments and if statements the mapping is 
 		// done in this method
 
-		System.out.println("Start originalToAlloy: " + originalToAlloy.toString());
+//		System.out.println("Start originalToAlloy: " + originalToAlloy.toString());
 		Map<String,String> originalToOriginal = new HashMap<>();
 		for(String key:originalToAlloy.keySet()){
 			originalToOriginal.put(key,key);
@@ -816,8 +889,9 @@ public class Translator implements Visitor {
 			Translator instTranslator = null;
 			if (inst instanceof IfElseIfStatement){
 				// 
-				System.out.println("IfElseIfStatement");
-				instTranslator = new Translator(rhsOfUpdates, functionsDefined,lhsOfUpdates,rhsOfUpdates);
+//				System.out.println("IfElseIfStatement");
+				Map<String,String> newOriginalToAlloy = new HashMap<>(rhsOfUpdates);
+				instTranslator = new Translator(newOriginalToAlloy, functionsDefined,lhsOfUpdates,rhsOfUpdates);
 				inst.accept(instTranslator);
 				StringBuilder res =new StringBuilder();
 				res.append(" ( ");
@@ -826,7 +900,7 @@ public class Translator implements Visitor {
 				}
 				res.append(" ) ");
 				this.resultMap.put(res.toString(), null);
-				updateMaxUsed(this.resultMaxUsed,instTranslator.getResultMaxUsed());
+				updateToLargestMapping(this.resultMaxUsed,instTranslator.getResultMaxUsed());
 			} else {
 				instTranslator = new Translator(originalToOriginal, functionsDefined,lhsOfUpdates,rhsOfUpdates);
 				inst.accept(instTranslator);
@@ -842,8 +916,8 @@ public class Translator implements Visitor {
 //				System.out.println("rhs List: " + rhsList.toString());
 //				System.out.println("rhs Updates: " + rhsOfUpdates.toString());
 
-				System.out.println("Before lhs Updates: " + lhsOfUpdates.toString());
-				System.out.println("Before rhs Updates: " + rhsOfUpdates.toString());
+//				System.out.println("Before lhs Updates: " + lhsOfUpdates.toString());
+//				System.out.println("Before rhs Updates: " + rhsOfUpdates.toString());
 				
 				String lhs = updateToString(lhsList, lhsOfUpdates, rhsOfUpdates, this.resultMaxUsed);
 				lhsOfUpdates.put(lhsList.get(0),lhsOfUpdates.get(lhsList.get(0))+"'");
@@ -851,11 +925,11 @@ public class Translator implements Visitor {
 				String rhs = updateToString(rhsList, rhsOfUpdates, lhsOfUpdates, this.resultMaxUsed);
 				rhsOfUpdates.put(lhsList.get(0),lhs);
 				
-				System.out.println("After lhs Updates: " + lhsOfUpdates.toString());
-				System.out.println("After rhs Updates: " + rhsOfUpdates.toString());
-				
-				System.out.println("Lhs String: " + lhs);
-				System.out.println("rhs String: " + rhs);
+//				System.out.println("After lhs Updates: " + lhsOfUpdates.toString());
+//				System.out.println("After rhs Updates: " + rhsOfUpdates.toString());
+//				
+//				System.out.println("Lhs String: " + lhs);
+//				System.out.println("rhs String: " + rhs);
 			
 				updateMaxUsed(this.resultMaxUsed,lhsList.get(0),lhs);
 
@@ -868,8 +942,8 @@ public class Translator implements Visitor {
 			}	
 		}
 		
-		System.out.println("Final");
-		System.out.println("Final originalToAlloy: " + originalToAlloy.toString());
+//		System.out.println("Final");
+//		System.out.println("Final originalToAlloy: " + originalToAlloy.toString());
 	}
 
 	public void visitAssignExpression(ExpressionAssignment exp) {

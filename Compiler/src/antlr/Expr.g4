@@ -75,7 +75,7 @@ expression: arithmeticOp			# ArithmeticOperation
 		  | logicalOp				# LogicalOpteration
 		  | relationalOp			# RelationalOperation
 		  | functionCall			# FunctionReturnOperation
-		  | '(' expression ')'		# ParanthesesExpression // remove this
+		  | '(' expression ')'		# ParanthesesExpression 
 		  ;
 
 arithmeticOp: '(' arithmeticOp ')'              # ParanthesesArithmetic

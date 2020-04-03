@@ -1,0 +1,6 @@
+fun int add (int x, int y){
+	fun_require(true)
+			x = x + y;
+			return x;	
+	fun_ensure(x == x_old+y_old)
+}

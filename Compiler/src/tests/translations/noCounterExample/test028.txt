@@ -1,0 +1,15 @@
+fun int add(int x, int y, int result){
+	fun_require(true)
+			result = x+y;
+			return result;	
+	fun_ensure(result == (x+y))
+}
+
+int x;
+int y;
+int tmp;
+if_require(x>y)
+if(x>y){
+x = add(x,y,tmp);
+}
+if_ensure(x == (x_old+y_old) )

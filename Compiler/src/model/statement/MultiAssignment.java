@@ -8,6 +8,7 @@ import model.Instruction;
 import model.Statement;
 import model.values.Value;
 import model.Visitor;
+import model.statement.assignment.Expression;
 
 public class MultiAssignment extends Statement {
     private List<Instruction> assignments;
@@ -32,6 +33,10 @@ public class MultiAssignment extends Statement {
 			result.putAll(assign.getVariables());
 		}
 		return result;
+	}
+	
+	public Instruction clone() {
+		return this; 
 	}
 
 }

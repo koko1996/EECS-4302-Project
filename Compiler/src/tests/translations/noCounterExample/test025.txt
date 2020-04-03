@@ -1,0 +1,13 @@
+fun int min(int x, int y){
+	fun_require(true)
+			if (x>y){
+				x=y;
+			} else if (x==y) {
+				x=x;
+			} else {
+				x+x; // has no effect
+				x=x;
+			}
+			return x;	
+	fun_ensure( ((x==x_old) && (x_old <= y_old )) || ((x==y_old) && (x_old > y_old )) )
+}

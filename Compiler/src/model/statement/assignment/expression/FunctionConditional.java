@@ -1,13 +1,14 @@
 package model.statement.assignment.expression;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import model.Instruction;
-import model.Statement;
 import model.values.Value;
 import model.Visitor;
+import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 
 public class FunctionConditional extends Expression{
@@ -116,11 +117,10 @@ public class FunctionConditional extends Expression{
 	}
 
 
-
+	// will never be used
 	@Override
 	public Expression clone() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 

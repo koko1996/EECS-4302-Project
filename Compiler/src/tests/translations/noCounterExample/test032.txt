@@ -1,0 +1,8 @@
+fun int swap(int x, int y, int tmp){
+	fun_require(true)
+			tmp = x;
+			x = y;
+			y = tmp ;
+			return x;	
+	fun_ensure( (x==y_old) &&  (y==x_old) )
+}

@@ -1,0 +1,16 @@
+fun int test(int x){
+	fun_require(true)
+			x=x;
+			return x;	
+	fun_ensure(x==x_old)
+}
+
+int x= 10;
+if_require(true)
+if(true){
+x = test(x);
+x = test(x);
+x=x+2;
+x=x;
+}
+if_ensure(true)

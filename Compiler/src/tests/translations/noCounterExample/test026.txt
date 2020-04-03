@@ -1,0 +1,21 @@
+fun int min(int x, int y, bool flag){
+	fun_require(true)
+			if (x>y){
+				x=y;
+				if (y<0){
+					flag=true;
+				} else {
+					flag = false;
+				}
+			} else {
+				x+x; // has no effect
+				x=x;
+				if (y<0){
+					flag=true;
+				} else {
+					flag = false;
+				}
+			}
+			return x;	
+	fun_ensure( (((x==x_old) && (x_old <= y_old )) || ((x==y_old) && (x_old > y_old ))) && ((flag<=>true && y_old <0 ) || (flag<=>false && y_old>=0)) )
+}

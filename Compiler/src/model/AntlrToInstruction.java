@@ -599,7 +599,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String returnType = ctx.getChild(1).getText();
 		returnType = returnType.substring(0, 1).toUpperCase() + returnType.substring(1);
 		
-		this.values = new ValuesLocal();
+		this.values = new ValuesLocal(); // local scope for function
 		if(checkNotDefined(name,line,column)){
 			for(int i=0; i<ctx.getChild(4).getChildCount();i++){
 				Instruction instr = visit(ctx.getChild(4).getChild(i));
@@ -608,10 +608,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				}
 			}
 			preCond = visit(ctx.logicalOp(0));
+			assignments =  visit(ctx.multAssig());
 			this.isEnsure = true;
 			postCond = visit(ctx.logicalOp(1));
 			this.isEnsure = false;
-			assignments =  visit(ctx.multAssig());
 			returnVariable = ctx.ID(1).getText();
 			
 			Token returnToken = ctx.ID(1).getSymbol();
@@ -701,10 +701,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return result; 
 	}
 
-
-
-	
-	
 	@Override
 	public Instruction visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
 		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));

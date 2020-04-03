@@ -2,12 +2,11 @@ int x;
 if_require(true)
 if(x==0){
 x=1;
-if(x>0){
-	x=2;
-	if(x==2){
-		x=3;
+	if(x>0){
+		x=2;
+		if(x==2){
+			x=3;
+		}
 	}
-}
-
 }
 if_ensure(x_old == x)
