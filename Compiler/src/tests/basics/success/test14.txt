@@ -1,0 +1,17 @@
+loop_require(Q)
+loop (ExitCondtion){
+loop_invariant()
+loop_variant(x)
+	multiassignmet
+}
+loop_ensure(R)
+
+
+Q => Initialization => (invariant <=> true)
+
+((invariant <=> true) && not(ExitCondtion) ) => assignments => ((invariant <=> true) && (x>0) && (x_old > x)) 
+
+ 
+((invariant <=> true) && (ExitCondtion)) => R
+
+

@@ -486,13 +486,22 @@ public class Translator implements Visitor {
 	 * 
 	 *
 	**/
-	protected String updateFunctionParameters(String functionName, List<String> origOutput, Map<String,String> rhsOfUpdates, Map<String,String> lhsOfUpdates, Map<String,String> resultMaxUsed){				
-		FunctionConditional actualFunction = (FunctionConditional) values.getValue(functionName).getValue();
-		Map<String,Integer> functionParamCount = functionParamCount(actualFunction);
+	protected String updateFunctionParameters(String functionName, List<String> origOutput, Map<String,String> rhsOfUpdates, Map<String,String> lhsOfUpdates, Map<String,String> resultMaxUsed){				;
 		
 		List<Integer> functionParamCounter = new ArrayList<>();  // Helper counter to know which parameter to update next
-		for (String key: functionParamCount.keySet()){
-			functionParamCounter.add(functionParamCount.get(key));
+		String last ="?";
+		int lastIndex = -1;
+		for (int i=0;i< origOutput.size();i++){
+			if(rhsOfUpdates.containsKey(origOutput.get(i))){ // make sure it is not garbage (for example "," )
+				if (origOutput.get(i).equals(last)){
+					functionParamCounter.set(lastIndex,functionParamCounter.get(lastIndex)+1);
+					
+				} else {
+					functionParamCounter.add(1);
+					last = origOutput.get(i);
+					lastIndex++;
+				}
+			}
 		}
 		
 		Pair<Integer,Integer> currIndex = new Pair<>(0,0); // Pair left represent the current Variable ->
@@ -871,7 +880,6 @@ public class Translator implements Visitor {
 		// because for assignments and if statements the mapping is 
 		// done in this method
 
-//		System.out.println("Start originalToAlloy: " + originalToAlloy.toString());
 		Map<String,String> originalToOriginal = new HashMap<>();
 		for(String key:originalToAlloy.keySet()){
 			originalToOriginal.put(key,key);
