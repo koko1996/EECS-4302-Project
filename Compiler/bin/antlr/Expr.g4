@@ -23,6 +23,10 @@ declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
     		| VARIABLE ID '=' expression  SEMICOLON		# VariableInitializationConstant
     		;
 
+loop: 'loop_require' '(' logicalOp ')' 'loop' '(' logicalOp ')' '{' 'loop_invariant' '(' expression ')' 'loop_variant' '(' ID ')' multAssig '}' 'loop_ensure' '(' logicalOp')' # LoopStatement
+    ;
+
+
 // function can't have empty bodies
 // function can have zero or more arguments
 // function has to have a return type (it makes sense because there are no objects and everything is pass by value)

@@ -58,26 +58,48 @@ public interface ExprListener extends ParseTreeListener {
 	/**
 	 * Enter a parse tree produced by the {@code VariableInitializationConstant}
 	 * labeled alternative in {@link ExprParser#declaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code VariableInitializationConstant}
-	 * labeled alternative in {@link ExprParser#declaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code FunctionConditional}
-	 * labeled alternative in {@link ExprParser#function}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunctionConditional(ExprParser.FunctionConditionalContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code FunctionConditional}
-	 * labeled alternative in {@link ExprParser#function}.
-	 * @param ctx the parse tree
-	 */
+     * @param ctx the parse tree
+     */
+    void enterVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
+
+    /**
+     * Exit a parse tree produced by the {@code VariableInitializationConstant}
+     * labeled alternative in {@link ExprParser#declaration}.
+     *
+     * @param ctx the parse tree
+     */
+    void exitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
+
+    /**
+     * Enter a parse tree produced by the {@code LoopStatement}
+     * labeled alternative in {@link ExprParser#loop}.
+     *
+     * @param ctx the parse tree
+     */
+    void enterLoopStatement(ExprParser.LoopStatementContext ctx);
+
+    /**
+     * Exit a parse tree produced by the {@code LoopStatement}
+     * labeled alternative in {@link ExprParser#loop}.
+     *
+     * @param ctx the parse tree
+     */
+    void exitLoopStatement(ExprParser.LoopStatementContext ctx);
+
+    /**
+     * Enter a parse tree produced by the {@code FunctionConditional}
+     * labeled alternative in {@link ExprParser#function}.
+     *
+     * @param ctx the parse tree
+     */
+    void enterFunctionConditional(ExprParser.FunctionConditionalContext ctx);
+
+    /**
+     * Exit a parse tree produced by the {@code FunctionConditional}
+     * labeled alternative in {@link ExprParser#function}.
+     *
+     * @param ctx the parse tree
+     */
 	void exitFunctionConditional(ExprParser.FunctionConditionalContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ParameterArguments}

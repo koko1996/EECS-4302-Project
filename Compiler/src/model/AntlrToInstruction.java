@@ -1,43 +1,16 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.antlr.v4.runtime.Token;
-
 import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
 import model.declaration.VariableInitialization;
+import model.statement.Loop;
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
-import model.statement.assignment.expression.Arithmetic;
-import model.statement.assignment.expression.FunctionCall;
-import model.statement.assignment.expression.FunctionConditional;
-import model.statement.assignment.expression.Logical;
-import model.statement.assignment.expression.ParanthesesExpression;
-import model.statement.assignment.expression.Relational;
-import model.statement.assignment.expression.arithmetic.Addition;
-import model.statement.assignment.expression.arithmetic.Division;
-import model.statement.assignment.expression.arithmetic.IntegerConstant;
-import model.statement.assignment.expression.arithmetic.IntegerVariable;
-import model.statement.assignment.expression.arithmetic.Modulo;
-import model.statement.assignment.expression.arithmetic.Multiplication;
-import model.statement.assignment.expression.arithmetic.Subtraction;
-import model.statement.assignment.expression.logical.BooleanConstant;
-import model.statement.assignment.expression.logical.BooleanVariable;
-import model.statement.assignment.expression.logical.Conjunction;
-import model.statement.assignment.expression.logical.Disjunction;
-import model.statement.assignment.expression.logical.Equivalence;
-import model.statement.assignment.expression.logical.Implication;
-import model.statement.assignment.expression.logical.Negation;
-import model.statement.assignment.expression.relational.Equality;
-import model.statement.assignment.expression.relational.GreaterThan;
-import model.statement.assignment.expression.relational.GreaterThanOrEqual;
-import model.statement.assignment.expression.relational.Inequality;
-import model.statement.assignment.expression.relational.LessThan;
-import model.statement.assignment.expression.relational.LessThanOrEqual;
+import model.statement.assignment.expression.*;
+import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.logical.*;
+import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
 import model.statement.conditional.ElseIfStatement;
 import model.statement.conditional.IfElseIfStatement;
@@ -45,6 +18,11 @@ import model.values.Value;
 import model.values.Values;
 import model.values.ValuesGlobal;
 import model.values.ValuesLocal;
+import org.antlr.v4.runtime.Token;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private Values values; // Symbol table for storing values of
@@ -716,4 +694,13 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
 	}
 
+	@Override
+	public Instruction visitLoopStatement(ExprParser.LoopStatementContext ctx) {
+		Instruction precondition = visit(ctx.getChild(2));
+		Instruction postcondition = visit(ctx.getChild(11));
+		Instruction exitCondition = visit(ctx.getChild(6));
+		Instruction loopVariant = visit(ctx.getChild(15));
+		Instruction assignments = visit(ctx.getChild(17));
+		return new Loop(precondition, postcondition, exitCondition, loopVariant, assignments);
+	}
 }

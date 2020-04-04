@@ -1,37 +1,13 @@
 package model;
 
+import model.statement.Loop;
 import model.statement.MultiAssignment;
 import model.statement.assignment.ExpressionAssignment;
-import model.statement.assignment.expression.FunctionCall;
-import model.statement.assignment.expression.FunctionConditional;
-import model.statement.assignment.expression.Logical;
-import model.statement.assignment.expression.ParanthesesExpression;
-import model.statement.assignment.expression.Relational;
-import model.statement.assignment.expression.arithmetic.Addition;
-import model.statement.assignment.expression.arithmetic.Division;
-import model.statement.assignment.expression.arithmetic.IntegerConstant;
-import model.statement.assignment.expression.arithmetic.IntegerVariable;
-import model.statement.assignment.expression.arithmetic.Modulo;
-import model.statement.assignment.expression.arithmetic.Multiplication;
-import model.statement.assignment.expression.arithmetic.Subtraction;
-import model.statement.assignment.expression.logical.BooleanConstant;
-import model.statement.assignment.expression.logical.BooleanVariable;
-import model.statement.assignment.expression.logical.Conjunction;
-import model.statement.assignment.expression.logical.Disjunction;
-import model.statement.assignment.expression.logical.Equivalence;
-import model.statement.assignment.expression.logical.Implication;
-import model.statement.assignment.expression.logical.Negation;
-import model.statement.assignment.expression.relational.Equality;
-import model.statement.assignment.expression.relational.GreaterThan;
-import model.statement.assignment.expression.relational.GreaterThanOrEqual;
-import model.statement.assignment.expression.relational.Inequality;
-import model.statement.assignment.expression.relational.LessThan;
-import model.statement.assignment.expression.relational.LessThanOrEqual;
-import model.statement.conditional.AssertedConditional;
-import model.statement.conditional.ElseIfStatement;
-import model.statement.conditional.IfElseIfStatement;
-import model.statement.conditional.PostcondStatement;
-import model.statement.conditional.PrecondStatement;
+import model.statement.assignment.expression.*;
+import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.logical.*;
+import model.statement.assignment.expression.relational.*;
+import model.statement.conditional.*;
 
 public interface Visitor {
 	void visitFucntionConditional(FunctionConditional exp);
@@ -106,7 +82,9 @@ public interface Visitor {
 
     void visitPostcondStatement(PostcondStatement exp);
 
-	void visitMultipleAssignments(MultiAssignment exp);
+    void visitMultipleAssignments(MultiAssignment exp);
 
-	void visitFunctionCall(FunctionCall functionCall);
+    void visitFunctionCall(FunctionCall functionCall);
+
+    void visitLoop(Loop exp);
 }

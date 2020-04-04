@@ -39,20 +39,34 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code VariableInitializationConstant}
 	 * labeled alternative in {@link ExprParser#declaration}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
+
+	/**
+	 * Visit a parse tree produced by the {@code LoopStatement}
+	 * labeled alternative in {@link ExprParser#loop}.
+	 *
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLoopStatement(ExprParser.LoopStatementContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code FunctionConditional}
 	 * labeled alternative in {@link ExprParser#function}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFunctionConditional(ExprParser.FunctionConditionalContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code ParameterArguments}
 	 * labeled alternative in {@link ExprParser#parameters}.
