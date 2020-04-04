@@ -341,7 +341,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (checkDefined(id, "Int", line, column)) {
 			if (!values.getType(id).equals("Int")) {
-				semanticErrors.add("Error 3: The given ID has type " + values.getType(id) + " but the expceted type is "
+				semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
 						+ "int" + " (line:" + line + ", column:" + column + ")");
 			} else {
 				return new IntegerVariable(idOrig, values.getValue(id).getValue());
@@ -466,7 +466,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		if (checkDefined(id, "Bool", line, column)) {
 			if (!values.getType(id).equals("Bool")) {
-				semanticErrors.add("Error 5: The given ID has type " + values.getType(id) + " but the expceted type is "
+				semanticErrors.add("Error: The given ID has type " + values.getType(id) + " but the expceted type is "
 						+ "bool" + " (line:" + line + ", column:" + column + ")");
 			} else {
 				return new BooleanVariable(idOrig, values.getValue(id).getValue());
@@ -577,7 +577,10 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String returnType = ctx.getChild(1).getText();
 		returnType = returnType.substring(0, 1).toUpperCase() + returnType.substring(1);
 		
+		Map<String,Value> functions  = this.values.getDeclaredFunctions();
 		this.values = new ValuesLocal(); // local scope for function
+		values.putAll(functions);		 // add the declared functions (because functions have global scope)
+
 		if(checkNotDefined(name,line,column)){
 			for(int i=0; i<ctx.getChild(4).getChildCount();i++){
 				Instruction instr = visit(ctx.getChild(4).getChild(i));
@@ -653,7 +656,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				}
 				if(instr !=null){
 					if (actualParametersCounter>=actualParameters.size()){
-						semanticErrors.add("Error 4: expected number of arguments does not match the given number of arguments (line:" + line + ", column:" + column + ")");
+						semanticErrors.add("Error : expected number of arguments does not match the given number of arguments (line:" + line + ", column:" + column + ")");
 					} else {
 						Map<String, Value> actualParam = actualParameters.get(actualParametersCounter).getVariables();
 						assert(actualParam.keySet().size()==1);
@@ -670,7 +673,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				}
 			}
 			if((actualParametersCounter)!=actualParameters.size()){
-				semanticErrors.add("Error 3: expected number of arguments does not match the given number of arguments (line:" + line + ", column:" + column + ")");
+				semanticErrors.add("Error : expected number of arguments does not match the given number of arguments (line:" + line + ", column:" + column + ")");
 			}
 		}
 		
