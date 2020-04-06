@@ -39,34 +39,27 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVariableInitializationConstantCopy(ExprParser.VariableInitializationConstantCopyContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code VariableInitializationConstant}
 	 * labeled alternative in {@link ExprParser#declaration}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVariableInitializationConstant(ExprParser.VariableInitializationConstantContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code LoopStatement}
 	 * labeled alternative in {@link ExprParser#loop}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitLoopStatement(ExprParser.LoopStatementContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code FunctionConditional}
 	 * labeled alternative in {@link ExprParser#function}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFunctionConditional(ExprParser.FunctionConditionalContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code ParameterArguments}
 	 * labeled alternative in {@link ExprParser#parameters}.
@@ -144,20 +137,34 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitElseIfConditional(ExprParser.ElseIfConditionalContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code ElseConditional}
 	 * labeled alternative in {@link ExprParser#finaElse}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitElseConditional(ExprParser.ElseConditionalContext ctx);
+
+	/**
+	 * Visit a parse tree produced by the {@code MultipleAssignmentsSimple}
+	 * labeled alternative in {@link ExprParser#multAssigSimple}.
+	 *
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultipleAssignmentsSimple(ExprParser.MultipleAssignmentsSimpleContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code MultipleAssignments}
 	 * labeled alternative in {@link ExprParser#multAssig}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMultipleAssignments(ExprParser.MultipleAssignmentsContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code IDExpression}
 	 * labeled alternative in {@link ExprParser#assignment}.

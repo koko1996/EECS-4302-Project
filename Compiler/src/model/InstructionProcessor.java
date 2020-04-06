@@ -1,10 +1,11 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import model.statement.Loop;
 import model.statement.assignment.expression.FunctionConditional;
 import model.statement.conditional.AssertedConditional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * ExpressionProcessor class to process given expression
@@ -36,8 +37,11 @@ public class InstructionProcessor {
 				evaluations.add(tr.getFinalResult());				
 		 	} else if (inst instanceof FunctionConditional) {
 				inst.accept(tr);
-				evaluations.add(tr.getFinalResult());		 		
-		 	}
+				evaluations.add(tr.getFinalResult());
+			} else if (inst instanceof Loop) {
+				inst.accept(tr);
+				evaluations.add(tr.getFinalResult());
+			}
 		}
 		return evaluations;
 	}

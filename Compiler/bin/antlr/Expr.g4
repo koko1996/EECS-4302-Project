@@ -15,6 +15,7 @@ statement: declaration
          | conditional
          | assertedConditional
          | function
+         | loop
          ;
 
 
@@ -23,7 +24,7 @@ declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
     		| VARIABLE ID '=' expression  SEMICOLON		# VariableInitializationConstant
     		;
 
-loop: 'loop_require' '(' logicalOp ')' 'loop' '(' logicalOp ')' '{' 'loop_invariant' '(' expression ')' 'loop_variant' '(' ID ')' multAssig '}' 'loop_ensure' '(' logicalOp')' # LoopStatement
+loop: 'loop_require' '(' logicalOp ')' 'loop_init' '{' multAssigSimple '}' 'loop' '(' logicalOp ')' '{' 'loop_invariant' '(' expression ')' 'loop_variant' '(' ID ')' multAssig '}' 'loop_ensure' '(' logicalOp')' # LoopStatement
     ;
 
 
@@ -66,6 +67,8 @@ elseIf: 'else' 'if' '(' logicalOp ')' '{' multAssig '}'				# ElseIfConditional
 finaElse:  'else' '{' multAssig '}'									# ElseConditional
 	;
 
+multAssigSimple: (assignment)+                  # MultipleAssignmentsSimple
+               ;
 multAssig: (assignment|conditional)+			# MultipleAssignments
 		;
 

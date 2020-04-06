@@ -1,0 +1,13 @@
+int sum = 0;
+int current;
+loop_require(sum == 0)
+loop_init{
+    current = 1;
+    current = 2;
+}
+loop(current < 5) {
+loop_invariant((current >= 1) && (current < 5) )
+loop_variant(current)
+sum = sum + current;
+}
+loop_ensure(sum == 10)
