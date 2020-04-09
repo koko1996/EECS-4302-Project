@@ -1,43 +1,16 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.antlr.v4.runtime.Token;
-
 import antlr.ExprBaseVisitor;
 import antlr.ExprParser;
 import model.declaration.VariableInitialization;
+import model.statement.Loop;
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
-import model.statement.assignment.expression.Arithmetic;
-import model.statement.assignment.expression.FunctionCall;
-import model.statement.assignment.expression.FunctionConditional;
-import model.statement.assignment.expression.Logical;
-import model.statement.assignment.expression.ParanthesesExpression;
-import model.statement.assignment.expression.Relational;
-import model.statement.assignment.expression.arithmetic.Addition;
-import model.statement.assignment.expression.arithmetic.Division;
-import model.statement.assignment.expression.arithmetic.IntegerConstant;
-import model.statement.assignment.expression.arithmetic.IntegerVariable;
-import model.statement.assignment.expression.arithmetic.Modulo;
-import model.statement.assignment.expression.arithmetic.Multiplication;
-import model.statement.assignment.expression.arithmetic.Subtraction;
-import model.statement.assignment.expression.logical.BooleanConstant;
-import model.statement.assignment.expression.logical.BooleanVariable;
-import model.statement.assignment.expression.logical.Conjunction;
-import model.statement.assignment.expression.logical.Disjunction;
-import model.statement.assignment.expression.logical.Equivalence;
-import model.statement.assignment.expression.logical.Implication;
-import model.statement.assignment.expression.logical.Negation;
-import model.statement.assignment.expression.relational.Equality;
-import model.statement.assignment.expression.relational.GreaterThan;
-import model.statement.assignment.expression.relational.GreaterThanOrEqual;
-import model.statement.assignment.expression.relational.Inequality;
-import model.statement.assignment.expression.relational.LessThan;
-import model.statement.assignment.expression.relational.LessThanOrEqual;
+import model.statement.assignment.expression.*;
+import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.logical.*;
+import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
 import model.statement.conditional.ElseIfStatement;
 import model.statement.conditional.IfElseIfStatement;
@@ -45,6 +18,11 @@ import model.values.Value;
 import model.values.Values;
 import model.values.ValuesGlobal;
 import model.values.ValuesLocal;
+import org.antlr.v4.runtime.Token;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private Values values; // Symbol table for storing values of
@@ -96,7 +74,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return true;
 	}
 
-	
+
 	private boolean checkNotOLD(String id, int line, int column) {
 		if (id.contains(this.oldSyntax)) {
 			semanticErrors.add("Error: variable name not allowed to have the substring " + this.oldSyntax + " (line:"
@@ -117,8 +95,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return super.visitStatement(ctx);
 	}
 
-	
-	
+
 	@Override
 	public Instruction visitVariableDeclaration(ExprParser.VariableDeclarationContext ctx) {
 		Token idToken = ctx.ID().getSymbol();
@@ -134,7 +111,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				if (type.equals("Bool")) { // default value is false
 					value = new Value(new BooleanVariable(id, new BooleanConstant(false)), type);
 				} else if (type.equals("Int")) { // default value is 0
-					value = new Value(new IntegerVariable(id,new IntegerConstant(0)), type);
+					value = new Value(new IntegerVariable(id, new IntegerConstant(0)), type);
 				} else {
 					throw new IllegalArgumentException("You probably should not get this exception.");
 				}
@@ -239,13 +216,13 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 						"Error: Right hand side of the expression has type " + rhsType + " but the left hand side has type "
 								+ lhsType + " (line:" + rhsIDLine + ", column:" + rhsColumnLine + ")");
 			} else {
-				 
-				if (rhsType.equals("Bool")){
+
+				if (rhsType.equals("Bool")) {
 					expr = new BooleanVariable(rhsID, expr);
-				}else if (rhsType.equals("Int")){
+				} else if (rhsType.equals("Int")) {
 					expr = new IntegerVariable(rhsID, expr);
-				} 
-				Value newValue = new Value(expr,rhsType);
+				}
+				Value newValue = new Value(expr, rhsType);
 				values.put(lhsID, newValue);
 			}
 		}
@@ -260,13 +237,13 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
 		Expression exp = (Expression) visit(ctx.getChild(2));
-		String exprType ="";
-		if ((exp instanceof Logical | exp instanceof Relational)){
+		String exprType = "";
+		if ((exp instanceof Logical | exp instanceof Relational)) {
 			exprType = "Bool";
-		} else if((exp instanceof Arithmetic)) {
+		} else if ((exp instanceof Arithmetic)) {
 			exprType = "Int";
-		} else if((exp instanceof FunctionCall)) {
-			exprType = ((FunctionCall) exp ).getType();
+		} else if ((exp instanceof FunctionCall)) {
+			exprType = ((FunctionCall) exp).getType();
 		}
 
 		if (checkDefined(id, exprType, line, column)) {
@@ -287,14 +264,14 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		return new ExpressionAssignment(id, exp);
 	}
-	
-	@Override 
-	public Instruction visitIDExpression(ExprParser.IDExpressionContext ctx) { 
+
+	@Override
+	public Instruction visitIDExpression(ExprParser.IDExpressionContext ctx) {
 		String id = ctx.ID().getText();
 		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
-	
+
 		if (checkDefined(id, line, column)) {
 			String lhsType = values.getType(id);
 			Expression expr = values.getValue(id).getValue();
@@ -303,9 +280,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				return new BooleanVariable(id, expr);
 			} else if (!lhsType.equals("Int")) {
 				return new IntegerVariable(id, expr);
-			} 
+			}
 		}
-		return new IntegerVariable(id, new IntegerConstant(0)); 
+		return new IntegerVariable(id, new IntegerConstant(0));
 	}
 
 	@Override
@@ -554,9 +531,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return new IfElseIfStatement(new BooleanConstant(true), visit(ctx.getChild(2)), new ArrayList<>(), null);
 	}
 
-	
-	@Override 
-	public Instruction visitParameterArgumentVariable(ExprParser.ParameterArgumentVariableContext ctx) { 
+
+	@Override
+	public Instruction visitParameterArgumentVariable(ExprParser.ParameterArgumentVariableContext ctx) {
 		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
@@ -570,7 +547,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				if (type.equals("Bool")) {
 					value = new Value(new BooleanVariable(id, new BooleanConstant(false)), type);
 				} else if (type.equals("Int")) {
-					value = new Value(new IntegerVariable(id,new IntegerConstant(0)), type);
+					value = new Value(new IntegerVariable(id, new IntegerConstant(0)), type);
 				} else {
 					throw new IllegalArgumentException("You probably should not get this exception.");
 				}
@@ -581,9 +558,9 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return new VariableInitialization(id, type, value);
 	}
 
-	
-	@Override 
-	public Instruction visitFunctionConditional(ExprParser.FunctionConditionalContext ctx) { 
+
+	@Override
+	public Instruction visitFunctionConditional(ExprParser.FunctionConditionalContext ctx) {
 		Token idToken = ctx.ID(0).getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
@@ -594,52 +571,51 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		Instruction assignments = null;
 		String returnVariable = null;
 		List<Instruction> parameters = new ArrayList<>();
-		
+
 		String name = ctx.getChild(2).getText();
 		String returnType = ctx.getChild(1).getText();
 		returnType = returnType.substring(0, 1).toUpperCase() + returnType.substring(1);
-		
-		Map<String,Value> functions  = this.values.getDeclaredFunctions();
-		this.values = new ValuesLocal(); // local scope for function
-		values.putAll(functions);		 // add the declared functions (because functions have global scope)
 
-		if(checkNotDefined(name,line,column)){
-			for(int i=0; i<ctx.getChild(4).getChildCount();i++){
+		Map<String, Value> functions = this.values.getDeclaredFunctions();
+		this.values = new ValuesLocal(); // local scope for function
+		values.putAll(functions);         // add the declared functions (because functions have global scope)
+
+		if (checkNotDefined(name, line, column)) {
+			for (int i = 0; i < ctx.getChild(4).getChildCount(); i++) {
 				Instruction instr = visit(ctx.getChild(4).getChild(i));
-				if(instr !=null){
-					parameters.add(instr);	
+				if (instr != null) {
+					parameters.add(instr);
 				}
 			}
 			preCond = visit(ctx.logicalOp(0));
-			assignments =  visit(ctx.multAssig());
+			assignments = visit(ctx.multAssig());
 			this.isEnsure = true;
 			postCond = visit(ctx.logicalOp(1));
 			this.isEnsure = false;
 			returnVariable = ctx.ID(1).getText();
-			
+
 			Token returnToken = ctx.ID(1).getSymbol();
 			int returnline = returnToken.getLine();
 			int returncolumn = returnToken.getCharPositionInLine() + 1;
-			
-			if(checkDefined(returnVariable, returnline, returncolumn)){
-				if( (returnType.equals("Int") && !(values.getType(returnVariable).equals("Int"))) || (returnType.equals("Bool") && !(values.getType(returnVariable).equals("Bool")) ) ){
+
+			if (checkDefined(returnVariable, returnline, returncolumn)) {
+				if ((returnType.equals("Int") && !(values.getType(returnVariable).equals("Int"))) || (returnType.equals("Bool") && !(values.getType(returnVariable).equals("Bool")))) {
 					semanticErrors.add("Error: return type of function " + name + " does not match the returned expression (line:" + returnline + ", column:" + returncolumn + ")");
 				}
-			}			
+			}
 		}
-		
+
 		this.values = ValuesGlobal.getInstance();
 		result = new FunctionConditional(name, returnType, parameters, preCond, postCond, assignments, returnVariable);
-		Value value = new Value(result , returnType);
+		Value value = new Value(result, returnType);
 		values.put(name, value);
-		
-		return result; 
+
+		return result;
 	}
 
 
-	
-	@Override 
-	public Instruction visitFunctionCallStatment(ExprParser.FunctionCallStatmentContext ctx) { 
+	@Override
+	public Instruction visitFunctionCallStatment(ExprParser.FunctionCallStatmentContext ctx) {
 		Token idToken = ctx.ID().getSymbol();
 		int line = idToken.getLine();
 		int column = idToken.getCharPositionInLine() + 1;
@@ -647,61 +623,61 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		String id = ctx.ID().getText();
 		String type = "Int";
 		Instruction result = null;
-		List<Instruction> parameters = new ArrayList<>(); 
-		
-		if(checkDefined(id,line,column)){
+		List<Instruction> parameters = new ArrayList<>();
+
+		if (checkDefined(id, line, column)) {
 			type = this.values.getType(ctx.ID().getText());
 			FunctionConditional actualFunction = (FunctionConditional) values.getValue(id).getValue();
 			List<Instruction> actualParameters = actualFunction.getParameters();
-			int actualParametersCounter =0;
-			for(int i=0; i<ctx.getChild(2).getChildCount();i++){
+			int actualParametersCounter = 0;
+			for (int i = 0; i < ctx.getChild(2).getChildCount(); i++) {
 				Instruction instr = null;
 				String expectedType = "";
 				String actualType = "";
-				if(ctx.getChild(2).getChild(i) instanceof ExprParser.SingleParameterIDContext ){
-					String varName =ctx.getChild(2).getChild(i).getChild(0).getText();
-					if(checkDefined(varName, line, column)){
+				if (ctx.getChild(2).getChild(i) instanceof ExprParser.SingleParameterIDContext) {
+					String varName = ctx.getChild(2).getChild(i).getChild(0).getText();
+					if (checkDefined(varName, line, column)) {
 						actualType = this.values.getValue(varName).getType();
-						if (actualType.equals("Bool")){
+						if (actualType.equals("Bool")) {
 							instr = new BooleanVariable(varName, this.values.getValue(varName).getValue());
-						}else if (actualType.equals("Int")){
+						} else if (actualType.equals("Int")) {
 							instr = new IntegerVariable(varName, this.values.getValue(varName).getValue());
-						} 
+						}
 					}
 				} else {
 					instr = visit(ctx.getChild(2).getChild(i));
-					if(instr instanceof Arithmetic){
-						actualType  = "Int";
+					if (instr instanceof Arithmetic) {
+						actualType = "Int";
 					} else if (instr instanceof Logical) {
-						actualType  = "Bool";
+						actualType = "Bool";
 					}
 				}
-				if(instr !=null){
-					if (actualParametersCounter>=actualParameters.size()){
+				if (instr != null) {
+					if (actualParametersCounter >= actualParameters.size()) {
 						semanticErrors.add("Error : expected number of arguments does not match the given number of arguments (line:" + line + ", column:" + column + ")");
 					} else {
 						Map<String, Value> actualParam = actualParameters.get(actualParametersCounter).getVariables();
-						assert(actualParam.keySet().size()==1);
-						for(String name: actualParam.keySet()){
+						assert (actualParam.keySet().size() == 1);
+						for (String name : actualParam.keySet()) {
 							expectedType = actualParam.get(name).getType();
 						}
-						if(expectedType.equals(actualType)) {
-								parameters.add(instr);				
+						if (expectedType.equals(actualType)) {
+							parameters.add(instr);
 						} else {
 							semanticErrors.add("Error: expected type of the argument does not match the given expression (line:" + line + ", column:" + column + ")");
 						}
-						actualParametersCounter++;						
+						actualParametersCounter++;
 					}
 				}
 			}
-			if((actualParametersCounter)!=actualParameters.size()){
+			if ((actualParametersCounter) != actualParameters.size()) {
 				semanticErrors.add("Error : expected number of arguments does not match the given number of arguments (line:" + line + ", column:" + column + ")");
 			}
 		}
-		
+
 		result = new FunctionCall(id, type, parameters);
-		
-		return result; 
+
+		return result;
 	}
 
 	@Override
@@ -719,4 +695,35 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
 	}
 
+	@Override
+	public Instruction visitLoopStatement(ExprParser.LoopStatementContext ctx) {
+		Instruction precondition = visit(ctx.logicalOp(0));
+		this.isEnsure = true;
+		Instruction postcondition = visit(ctx.logicalOp(2));
+		this.isEnsure = false;
+		Instruction exitCondition = visit(ctx.logicalOp(1));
+
+
+		String loopVariantName = ctx.ID().getText();
+		Token idToken = ctx.ID().getSymbol();
+		int line = idToken.getLine();
+		int column = idToken.getCharPositionInLine() + 1;
+		Instruction loopVariant = null;
+		if (checkDefined(loopVariantName, line, column)) {
+			String actualType = this.values.getValue(loopVariantName).getType();
+			if (actualType.equals("Bool")) {
+				loopVariant = new BooleanVariable(loopVariantName, this.values.getValue(loopVariantName).getValue());
+			} else if (actualType.equals("Int")) {
+				loopVariant = new IntegerVariable(loopVariantName, this.values.getValue(loopVariantName).getValue());
+			}
+		}
+
+		Instruction loopInvariant = visit(ctx.expression());
+		List<Instruction> initAssignments = new ArrayList<>();
+		for (int i = 0; i < ctx.getChild(6).getChildCount(); i++) {
+			initAssignments.add(visit(ctx.getChild(6).getChild(i)));
+		}
+		Instruction assignments = visit(ctx.multAssig());
+		return new Loop(precondition, postcondition, exitCondition, loopInvariant, loopVariant, assignments, initAssignments);
+	}
 }

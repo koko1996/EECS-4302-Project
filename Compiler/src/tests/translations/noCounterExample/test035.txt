@@ -1,0 +1,21 @@
+int sum;
+int current;
+loop_require(true)
+loop_init{
+	sum = 0;
+    current = 3;
+}
+loop(current != 0 ) {
+loop_invariant((sum == (3-current)) && (current >= 0) && (current < 4) )
+loop_variant(current)
+sum = sum + 1;
+current = current - 1;
+}
+loop_ensure(sum == 3)
+
+
+// Q => Initialization => (invariant <=> true)
+
+// ((invariant <=> true) && not(ExitCondtion) ) => assignments => ((invariant <=> true) && (x>0) && (x_old > x)) 
+
+//((invariant <=> true) && (ExitCondtion)) => R

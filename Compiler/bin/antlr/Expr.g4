@@ -15,6 +15,7 @@ statement: declaration
          | conditional
          | assertedConditional
          | function
+         | loop
          ;
 
 
@@ -22,6 +23,10 @@ declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
             | VARIABLE ID '=' ID  SEMICOLON         	# VariableInitializationConstantCopy 	// singleParameter can be used here
     		| VARIABLE ID '=' expression  SEMICOLON		# VariableInitializationConstant
     		;
+
+loop: 'loop_require' '(' logicalOp ')' 'loop_init' '{' multAssigSimple '}' 'loop' '(' logicalOp ')' '{' 'loop_invariant' '(' expression ')' 'loop_variant' '(' ID ')' multAssig '}' 'loop_ensure' '(' logicalOp')' # LoopStatement
+    ;
+
 
 // function can't have empty bodies
 // function can have zero or more arguments
@@ -62,6 +67,8 @@ elseIf: 'else' 'if' '(' logicalOp ')' '{' multAssig '}'				# ElseIfConditional
 finaElse:  'else' '{' multAssig '}'									# ElseConditional
 	;
 
+multAssigSimple: (assignment)+                  # MultipleAssignmentsSimple
+               ;
 multAssig: (assignment|conditional)+			# MultipleAssignments
 		;
 

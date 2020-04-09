@@ -1,0 +1,16 @@
+int i;
+int length;
+int result;
+int koko;
+loop_require(true)
+loop_init {
+    result = 0;
+    length = 5;
+}
+loop (i < length) {
+loop_invariant(true)
+loop_variant(i)
+	result = result + i;
+	koko = 31;
+}
+loop_ensure(true)

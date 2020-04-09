@@ -1,49 +1,21 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import model.declaration.VariableInitialization;
+import model.statement.Loop;
 import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
-import model.statement.assignment.expression.FunctionCall;
-import model.statement.assignment.expression.FunctionConditional;
-import model.statement.assignment.expression.Logical;
-import model.statement.assignment.expression.ParanthesesExpression;
-import model.statement.assignment.expression.Relational;
-import model.statement.assignment.expression.arithmetic.Addition;
-import model.statement.assignment.expression.arithmetic.Division;
-import model.statement.assignment.expression.arithmetic.IntegerConstant;
-import model.statement.assignment.expression.arithmetic.IntegerVariable;
-import model.statement.assignment.expression.arithmetic.Modulo;
-import model.statement.assignment.expression.arithmetic.Multiplication;
-import model.statement.assignment.expression.arithmetic.Subtraction;
-import model.statement.assignment.expression.logical.BooleanConstant;
-import model.statement.assignment.expression.logical.BooleanVariable;
-import model.statement.assignment.expression.logical.Conjunction;
-import model.statement.assignment.expression.logical.Disjunction;
-import model.statement.assignment.expression.logical.Equivalence;
-import model.statement.assignment.expression.logical.Implication;
-import model.statement.assignment.expression.logical.Negation;
-import model.statement.assignment.expression.relational.Equality;
-import model.statement.assignment.expression.relational.GreaterThan;
-import model.statement.assignment.expression.relational.GreaterThanOrEqual;
-import model.statement.assignment.expression.relational.Inequality;
-import model.statement.assignment.expression.relational.LessThan;
-import model.statement.assignment.expression.relational.LessThanOrEqual;
-import model.statement.conditional.AssertedConditional;
-import model.statement.conditional.ElseIfStatement;
-import model.statement.conditional.IfElseIfStatement;
-import model.statement.conditional.PostcondStatement;
-import model.statement.conditional.PrecondStatement;
+import model.statement.assignment.expression.*;
+import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.logical.*;
+import model.statement.assignment.expression.relational.*;
+import model.statement.conditional.*;
 import model.values.Value;
 import model.values.Values;
 import model.values.ValuesGlobal;
 import utils.Pair;
+
+import java.util.*;
 
 /*
  * Translator visitor calls to translate from input language to Alloy
@@ -51,17 +23,19 @@ import utils.Pair;
  */
 public class Translator implements Visitor {
 
-	private int functionsTranslated;				// current number of functions translated
-	
-	private int ifStatementsTranslated;				// current number of if statements translated
- 
-	protected Map<String,String> functionsDefined;	// Mapping from original function names to their  
-													// Alloy counterpart
-	private Map<String, String> originalToAlloy;	// container to hold the variable name mapping 
-													// from  original name to alloy name
-	private Map<String,String> lhsOfUpdates ;		// container to hold the variable name mapping from 
-													// original alloy name to next available alloy name 
-	private Map<String,String> rhsOfUpdates ;		// container to hold the variable name mapping from 
+	private int functionsTranslated;                // current number of functions translated
+
+	private int loopsTranslated;
+
+	private int ifStatementsTranslated;                // current number of if statements translated
+
+	protected Map<String, String> functionsDefined;    // Mapping from original function names to their
+	// Alloy counterpart
+	private Map<String, String> originalToAlloy;    // container to hold the variable name mapping
+	// from  original name to alloy name
+	private Map<String, String> lhsOfUpdates;        // container to hold the variable name mapping from
+	// original alloy name to next available alloy name
+	private Map<String, String> rhsOfUpdates;        // container to hold the variable name mapping from
 	 												// original alloy name to last used alloy name that
 													// appeared on the lhs of an assignment
 	private Values values;
@@ -86,10 +60,11 @@ public class Translator implements Visitor {
 		trueInAlloy = "True";
 		ifStatementsTranslated = 0;
 		functionsTranslated = 0;
+		loopsTranslated = 0;
 		values = ValuesGlobal.getInstance();
 		result = new ArrayList<>();
 		resultMap = new HashMap<>();
-		resultMaxUsed= new HashMap<>();
+		resultMaxUsed = new HashMap<>();
 		functionsDefined = new HashMap<>();
 		originalToAlloy = new HashMap<>();
 		lhsOfUpdates = new HashMap<>();
@@ -102,15 +77,24 @@ public class Translator implements Visitor {
 		trueInAlloy = "True";
 		ifStatementsTranslated = 0;
 		functionsTranslated = 0;
+		loopsTranslated = 0;
 		values = ValuesGlobal.getInstance();
 		result = new ArrayList<>();
 		resultMap = new HashMap<>();
-		resultMaxUsed= new HashMap<>();
+		resultMaxUsed = new HashMap<>();
 		this.functionsDefined = functionsDefined;
 		this.originalToAlloy = originalToAlloy;
 		this.lhsOfUpdates = lhsOfUpdates;
 		this.rhsOfUpdates = rhsOfUpdates;
 	}
+
+	/**
+	 * @return the statementsTranslated
+	 */
+	private void incrementLoopsTranslated() {
+		loopsTranslated++;
+	}
+
 
 	/**
 	 * @return the statementsTranslated
@@ -1270,6 +1254,179 @@ public class Translator implements Visitor {
 	public void visitLogicalOpteration(Logical exp) {
 		System.out.println("Visting visitLogicalOpteration which is not supposed to happen");
 
+	}
+
+	@Override
+	public void visitLoop(Loop exp) {
+		String predName = "predForStatement" + this.loopsTranslated;
+		String assertName = "assertForStatement" + this.loopsTranslated;
+		Map<String, Value> vars = exp.getVariables();
+		Instruction invariant = exp.getLoopInvariant();
+		Instruction variant = exp.getLoopVariant();
+		
+		Map<String, String> preOriginalToAlloy = originalToAlloyCalculator(vars.keySet());
+		Map<String, String> postOriginalToAlloy = new HashMap<>();
+
+		// Clean up the lhs and rhs updates because this must be the highest level of visit calls
+		lhsOfUpdates = new HashMap<>();
+		rhsOfUpdates = new HashMap<>();
+		// prepare the lhs and rhs updates for visiting multiassignment
+		for (String key : preOriginalToAlloy.keySet()) {
+			lhsOfUpdates.put(key, preOriginalToAlloy.get(key) + "'");
+		}
+		for (String key : preOriginalToAlloy.keySet()) {
+			rhsOfUpdates.put(key, preOriginalToAlloy.get(key));
+		}
+		
+		this.resultMaxUsed.putAll(rhsOfUpdates);
+	
+		
+		// Visiting the precondition statement
+		// Which must be a logical expression
+		// lhsUpdates and rhsUpdates will not be used in this section
+		Translator  precondTranslator= new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		exp.getPreCond().accept(precondTranslator);
+		List<String> precondTranslated = precondTranslator.getResult();
+		StringBuilder precondSB = new StringBuilder();
+		precondSB.append("((");
+		precondTranslated.forEach(precondSB::append);
+		precondSB.append(")");
+		precondSB.append(" in True");
+		precondSB.append(") ");
+		String precondTranslatedString = precondSB.toString();
+		
+		Translator postcondTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		exp.getPostCond().accept(postcondTranslator);
+		List<String> postcondTranslated = postcondTranslator.getResult();
+		StringBuilder postcondSB = new StringBuilder();
+		postcondSB.append("((");
+		postcondTranslated.forEach(postcondSB::append);
+		postcondSB.append(") in True)");
+		String postcondTranslatedString = postcondSB.toString();
+
+		
+		Translator initializationTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		Instruction initialization = exp.getInitAssignments();
+		initialization.accept(initializationTranslator);
+		updateToLargestMapping(this.resultMaxUsed, initializationTranslator.getResultMaxUsed());
+		StringBuilder initializationSB =assignmentsToString(initializationTranslator.getResultMap());
+		String initializationResult = initializationSB.toString();
+		postOriginalToAlloy.putAll(rhsOfUpdates);
+		
+		Translator invariantPostInitializationTranslator = new Translator(postOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		invariant.accept(invariantPostInitializationTranslator);
+		StringBuilder invariantPostInitSB = new StringBuilder();
+		invariantPostInitializationTranslator.result.forEach(invariantPostInitSB::append);
+		String invariantPostInitResult = "( " +invariantPostInitSB.toString() + " in True )";
+
+		
+		
+		// reset the values in postOriginalToAlloy and rhsOfUpdates
+		postOriginalToAlloy = new HashMap<>(preOriginalToAlloy); 
+		rhsOfUpdates = new HashMap<>(preOriginalToAlloy);
+		
+		
+		Translator exitConditionTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		Instruction exitCondition = exp.getExitCond();
+		exitCondition.accept(exitConditionTranslator);
+		StringBuilder exitConditionSB = new StringBuilder();
+		exitConditionTranslator.result.forEach(exitConditionSB::append);
+		String exitConditionResult = "( " + exitConditionSB.toString() + " in True )";
+
+		Translator invariantPreAssignmentTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		invariant.accept(invariantPreAssignmentTranslator);
+		StringBuilder invariantPreAssignmentSB = new StringBuilder();
+		invariantPreAssignmentTranslator.result.forEach(invariantPreAssignmentSB::append);
+		String invariantPreAssignmentResult = "( " +invariantPreAssignmentSB.toString() + " in True )";
+
+		Translator variantPreAssignmentTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		variant.accept(variantPreAssignmentTranslator);
+		StringBuilder variantPreAssignmentSB = new StringBuilder();
+		variantPreAssignmentTranslator.result.forEach(variantPreAssignmentSB::append);
+		String variantPreAssignmentResult = variantPreAssignmentSB.toString();
+		
+		Translator assignmentsTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		exp.getAssignments().accept(assignmentsTranslator);
+		updateToLargestMapping(this.resultMaxUsed, assignmentsTranslator.getResultMaxUsed());
+		StringBuilder assignmentsSB = assignmentsToString(assignmentsTranslator.getResultMap());
+		String assignmentsTranslatedString = assignmentsSB.toString();
+		postOriginalToAlloy = new HashMap<>(rhsOfUpdates);
+
+		Translator variantPostAssignmentTranslator = new Translator(postOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		variant.accept(variantPostAssignmentTranslator);
+		StringBuilder variantPostAssignmentSB = new StringBuilder();
+		variantPostAssignmentTranslator.result.forEach(variantPostAssignmentSB::append);
+		String variantPostAssignmentResult = variantPostAssignmentSB.toString();
+		
+		
+		
+		Translator invariantPostAssignmentTranslator = new Translator(postOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
+		invariant.accept(invariantPostAssignmentTranslator);
+		StringBuilder invariantPostAssignmentSB = new StringBuilder();
+		invariantPostAssignmentTranslator.result.forEach(invariantPostAssignmentSB::append);
+		String invariantPostAssignmentResult = invariantPostAssignmentSB.toString() + " in True";
+		
+		
+		StringBuilder predParamSB = new StringBuilder();
+		StringBuilder forAllParamSB = new StringBuilder();
+		StringBuilder forSomeParamSB = new StringBuilder();
+		StringBuilder predInputParamSB = new StringBuilder();
+		alloyParametersCalculator(preOriginalToAlloy, this.resultMaxUsed, vars, predParamSB, forAllParamSB, forSomeParamSB, predInputParamSB);
+		
+		
+
+		StringBuilder predSignitureSB = new StringBuilder();
+		predSignitureSB.append("pred ").append(predName);
+		predSignitureSB.append(" [").append(predParamSB).append("] {\n");
+
+		predSignitureSB.append("\t(");
+		predSignitureSB.append(initializationResult);
+		predSignitureSB.append("\n\t=> \n\t");
+		predSignitureSB.append(invariantPostInitResult);
+		predSignitureSB.append(") ");
+
+		predSignitureSB.append("\n\n");
+		predSignitureSB.append("\t(");
+		predSignitureSB.append(invariantPreAssignmentResult);
+		predSignitureSB.append("\n\t and");
+		predSignitureSB.append(exitConditionResult);
+		predSignitureSB.append(")");
+		predSignitureSB.append("\n\t=> \n\t");
+		predSignitureSB.append(assignmentsTranslatedString);
+		predSignitureSB.append("\n\t=> \n\t");
+		predSignitureSB.append("(");
+		predSignitureSB.append(invariantPostAssignmentResult);
+		predSignitureSB.append(" and ");
+		predSignitureSB.append(" ( ");
+		predSignitureSB.append(variantPostAssignmentResult);
+		predSignitureSB.append(" >= 0 )");
+		predSignitureSB.append(" and ( ");
+		predSignitureSB.append(variantPreAssignmentResult);
+		predSignitureSB.append(" > ");
+		predSignitureSB.append(variantPostAssignmentResult);
+		predSignitureSB.append(")");
+		predSignitureSB.append(")");
+		
+		predSignitureSB.append("\n\n\t");
+		predSignitureSB.append("(");
+		predSignitureSB.append(invariantPreAssignmentResult);
+		predSignitureSB.append(" and ");
+		predSignitureSB.append("not(");
+		predSignitureSB.append(exitConditionResult);
+		predSignitureSB.append(")");
+		predSignitureSB.append("\n\t => \n\t");
+		predSignitureSB.append(postcondTranslatedString).append(") \t\t\t // post condition\n}\n\n");
+		
+		StringBuilder assertSB = new StringBuilder();
+		assertSB.append("check ").append(assertName).append(" {\n");
+		assertSB.append("\t { all ").append(forAllParamSB).append(" | ");
+		if (forSomeParamSB.length() > 0) {
+			assertSB.append("some ").append(forSomeParamSB).append(" | ");
+		}
+		assertSB.append(precondTranslatedString).append(" => ").append(predName).append("[");
+		assertSB.append(predInputParamSB).append("] }").append("\n}\n");
+		this.finalResult = predSignitureSB.append(assertSB).toString();
+		this.incrementLoopsTranslated();
 	}
 
 }
