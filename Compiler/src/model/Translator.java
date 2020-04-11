@@ -7,6 +7,7 @@ import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.*;
 import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.array.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.*;
@@ -88,6 +89,21 @@ public class Translator implements Visitor {
 		this.rhsOfUpdates = rhsOfUpdates;
 	}
 
+	public Translator(Map<String, String> originalToAlloy) {
+		finalResult = "";
+		falseInAlloy = "False";
+		trueInAlloy = "True";
+		ifStatementsTranslated = 0;
+		result = new ArrayList<>();
+		resultMap = new HashMap<>();
+		resultMaxUsed = new HashMap<>();
+		functionsDefined = new HashMap<>();
+		lhsOfUpdates = new HashMap<>();
+		rhsOfUpdates = new HashMap<>();
+		this.originalToAlloy = originalToAlloy;
+		values = ValuesGlobal.getInstance();
+	}
+
 	/**
 	 * @return the statementsTranslated
 	 */
@@ -139,12 +155,19 @@ public class Translator implements Visitor {
 	}
 
 	/**
+	 * @return the originalToAlloy
+	 */
+	private Map<String, String> getOriginalToAlloy() {
+		return originalToAlloy;
+	}
+
+	/**
 	 * @return the finalResult
 	 */
 	public String getFinalResult() {
 		return finalResult;
 	}
-		
+
 	public Map<String, String> getResultMaxUsed() {
 		return resultMaxUsed;
 	}
@@ -1210,6 +1233,12 @@ public class Translator implements Visitor {
 	}
 
 	@Override
+	public void visitArray(Array exp) {
+		String alloyVarName = this.originalToAlloy.get(exp.getID());
+		result.add(alloyVarName);
+	}
+
+	@Override
 	public void visitPrecondStatement(PrecondStatement exp) {
 		Logical precondLogical = (Logical) exp.getLogicalCondition();
 		Translator tr = new Translator();
@@ -1427,6 +1456,140 @@ public class Translator implements Visitor {
 		assertSB.append(predInputParamSB).append("] }").append("\n}\n");
 		this.finalResult = predSignitureSB.append(assertSB).toString();
 		this.incrementLoopsTranslated();
+	}
+
+	@Override
+	public void visitForAll(ForAll exp) {
+		Translator tr = new Translator(this.originalToAlloy);
+		Instruction inside = exp.getInside();
+		inside.accept(tr);
+
+		StringBuilder insideTranslationSB = new StringBuilder();
+		insideTranslationSB.append("(");
+		tr.result.forEach(insideTranslationSB::append);
+		insideTranslationSB.append(" in True").append(")");
+		String insideTranslation = insideTranslationSB.toString();
+
+		Array array = (Array) exp.getArray();
+		String arrayNameOriginal = array.getID();
+		String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+		String lambdaType = values.getPrimitiveType(arrayNameOriginal);
+
+		result.add("(");
+		result.add("(");
+		result.add("all ");
+		result.add("arrayElems: ");
+		result.add(arrayNameInAlloy);
+		result.add(".elems ");
+		result.add("| ");
+		result.add("arrayElems ");
+		result.add(" in ");
+		result.add("{");
+		result.add("each: ");
+		result.add(lambdaType);
+		result.add(" | ");
+		result.add(insideTranslation);
+		result.add("}");
+		result.add(")");
+		result.add("=> True else False");
+		result.add(")");
+
+	}
+
+	@Override
+	public void visitForSome(ForSome exp) {
+		Translator tr = new Translator(this.originalToAlloy);
+		Instruction inside = exp.getInside();
+		inside.accept(tr);
+
+		StringBuilder insideTranslationSB = new StringBuilder();
+		insideTranslationSB.append("(");
+		tr.result.forEach(insideTranslationSB::append);
+		insideTranslationSB.append(" in True").append(")");
+		String insideTranslation = insideTranslationSB.toString();
+
+		Array array = (Array) exp.getArray();
+		String arrayNameOriginal = array.getID();
+		String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+		String lambdaType = values.getPrimitiveType(arrayNameOriginal);
+
+		result.add("(");
+		result.add("(");
+		result.add("some ");
+		result.add("arrayElems: ");
+		result.add(arrayNameInAlloy);
+		result.add(".elems ");
+		result.add("| ");
+		result.add("arrayElems ");
+		result.add("in ");
+		result.add("{");
+		result.add("each: ");
+		result.add(lambdaType);
+		result.add(" | ");
+		result.add(insideTranslation);
+		result.add("}");
+		result.add(")");
+		result.add("=> True else False");
+		result.add(")");
+
+	}
+
+	// TODO :
+	// - FIX THE ISSUE WHEN PARSING INT Y = X - 1
+	// - IMPLEMENT ARRAY METHODS
+	// https://stackoverflow.com/questions/52690845/alloy-define-relation-to-only-positive-integers
+
+
+	@Override //TODO
+	public void visitAddToArray(AddToArray exp) {
+		Translator tr = new Translator(this.originalToAlloy);
+		Instruction inside = exp.getInside();
+		inside.accept(tr);
+
+		StringBuilder insideTranslationSB = new StringBuilder();
+		tr.result.forEach(insideTranslationSB::append);
+		String insideTranslation = insideTranslationSB.toString();
+
+		Array array = (Array) exp.getArray();
+		String arrayNameOriginal = array.getID();
+		String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+
+//		result.add("(");
+		result.add(arrayNameInAlloy);
+		result.add(".add[");
+		result.add(insideTranslation);
+		result.add("]");
+//		result.add(")");
+	}
+
+	@Override //TODO
+	public void visitRemoveFromArray(RemoveFromArray exp) {
+		Translator tr = new Translator(this.originalToAlloy);
+		Instruction inside = exp.getInside();
+		inside.accept(tr);
+
+		StringBuilder insideTranslationSB = new StringBuilder();
+		tr.result.forEach(insideTranslationSB::append);
+		String insideTranslation = insideTranslationSB.toString();
+
+		Array array = (Array) exp.getArray();
+		String arrayNameOriginal = array.getID();
+		String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+
+//		result.add("(");
+		result.add(arrayNameInAlloy);
+		result.add(".delete[");
+		result.add(arrayNameInAlloy);
+		result.add(".idxOf[");
+		result.add(insideTranslation);
+		result.add("]");
+		result.add("]");
+//		result.add(")");
+	}
+
+	@Override
+	public void visitEach(Each exp) {
+		result.add("each");
 	}
 
 }

@@ -22,6 +22,7 @@ statement: declaration
 declaration: VARIABLE ID  SEMICOLON                 	# VariableDeclaration
             | VARIABLE ID '=' ID  SEMICOLON         	# VariableInitializationConstantCopy 	// singleParameter can be used here
     		| VARIABLE ID '=' expression  SEMICOLON		# VariableInitializationConstant
+    		| VARIABLE '[' ']' ID SEMICOLON				# VariableArrayDeclaration
     		;
 
 loop: 'loop_require' '(' logicalOp ')' 'loop_init' '{' multAssigSimple '}' 'loop' '(' logicalOp ')' '{' 'loop_invariant' '(' expression ')' 'loop_variant' '(' ID ')' multAssig '}' 'loop_ensure' '(' logicalOp')' # LoopStatement
@@ -75,15 +76,25 @@ multAssig: (assignment|conditional)+			# MultipleAssignments
 assignment: ID	SEMICOLON					# IDExpression
 		  | ID '=' ID  SEMICOLON			# IDAssignment			// singleParameter can be used here
 		  | ID '=' expression  SEMICOLON	# AssignAssignment
+		  | ID '.' arrayOp SEMICOLON		# AssignProperty
 		  | expression	SEMICOLON			# AssignExpression
 		  ;
 
 expression: arithmeticOp			# ArithmeticOperation
 		  | logicalOp				# LogicalOpteration
 		  | relationalOp			# RelationalOperation
+		  | lambdaOp                # LambdaOperation
 		  | functionCall			# FunctionReturnOperation
 		  | '(' expression ')'		# ParanthesesExpression 
 		  ;
+
+lambdaOp: relationalOp | logicalOp;
+
+arrayOp: 'add' '(' constant ')'                   # AddToArray
+       | 'remove' '(' constant ')'                # RemoveFromArray
+       | 'all' '(' lambdaOp ')'                   # ForAllArray
+       | 'some' '(' lambdaOp ')'                  # ForSomeArray
+	    ;
 
 arithmeticOp: '(' arithmeticOp ')'              # ParanthesesArithmetic
             | arithmeticOp '*' arithmeticOp		# MultiplicationArithmetic
@@ -91,9 +102,9 @@ arithmeticOp: '(' arithmeticOp ')'              # ParanthesesArithmetic
 			| arithmeticOp '%' arithmeticOp		# ModuloArithmetic
 			| arithmeticOp '+' arithmeticOp 	# AdditionArithmetic
 			| arithmeticOp '-' arithmeticOp		# SubtractionArithmetic
+			| 'each'                            # EachArithmetic
 			| ID								# VariableArithmetic
-			| IntConstant						# IntegerConstant
-			| '-' IntConstant					# NegationIntegerConstant
+            | constant                          # ConstantArithmetic
 			;
 
 relationalOp: '(' relationalOp ')'                  # ParanthesesRelational
@@ -112,22 +123,25 @@ logicalOp: '(' logicalOp ')'                    # ParanthesesLogical
 		 | logicalOp '=>' logicalOp				# ImplicationLogical
 		 | logicalOp '<=>' logicalOp			# EquivalenceLogical
 		 | relationalOp							# RelationalOpLogical
+		 | ID '.' arrayOp                       # ArrayOpLogical
+		 | 'each'                               # EachLogical
 		 | ID									# VariableLogical
-		 | BoolConstant							# BooleanConstant
+		 | constant                             # ConstantLogical
 		 ;
 
-//VARIABLE: 'int' | 'bool';
-//ID: [a-z][a-zA-Z0-9_]*;
-//IntConstant : [0-9][1-9]*;
-//WS : [ \t\n\r]+ -> skip;
-	/* Tokens */
-    VARIABLE: 'int' | 'bool';
-	IntConstant : [0-9]+;
-	BoolConstant: 'true' | 'false';
-	ConstantValue: IntConstant | BoolConstant;
-	ID: [a-z][a-zA-Z0-9_]*;
-	COMMENT: '//' ~[\r\n]* -> skip;
-	WS : [ \t\n\r]+ -> skip ;
-	SEMICOLON: ';';
-	COMMA: ',';
+constant: IntConstant                           # IntegerConstant
+        | '-' IntConstant                       # NegationIntegerConstant
+        | BoolConstant                          # BooleanConstant
+        ;
+
+
+VARIABLE: 'int' | 'bool';
+IntConstant : [0-9]+;
+BoolConstant: 'true' | 'false';
+ConstantValue: IntConstant | BoolConstant;
+ID: [a-z][a-zA-Z0-9_]*;
+COMMENT: '//' ~[\r\n]* -> skip;
+WS : [ \t\n\r]+ -> skip ;
+SEMICOLON: ';';
+COMMA: ',';
 	

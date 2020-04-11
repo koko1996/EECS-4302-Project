@@ -5,6 +5,7 @@ import model.statement.MultiAssignment;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.*;
 import model.statement.assignment.expression.arithmetic.*;
+import model.statement.assignment.expression.array.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.*;
@@ -87,4 +88,16 @@ public interface Visitor {
     void visitFunctionCall(FunctionCall functionCall);
 
     void visitLoop(Loop exp);
+
+    void visitForAll(ForAll exp);
+
+    void visitForSome(ForSome exp);
+
+    void visitEach(Each exp);
+
+    void visitAddToArray(AddToArray exp);
+
+    void visitRemoveFromArray(RemoveFromArray exp);
+
+    void visitArray(Array exp);
 }
