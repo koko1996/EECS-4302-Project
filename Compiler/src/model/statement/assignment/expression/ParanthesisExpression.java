@@ -7,17 +7,17 @@ import model.Visitor;
 import model.statement.assignment.Expression;
 import model.values.Value;
 
-public class ParanthesesExpression extends Expression {
-	private Expression expr;
+public class ParanthesisExpression extends Expression {
+    private Expression expr;
 
-	/*
-	 * Constructor
-	 *
-	 * @param expr the underlying expression
-	 */
-	public ParanthesesExpression(Expression expr) {
-		this.expr = expr;
-	}
+    /*
+     * Constructor
+     *
+     * @param expr the underlying expression
+     */
+    public ParanthesisExpression(Expression expr) {
+        this.expr = expr;
+    }
 
 	/*
 	 * retrieve the underlying expression
@@ -31,8 +31,8 @@ public class ParanthesesExpression extends Expression {
 
 	@Override
 	public void accept(Visitor visitor) {
-		visitor.visitParanthesesExpression(this);
-	}
+        visitor.visitParenthesisExpression(this);
+    }
 
 	@Override
 	public Map<String, Value> getVariables() {
@@ -43,6 +43,6 @@ public class ParanthesesExpression extends Expression {
 	
     @Override
 	public Expression clone() {
-		return new ParanthesesExpression(expr.clone());
-	}
+        return new ParanthesisExpression(expr.clone());
+    }
 }

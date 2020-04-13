@@ -9,37 +9,27 @@ import model.statement.assignment.expression.array.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.*;
-
+/**
+ * Interface for the visitor classes.
+ */
 public interface Visitor {
-	void visitFucntionConditional(FunctionConditional exp);
-	
-    void visitConditionalAssertionStatement(AssertedConditional exp); 
+    void visitFunctionConditional(FunctionConditional exp);
+
+    void visitConditionalAssertionStatement(AssertedConditional exp);
 
     void visitIfConditional(IfElseIfStatement exp);
-    
+
     void visitElseIfConditional(ElseIfStatement exp);
 
-    void visitAssignExpression(ExpressionAssignment exp); 
+    void visitAssignExpression(ExpressionAssignment exp);
 
-    void visitAssignAssignment(Instruction exp); //TODO
-
-    void visitArithmeticOperation(Instruction exp); //?
-
-    void visitRelationalOperation(Relational exp);
-
-    void visitLogicalOpteration(Logical exp);
-
-    void visitParanthesesExpression(ParanthesesExpression exp);
+    void visitParenthesisExpression(ParanthesisExpression exp);
 
     void visitDivisionArithmetic(Division exp);
-
-    void visitVariableArithmetic(Instruction exp); //?
 
     void visitModuloArithmetic(Modulo exp);
 
     void visitMultiplicationArithmetic(Multiplication exp);
-
-    void visitNegationIntegerConstant(IntegerConstant exp); // SHOULDNT EXIST
 
     void visitAdditionArithmetic(Addition exp);
 
@@ -65,8 +55,6 @@ public interface Visitor {
 
     void visitImplicationLogical(Implication exp);
 
-    void visitVariableLogical(Instruction exp); //TODO
-
     void visitEquivalenceLogical(Equivalence exp);
 
     void visitNegationLogical(Negation exp);
@@ -76,8 +64,6 @@ public interface Visitor {
     void visitBooleanConstant(BooleanConstant exp);
     
     void visitBooleanVariable(BooleanVariable exp);
-
-    void visitRelationalOpLogical(Instruction exp); //TODO
 
     void visitPrecondStatement(PrecondStatement exp);
 

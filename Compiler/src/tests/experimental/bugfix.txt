@@ -1,0 +1,8 @@
+int a = 1;
+int b = 5;
+
+if_require(true)
+if(true){
+    a = b - -1;
+}
+if_ensure(true)

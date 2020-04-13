@@ -689,18 +689,18 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
-		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
-	}
+        return new ParanthesisExpression((Expression) visit(ctx.getChild(1)));
+    }
 
 	@Override
 	public Instruction visitParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx) {
-		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
-	}
+        return new ParanthesisExpression((Expression) visit(ctx.getChild(1)));
+    }
 
 	@Override
 	public Instruction visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx) {
-		return new ParanthesesExpression((Expression) visit(ctx.getChild(1)));
-	}
+        return new ParanthesisExpression((Expression) visit(ctx.getChild(1)));
+    }
 
 	@Override
 	public Instruction visitLoopStatement(ExprParser.LoopStatementContext ctx) {

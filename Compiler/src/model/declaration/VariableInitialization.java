@@ -82,10 +82,7 @@ public class VariableInitialization extends Declaration {
 	}
 
 	@Override
-	public void accept(Visitor visitor) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void accept(Visitor visitor) {/* Not used. */}
 
 	@Override
 	public Map<String, Value> getVariables() {

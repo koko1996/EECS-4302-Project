@@ -45,10 +45,10 @@ public class IfElseIfStatement extends Statement {
 	}
 
 	/**
-	 * @return the elseIfStatments
-	 */
-	public List<ElseIfStatement> getElseIfStatments() {
-		return elseIfStatments;
+     * @return the elseIfStatments
+     */
+    public List<ElseIfStatement> getElseIfStatements() {
+        return elseIfStatments;
     }
 
 

@@ -1,6 +1,5 @@
 package model.statement.assignment.expression;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +7,6 @@ import java.util.Map;
 import model.Instruction;
 import model.values.Value;
 import model.Visitor;
-import model.statement.MultiAssignment;
 import model.statement.assignment.Expression;
 
 public class FunctionConditional extends Expression{
@@ -103,8 +101,8 @@ public class FunctionConditional extends Expression{
 
 	@Override
 	public void accept(Visitor visitor) {
-		visitor.visitFucntionConditional(this);
-	}
+        visitor.visitFunctionConditional(this);
+    }
 
 	@Override
 	public Map<String, Value> getVariables() {
