@@ -1,0 +1,12 @@
+open logicFuncs
+
+pred predIfStatement0 [arg1:seq Int,arg2,arg2':Int] {
+	((True) in True) => 
+		 ((True) in True) and arg2'=1
+	((((some arrayElems: arg1.elems | arrayElems  in {each: Int | (((each > 0) => True else False) in True)})=> True else False)) in True) 			 // post condition
+}
+
+check assertIfStatement0 {
+	 { all arg1:seq Int,arg2:Int | some arg2':Int | ((((all arrayElems: arg1.elems | arrayElems  in {each: Int | (((each > 0) => True else False) in True)})=> True else False)) in True)  => predIfStatement0[arg1,arg2,arg2'] }
+}
+

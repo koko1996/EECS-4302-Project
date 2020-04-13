@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A visitor class for traslating the input programming language into Instruction objects.
+ * A visitor class for translating the input programming language into Instruction objects.
  */
 public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	private Values values; // Symbol table for storing values of variables

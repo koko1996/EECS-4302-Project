@@ -1,0 +1,11 @@
+int[] x;
+x.add(1);
+x.add(2);
+x.add(3);
+int y;
+
+if_require(x.all(each > 0))
+if(true) {
+	y = 1;
+}
+if_ensure(x.some(each > 0))
