@@ -937,7 +937,7 @@ public class Translator implements Visitor {
                                            StringBuilder predInputParamSB) {
         for (String key : preOriginalToAlloy.keySet()) {
             String alloyVar = preOriginalToAlloy.get(key);
-            String varType = vars.get(key).getType();
+            String varType = vars.get(key).getAlloyType();
             List<String> remainingVars = listOfVariablesUsed(alloyVar, postOriginalToAlloy.get(key));
 
             predParamSB.append(alloyVar);
