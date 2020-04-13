@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A class for Loops
+ */
 public class Loop extends Statement {
 
     private Instruction precondition;
@@ -20,6 +23,17 @@ public class Loop extends Statement {
     private Instruction assignments;
     private Instruction initAssignments;
 
+    /**
+     * Constructor
+     *
+     * @param precondition
+     * @param postcondition
+     * @param exitCondition
+     * @param loopInvariant
+     * @param loopVariant
+     * @param assignments
+     * @param initAssignments
+     */
     public Loop(Instruction precondition, Instruction postcondition, Instruction exitCondition, Instruction loopInvariant, Instruction loopVariant, Instruction assignments, List<Instruction> initAssignments) {
         this.precondition = precondition;
         this.postcondition = postcondition;
@@ -43,30 +57,65 @@ public class Loop extends Statement {
         return result;
     }
 
+    /**
+     * Getter for assignments
+     *
+     * @return
+     */
     public Instruction getAssignments() {
         return assignments;
     }
 
+    /**
+     * Getter for precondition
+     *
+     * @return
+     */
     public Instruction getPreCond() {
         return precondition;
     }
 
+    /**
+     * Getter for postcondition
+     *
+     * @return
+     */
     public Instruction getPostCond() {
         return postcondition;
     }
 
+    /**
+     * Getter for exitCondition
+     *
+     * @return
+     */
     public Instruction getExitCond() {
         return exitCondition;
     }
 
+    /**
+     * Getter for loopInvariant
+     *
+     * @return
+     */
     public Instruction getLoopInvariant() {
         return loopInvariant;
     }
 
+    /**
+     * Getter for loopVariant
+     *
+     * @return
+     */
     public Instruction getLoopVariant() {
         return loopVariant;
     }
 
+    /**
+     * Getter for initAssignments
+     *
+     * @return
+     */
     public Instruction getInitAssignments() {
         return initAssignments;
     }

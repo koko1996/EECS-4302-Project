@@ -5,7 +5,12 @@ import model.Visitor;
 import model.statement.assignment.Expression;
 
 public class Multiplication extends ArithmeticComposite {
-
+    /**
+     * Constructor
+     *
+     * @param left
+     * @param right
+     */
     public Multiplication(Instruction left, Instruction right) {
         super(left, right);
     }

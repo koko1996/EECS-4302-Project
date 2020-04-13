@@ -1,22 +1,21 @@
 package model.statement.assignment.expression.array;
 
 import model.Instruction;
-import model.values.Value;
 import model.Visitor;
-import model.statement.assignment.Expression;
+import model.values.Value;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ForAll extends ArrayComposite {
-
+    /**
+     * Constructor
+     *
+     * @param array
+     * @param inside
+     */
     public ForAll(Instruction array, Instruction inside) {
         super(array, inside);
-    }
-
-    @Override //TODO
-    public Expression clone() {
-        return null;
     }
 
     @Override

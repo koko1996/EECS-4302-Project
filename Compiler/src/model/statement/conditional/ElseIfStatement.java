@@ -1,22 +1,33 @@
 package model.statement.conditional;
 
-import java.util.Map;
-
 import model.Instruction;
 import model.Statement;
 import model.Visitor;
 import model.values.Value;
 
+import java.util.Map;
+
+/**
+ * A class for ElseIfStatements
+ */
 public class ElseIfStatement extends Statement {
 	private Instruction logicalCondition;
 	private Instruction assignments;
 
+	/**
+	 * Constructor
+	 *
+	 * @param condition
+	 * @param assignments
+	 */
 	public ElseIfStatement(Instruction condition, Instruction assignments) {
 		this.logicalCondition = condition;
 		this.assignments = assignments;
 	}
 
 	/**
+	 * Getter for logicalCondition
+	 *
 	 * @return the logicalCondition
 	 */
 	public Instruction getCondition() {
@@ -24,6 +35,8 @@ public class ElseIfStatement extends Statement {
 	}
 
 	/**
+	 * Getter for assignments
+	 *
 	 * @return the assignments
 	 */
 	public Instruction getAssignments() {
@@ -33,19 +46,13 @@ public class ElseIfStatement extends Statement {
 
 	@Override
 	public void accept(Visitor visitor) {
-        visitor.visitElseIfConditional(this);
+		visitor.visitElseIfConditional(this);
 	}
 
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String, Value> logicalConditionVars = logicalCondition.getVariables();
-//        System.out.println("logicalConditionVars "+logicalConditionVars.size());
-//        System.out.println("logicalConditionVars "+logicalConditionVars.toString());
 		Map<String, Value> assignmentsVars = assignments.getVariables();
-//        System.out.println("assignmentsVars "+assignmentsVars.size());
-//        System.out.println("assignmentsVars "+assignmentsVars.toString());
-
-		
 		return this.combineVariables(logicalConditionVars, assignmentsVars);
 	}
 

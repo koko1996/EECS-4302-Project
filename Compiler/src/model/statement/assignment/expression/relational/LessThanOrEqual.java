@@ -5,8 +5,16 @@ import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Relational;
 
+/**
+ * A class for <= operator
+ */
 public class LessThanOrEqual extends Relational {
-
+    /**
+     * Constructor
+     *
+     * @param left
+     * @param right
+     */
     public LessThanOrEqual(Instruction left, Instruction right) {
         super(left, right);
     }
@@ -15,10 +23,10 @@ public class LessThanOrEqual extends Relational {
     public void accept(Visitor visitor) {
         visitor.visitLessEqualRelational(this);
     }
-    
-    
+
+
     @Override
-	public Expression clone() {
-		return new LessThanOrEqual(((Expression) left).clone(),((Expression) right).clone());
-	}
+    public Expression clone() {
+        return new LessThanOrEqual(((Expression) left).clone(), ((Expression) right).clone());
+    }
 }

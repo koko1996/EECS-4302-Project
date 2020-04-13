@@ -1,9 +1,9 @@
 package model.statement.assignment.expression.array;
 
-import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.ArrayOperations;
+import model.values.Value;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,16 +15,33 @@ public class Array extends ArrayOperations {
     private String type;
     private List<Expression> value;
 
+    /**
+     * Constructor
+     *
+     * @param id
+     * @param type
+     * @param value
+     */
     public Array(String id, String type, List<Expression> value) {
         this.id = id;
         this.value = value;
         this.type = type;
     }
 
+    /**
+     * Getter for id
+     *
+     * @return
+     */
     public String getID() {
         return id;
     }
 
+    /**
+     * Getter for value
+     *
+     * @return
+     */
     public List<Expression> getValue() {
         return value;
     }

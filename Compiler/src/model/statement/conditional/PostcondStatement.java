@@ -2,23 +2,35 @@ package model.statement.conditional;
 
 import model.Instruction;
 import model.Statement;
-import model.values.Value;
 import model.Visitor;
+import model.values.Value;
 
 import java.util.Map;
 
+/**
+ * A class for Postconditions.
+ */
 public class PostcondStatement extends Statement {
 
-    private Instruction logicalCondition; // See if we can restrict the static type here TODO
+    private Instruction logicalCondition; // A logical statement for the postcondition
 
+    /**
+     * Getter for logicalCondition
+     *
+     * @return
+     */
     public Instruction getLogicalCondition() {
         return logicalCondition;
     }
 
+    /**
+     * Setter for logicalCondition
+     *
+     * @param logicalCondition
+     */
     public void setLogicalCondition(Instruction logicalCondition) {
         this.logicalCondition = logicalCondition;
     }
-
 
     @Override
     public void accept(Visitor visitor) {

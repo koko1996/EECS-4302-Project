@@ -1,9 +1,9 @@
 package model.statement.assignment.expression.logical;
 
-import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;
+import model.values.Value;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,6 @@ public class BooleanVariable extends Logical {
 	 * Constructor
 	 *
 	 * @param id the id of the variable in the expression
-	 *
 	 * @param value the assigned value of the variable in the expression
 	 */
 	public BooleanVariable(String id, Expression value) {
@@ -24,19 +23,14 @@ public class BooleanVariable extends Logical {
 		this.value = value;
 	}
 
-	
-	/*
-	 * retrieve the id of the variable expression
-	 *
+	/* Getter for id
 	 * @return retrieve the id of the variable expression
 	 */
 	public String getID() {
 		return this.id;
 	}
 
-	/*
-	 * retrieve the value of the variable expression
-	 *
+	/* Getter for value
 	 * @return retrieve the value of the variable expression
 	 */
 	public Expression getValue() {
@@ -55,7 +49,6 @@ public class BooleanVariable extends Logical {
 		result.put(id, val);
 		return result;
 	}
-
 
 	@Override
 	public Expression clone() {

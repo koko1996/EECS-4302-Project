@@ -1,19 +1,18 @@
 package model.statement.assignment.expression.arithmetic;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Arithmetic;
+import model.values.Value;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class IntegerConstant extends Arithmetic {
 	private int value;
 
 	/*
 	 * Constructor
-	 * 
 	 * @param value the assigned value of the variable in the expression
 	 */
 	public IntegerConstant(int value) {
@@ -21,20 +20,17 @@ public class IntegerConstant extends Arithmetic {
 	}
 
 
-    /*
-     * retrieve the value of the variable expression
-     *
-     * @return retrieve the value of the variable expression
-     */
-    public int getValue() {
-        return this.value;
-    }
+	/* Getter for value
+	 * @return retrieve the value of the variable expression
+	 */
+	public int getValue() {
+		return this.value;
+	}
 
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitIntegerConstant(this);
-    }
-
+	@Override
+	public void accept(Visitor visitor) {
+		visitor.visitIntegerConstant(this);
+	}
 
 	@Override
 	public Map<String, Value> getVariables() {

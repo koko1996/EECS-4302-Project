@@ -5,7 +5,12 @@ import model.Visitor;
 import model.statement.assignment.Expression;
 
 public class Addition extends ArithmeticComposite {
-
+	/**
+	 * Constructor
+	 *
+	 * @param left
+	 * @param right
+	 */
 	public Addition(Instruction left, Instruction right) {
 		super(left, right);
 	}

@@ -1,36 +1,48 @@
 package model.statement.conditional;
 
+import model.Instruction;
+import model.Statement;
+import model.Visitor;
+import model.statement.MultiAssignment;
+import model.values.Value;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import model.Instruction;
-import model.Statement;
-import model.values.Value;
-import model.Visitor;
-import model.statement.MultiAssignment;
-
+/**
+ * A class for IfElseIfStatements
+ */
 public class IfElseIfStatement extends Statement {
 	private Instruction logicalCondition;
 	private Instruction assignments;
-	private List<ElseIfStatement> elseIfStatments;
-	private IfElseIfStatement elseStatment;
+	private List<ElseIfStatement> elseIfStatements;
+	private IfElseIfStatement elseStatement;
 
-
-	public IfElseIfStatement(Instruction condition, Instruction assignments, List<Instruction> elseIfStatments,Instruction elseStatement ) {
+	/**
+	 * Constructor
+	 *
+	 * @param condition
+	 * @param assignments
+	 * @param elseIfStatements
+	 * @param elseStatement
+	 */
+	public IfElseIfStatement(Instruction condition, Instruction assignments, List<Instruction> elseIfStatements, Instruction elseStatement) {
 		this.logicalCondition = condition;
 		this.assignments = assignments;
-		this.elseIfStatments = new ArrayList<>();
-		for(Instruction instr : elseIfStatments){
-			this.elseIfStatments.add((ElseIfStatement) instr);
+		this.elseIfStatements = new ArrayList<>();
+		for (Instruction instr : elseIfStatements) {
+			this.elseIfStatements.add((ElseIfStatement) instr);
 		}
-		if(elseStatement != null){
-			this.elseStatment = (IfElseIfStatement) elseStatement;	
-		} 
+		if (elseStatement != null) {
+			this.elseStatement = (IfElseIfStatement) elseStatement;
+		}
 	}
 
 	/**
+	 * Getter for logicalCondition
+	 *
 	 * @return the logicalCondition
 	 */
 	public Instruction getCondition() {
@@ -38,6 +50,8 @@ public class IfElseIfStatement extends Statement {
 	}
 
 	/**
+	 * Getter for assignments
+	 *
 	 * @return the assignments
 	 */
 	public Instruction getAssignments() {
@@ -45,19 +59,23 @@ public class IfElseIfStatement extends Statement {
 	}
 
 	/**
-     * @return the elseIfStatments
-     */
-    public List<ElseIfStatement> getElseIfStatements() {
-        return elseIfStatments;
-    }
+	 * Getter for elseIfStatements
+	 *
+	 * @return the elseIfStatements
+	 */
+	public List<ElseIfStatement> getElseIfStatements() {
+		return elseIfStatements;
+	}
 
 
-    /**
-     * @return the elseStatment
-     */
-    public IfElseIfStatement getElseStatment() {
-        return elseStatment;
-    }
+	/**
+	 * Getter for elseStatement
+	 *
+	 * @return the elseStatement
+	 */
+	public IfElseIfStatement getElseStatement() {
+		return elseStatement;
+	}
 
 	@Override
 	public String toString() {
@@ -66,32 +84,25 @@ public class IfElseIfStatement extends Statement {
 		MultiAssignment assignments = (MultiAssignment) this.assignments;
 		assignments.getAssignments().forEach(each -> sb.append("\n\t").append(each));
 		sb.append("else");
-		sb.append(elseStatment);
+		sb.append(elseStatement);
 		return sb.toString();
 	}
 
 	@Override
 	public void accept(Visitor visitor) {
-        visitor.visitIfConditional(this);
+		visitor.visitIfConditional(this);
 	}
 
 	@Override
 	public Map<String, Value> getVariables() {
 		Map<String, Value> logicalConditionVars = logicalCondition.getVariables();
-//        System.out.println("logicalConditionVars "+logicalConditionVars.size());
-//        System.out.println("logicalConditionVars "+logicalConditionVars.toString());
 		Map<String, Value> assignmentsVars = assignments.getVariables();
-//        System.out.println("assignmentsVars "+assignmentsVars.size());
-//        System.out.println("assignmentsVars "+assignmentsVars.toString());
 		Map<String, Value> ifElseIfVars = new HashMap<>();
-//        System.out.println("ifElseIfVars "+ifElseIfVars.size());
-//        System.out.println("ifElseIfVars "+ifElseIfVars.toString());
-		elseIfStatments.forEach(each -> ifElseIfVars.putAll(each.getVariables()));
-		Map<String, Value> elseVars =new HashMap<>();
-		if (elseStatment != null){
-			elseVars = elseStatment.getVariables();	
+		elseIfStatements.forEach(each -> ifElseIfVars.putAll(each.getVariables()));
+		Map<String, Value> elseVars = new HashMap<>();
+		if (elseStatement != null) {
+			elseVars = elseStatement.getVariables();
 		}
-		
 		return this.combineVariables(logicalConditionVars, assignmentsVars, ifElseIfVars, elseVars);
 	}
 

@@ -1,10 +1,5 @@
 package model.statement.assignment.expression;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import model.Instruction;
 import model.Visitor;
 import model.statement.assignment.Expression;
@@ -12,19 +7,36 @@ import model.statement.assignment.expression.arithmetic.IntegerConstant;
 import model.statement.assignment.expression.logical.BooleanConstant;
 import model.values.Value;
 
-public class FunctionCall extends Expression{
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * A class for FunctionCalls.
+ */
+public class FunctionCall extends Expression {
 
 	private String id;
 	private String type;
-	private List<Instruction>  parameters;
+	private List<Instruction> parameters;
 
+	/**
+	 * Constructor
+	 *
+	 * @param id
+	 * @param type
+	 * @param parameters
+	 */
 	public FunctionCall(String id, String type, List<Instruction> parameters) {
 		this.id = id;
 		this.type = type;
 		this.parameters = parameters;
 	}
-	
+
 	/**
+	 * Getter for id
+	 *
 	 * @return the id
 	 */
 	public String getId() {
@@ -32,6 +44,8 @@ public class FunctionCall extends Expression{
 	}
 
 	/**
+	 * Getter for parameters
+	 *
 	 * @return the parameters
 	 */
 	public List<Instruction> getParameters() {
@@ -39,6 +53,8 @@ public class FunctionCall extends Expression{
 	}
 
 	/**
+	 * Getter for type
+	 *
 	 * @return the type
 	 */
 	public String getType() {
@@ -48,7 +64,7 @@ public class FunctionCall extends Expression{
 	@Override
 	public Expression clone() {
 		List<Instruction> copyParameters = new ArrayList<>();
-		for(Instruction expr: this.parameters){
+		for (Instruction expr : this.parameters) {
 			copyParameters.add(((Expression) expr).clone());
 		}
 		return new FunctionCall(id,type,copyParameters);
@@ -57,7 +73,7 @@ public class FunctionCall extends Expression{
 	@Override
 	public void accept(Visitor visitor) {
 		visitor.visitFunctionCall(this);
-		
+
 	}
 
 	@Override

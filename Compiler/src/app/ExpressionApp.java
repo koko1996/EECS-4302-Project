@@ -80,7 +80,6 @@ public class ExpressionApp {
 					return;
 				}
 			}
-
 			// Saves output into a file.
 			try {
 				FileWriter fileWriter = new FileWriter("output.ke");
@@ -89,8 +88,6 @@ public class ExpressionApp {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-
 		}
 	}
 

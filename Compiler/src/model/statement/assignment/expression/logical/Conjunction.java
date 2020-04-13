@@ -12,7 +12,6 @@ public class Conjunction extends LogicalComposite {
      * Constructor
      *
      * @param left the left expression
-     *
      * @param right the left expression
      */
     public Conjunction(Instruction left, Instruction right) {

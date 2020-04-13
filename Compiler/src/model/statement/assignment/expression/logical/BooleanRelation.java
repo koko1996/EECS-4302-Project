@@ -1,13 +1,13 @@
 package model.statement.assignment.expression.logical;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import model.Instruction;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Logical;
 import model.values.Value;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BooleanRelation extends Logical {
     private Instruction expr;
@@ -21,9 +21,7 @@ public class BooleanRelation extends Logical {
         this.expr = expr;
     }
 
-    /*
-     * retrieve the value of the variable expression
-     *
+    /* Getter for value
      * @return retrieve the value of the variable expression
      */
     public Instruction getValue() {
@@ -32,7 +30,7 @@ public class BooleanRelation extends Logical {
 
     @Override
     public void accept(Visitor visitor) {
-//        visitor.visitBooleanRelation(this);  // TODO
+        // No need to implement.
     }
 
 	@Override

@@ -1,18 +1,22 @@
 package model.statement.assignment.expression.array;
 
 import model.Instruction;
-import model.values.Value;
 import model.Visitor;
+import model.values.Value;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ForSome extends ArrayComposite {
-
+    /**
+     * Constructor
+     *
+     * @param array
+     * @param inside
+     */
     public ForSome(Instruction array, Instruction inside) {
         super(array, inside);
     }
-
 
     @Override
     public void accept(Visitor visitor) {

@@ -1,15 +1,20 @@
 package model.statement.assignment.expression.array;
 
 import model.Instruction;
-import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
+import model.values.Value;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class RemoveFromArray extends ArrayComposite {
-
+    /**
+     * Constructor
+     *
+     * @param array
+     * @param inside
+     */
     public RemoveFromArray(Instruction array, Instruction inside) {
         super(array, inside);
     }

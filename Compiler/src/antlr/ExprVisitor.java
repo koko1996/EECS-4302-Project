@@ -373,7 +373,7 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx);
+	T visitParenthesisArithmetic(ExprParser.ParanthesesArithmeticContext ctx);
 
 	/**
 	 * Visit a parse tree produced by the {@code AdditionArithmetic}
@@ -409,10 +409,12 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx);
+	T visitParenthesisRelational(ExprParser.ParanthesesRelationalContext ctx);
+
 	/**
 	 * Visit a parse tree produced by the {@code LessRelational}
 	 * labeled alternative in {@link ExprParser#relationalOp}.
+	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
@@ -540,7 +542,7 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx);
+	T visitParenthesisLogical(ExprParser.ParanthesesLogicalContext ctx);
 
 	/**
 	 * Visit a parse tree produced by the {@code ArrayOpLogical}

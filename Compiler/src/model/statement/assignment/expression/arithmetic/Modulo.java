@@ -5,7 +5,12 @@ import model.Visitor;
 import model.statement.assignment.Expression;
 
 public class Modulo extends ArithmeticComposite {
-
+    /**
+     * Constructor
+     *
+     * @param left
+     * @param right
+     */
     public Modulo(Instruction left, Instruction right) {
         super(left, right);
     }
@@ -15,7 +20,7 @@ public class Modulo extends ArithmeticComposite {
         visitor.visitModuloArithmetic(this);
     }
 
-	@Override
+    @Override
 	public Expression clone() {
 		return new Modulo(((Expression) left).clone(),((Expression) right).clone());
 	}

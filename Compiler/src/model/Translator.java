@@ -185,14 +185,7 @@ public class Translator implements Visitor {
         // lhsUpdates and rhsUpdates will not be used in this section
         Translator precondTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         exp.getPreCond().accept(precondTranslator);
-        List<String> precondTranslated = precondTranslator.getResult();
-        StringBuilder precondSB = new StringBuilder();
-        precondSB.append("((");
-        precondTranslated.forEach(precondSB::append);
-        precondSB.append(")");
-        precondSB.append(" in True");
-        precondSB.append(") ");
-        String precondTranslatedString = precondSB.toString();
+        String precondTranslatedString = addPrecondHelper(precondTranslator.getResult()).toString();
 
         Map<String, String> tempPreOriginalToAlloy = preOriginalToAlloy;
         Translator assignmentsTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
@@ -217,14 +210,10 @@ public class Translator implements Visitor {
         assignmentsOfFunctionInAlloySB.append("}\n");
         String assignmentsOfFunctionInAlloyString = assignmentsOfFunctionInAlloySB.toString();
 
+        // Translate postcondition
         Translator postcondTranslator = new Translator(postOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         exp.getPostCond().accept(postcondTranslator);
-        List<String> postcondTranslated = postcondTranslator.getResult();
-        StringBuilder postcondSB = new StringBuilder();
-        postcondSB.append("((");
-        postcondTranslated.forEach(postcondSB::append);
-        postcondSB.append(") in True)");
-        String postcondTranslatedString = postcondSB.toString();
+        String postcondTranslatedString = addPostcondHelper(postcondTranslator.getResult()).toString();
 
         StringBuilder predParamSB = new StringBuilder();
         StringBuilder forAllParamSB = new StringBuilder();
@@ -235,11 +224,7 @@ public class Translator implements Visitor {
                 forAllParamSB, forSomeParamSB, predInputParamSB);
 
         // Generate predicate block
-        StringBuilder predSignatureSB = new StringBuilder();
-        predSignatureSB.append("pred ").append(predName);
-        predSignatureSB.append(" [").append(predParamSB).append("] {\n");
-        predSignatureSB.append("\t").append(assignmentsTranslatedString).append("\n\t");
-        predSignatureSB.append(postcondTranslatedString).append("\t\t\t // post condition\n}\n\n");
+        StringBuilder predSignatureSB = addPredBlockHelper(predName, predParamSB, assignmentsTranslatedString, postcondTranslatedString);
 
         // Generate function block
         StringBuilder funSignatureSB = new StringBuilder();
@@ -250,18 +235,12 @@ public class Translator implements Visitor {
         funSignatureSB.append("}\n\n");
 
         // Generate check block
-        StringBuilder assertSB = new StringBuilder();
-        assertSB.append("check ").append(assertName).append(" {\n");
-        assertSB.append("\t { all ").append(forAllParamSB).append(" | ");
-        assertSB.append(forSomeParamSB.length() > 0 ? "some " + forSomeParamSB + " | " : "");
-        assertSB.append(precondTranslatedString).append(" => ").append(predName).append("[");
-        assertSB.append(predInputParamSB).append("] }").append("\n}\n");
+        StringBuilder assertSB = addCheckBlockHelper(predName, assertName, precondTranslatedString, forAllParamSB, forSomeParamSB, predInputParamSB);
 
         this.finalResult = predSignatureSB.append(funSignatureSB).append(assertSB).toString();
         functionsDefined.put(exp.getName(), functionName);
         this.incrementFunctionsTranslated();
     }
-
 
     @Override
     public void visitConditionalAssertionStatement(AssertedConditional exp) {
@@ -285,16 +264,11 @@ public class Translator implements Visitor {
         // lhsUpdates and rhsUpdates will not be used in this section
         Translator precondTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         exp.getPreCond().accept(precondTranslator);
-        List<String> precondTranslated = precondTranslator.getResult();
-        StringBuilder precondSB = new StringBuilder();
-        precondSB.append("((");
-        precondTranslated.forEach(precondSB::append);
-        precondSB.append(") in True) ");
-        String precondTranslatedString = precondSB.toString();
+        String precondTranslatedString = addPrecondHelper(precondTranslator.getResult()).toString();
 
         Map<String, String> tempPreOriginalToAlloy = preOriginalToAlloy;
         Translator ifStatementTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates); // might change map values
-        exp.getIfStatment().accept(ifStatementTranslator);
+        exp.getIfStatement().accept(ifStatementTranslator);
         assert (tempPreOriginalToAlloy.equals(preOriginalToAlloy));
         this.resultMaxUsed.putAll(ifStatementTranslator.getResultMaxUsed());
 
@@ -314,12 +288,7 @@ public class Translator implements Visitor {
         // Translate post condition
         Translator postcondTranslator = new Translator(postOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         exp.getPostCond().accept(postcondTranslator);
-        List<String> postcondTranslated = postcondTranslator.getResult();
-        StringBuilder postcondSB = new StringBuilder();
-        postcondSB.append("((");
-        postcondTranslated.forEach(postcondSB::append);
-        postcondSB.append(") in True) ");
-        String postcondTranslatedString = postcondSB.toString();
+        String postcondTranslatedString = addPostcondHelper(postcondTranslator.getResult()).toString();
 
         StringBuilder predParamSB = new StringBuilder();
         StringBuilder forAllParamSB = new StringBuilder();
@@ -328,21 +297,12 @@ public class Translator implements Visitor {
         alloyParametersCalculator(preOriginalToAlloy, this.resultMaxUsed, vars, predParamSB, forAllParamSB, forSomeParamSB, predInputParamSB);
 
         // Generate predicate block
-        StringBuilder predSignatureSB = new StringBuilder();
-        predSignatureSB.append("pred ").append(predName).append(ifStatementsTranslated);
-        predSignatureSB.append(" [").append(predParamSB).append("] {\n");
-        predSignatureSB.append("\t").append(ifStatementTranslatedString).append(" \n\t");
-        predSignatureSB.append(postcondTranslatedString).append("\t\t\t // post condition\n}\n\n");
+        StringBuilder predSignatureSB = addPredBlockHelper(predName + ifStatementsTranslated, predParamSB, ifStatementTranslatedString, postcondTranslatedString);
 
         // Generate check block
-        StringBuilder assertSB = new StringBuilder();
-        assertSB.append("check ").append(assertName).append(ifStatementsTranslated).append(" {\n");
-        assertSB.append("\t { all ").append(forAllParamSB).append(" |  ");
-        if (forSomeParamSB.length() > 0) {
-            assertSB.append("some ").append(forSomeParamSB).append(" | ");
-        }
-        assertSB.append(precondTranslatedString).append(" => ").append(predName).append(ifStatementsTranslated).append("[");
-        assertSB.append(predInputParamSB).append("] }").append("\n}\n");
+        StringBuilder assertSB = addCheckBlockHelper(predName + ifStatementsTranslated,
+                assertName + ifStatementsTranslated, precondTranslatedString, forAllParamSB,
+                forSomeParamSB, predInputParamSB);
 
         this.finalResult = predSignatureSB.append(assertSB).toString();
 
@@ -382,8 +342,8 @@ public class Translator implements Visitor {
         // Translate else
         Map<String, String> elseRhsOfUpdates = new HashMap<>(origRhsOfUpdates);
         Translator elseTranslator = new Translator(originalToAlloy, functionsDefined, lhsOfUpdates, elseRhsOfUpdates);
-        if (exp.getElseStatment() != null) {
-            exp.getElseStatment().getAssignments().accept(elseTranslator);
+        if (exp.getElseStatement() != null) {
+            exp.getElseStatement().getAssignments().accept(elseTranslator);
             updateToLargestMapping(this.resultMaxUsed, elseTranslator.getResultMaxUsed());
             updateToLargestMapping(rhsOfUpdates, elseRhsOfUpdates);
         }
@@ -407,7 +367,7 @@ public class Translator implements Visitor {
             assignmentsToString(this.result, missingAssignments);
         }
 
-        if (exp.getElseStatment() != null) {
+        if (exp.getElseStatement() != null) {
             this.result.add("\n\telse \n\t\t");
             this.result.add(" ((" + trueInAlloy + ") in True)");
             assignmentsToString(this.result, elseTranslator.getResultMap());
@@ -506,7 +466,7 @@ public class Translator implements Visitor {
 
 
     @Override
-    public void visitParenthesisExpression(ParanthesisExpression exp) {
+    public void visitParenthesisExpression(ParenthesisExpression exp) {
         // Translate inside the parenthesis.
         Translator innerTranslator = new Translator(originalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         exp.getExpression().accept(innerTranslator);
@@ -684,43 +644,32 @@ public class Translator implements Visitor {
         Map<String, Value> vars = exp.getVariables();
         Instruction invariant = exp.getLoopInvariant();
         Instruction variant = exp.getLoopVariant();
-
         Map<String, String> preOriginalToAlloy = originalToAlloyCalculator(vars.keySet());
         Map<String, String> postOriginalToAlloy = new HashMap<>();
 
         // Clean up the lhs and rhs updates because this must be the highest level of visit calls
         lhsOfUpdates = new HashMap<>();
         rhsOfUpdates = new HashMap<>();
+
         // prepare the lhs and rhs updates for visiting multiassignment
         preOriginalToAlloy.keySet().forEach(key -> lhsOfUpdates.put(key, preOriginalToAlloy.get(key) + "'"));
         preOriginalToAlloy.keySet().forEach(key -> rhsOfUpdates.put(key, preOriginalToAlloy.get(key)));
 
         this.resultMaxUsed.putAll(rhsOfUpdates);
-        
+
         // Visiting the precondition statement
         // Which must be a logical expression
         // lhsUpdates and rhsUpdates will not be used in this section
         Translator precondTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         exp.getPreCond().accept(precondTranslator);
-        List<String> precondTranslated = precondTranslator.getResult();
-        StringBuilder precondSB = new StringBuilder();
-        precondSB.append("((");
-        precondTranslated.forEach(precondSB::append);
-        precondSB.append(")");
-        precondSB.append(" in True");
-        precondSB.append(") ");
-        String precondTranslatedString = precondSB.toString();
+        String precondTranslatedString = addPrecondHelper(precondTranslator.getResult()).toString();
 
+        // Translate post condition
         Translator postcondTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         exp.getPostCond().accept(postcondTranslator);
-        List<String> postcondTranslated = postcondTranslator.getResult();
-        StringBuilder postcondSB = new StringBuilder();
-        postcondSB.append("((");
-        postcondTranslated.forEach(postcondSB::append);
-        postcondSB.append(") in True)");
-        String postcondTranslatedString = postcondSB.toString();
+        String postcondTranslatedString = addPostcondHelper(postcondTranslator.getResult()).toString();
 
-
+        // Translate init
         Translator initializationTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         Instruction initialization = exp.getInitAssignments();
         initialization.accept(initializationTranslator);
@@ -729,37 +678,32 @@ public class Translator implements Visitor {
         String initializationResult = initializationSB.toString();
         postOriginalToAlloy.putAll(rhsOfUpdates);
 
+        // Translate invariant post init
         Translator invariantPostInitializationTranslator = new Translator(postOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         invariant.accept(invariantPostInitializationTranslator);
-        StringBuilder invariantPostInitSB = new StringBuilder();
-        invariantPostInitializationTranslator.result.forEach(invariantPostInitSB::append);
-        String invariantPostInitResult = "( " + invariantPostInitSB.toString() + " in True )";
-
+        String invariantPostInitResult = "( " + listToStringBuilderHelper(invariantPostInitializationTranslator.result).toString() + " in True )";
 
         // reset the values in postOriginalToAlloy and rhsOfUpdates
         postOriginalToAlloy = new HashMap<>(preOriginalToAlloy);
         rhsOfUpdates = new HashMap<>(preOriginalToAlloy);
 
-
+        // Translate exit condition
         Translator exitConditionTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         Instruction exitCondition = exp.getExitCond();
         exitCondition.accept(exitConditionTranslator);
-        StringBuilder exitConditionSB = new StringBuilder();
-        exitConditionTranslator.result.forEach(exitConditionSB::append);
-        String exitConditionResult = "( " + exitConditionSB.toString() + " in True )";
+        String exitConditionResult = "( " + listToStringBuilderHelper(exitConditionTranslator.result).toString() + " in True )";
 
+        // Translate invariant pre assignment
         Translator invariantPreAssignmentTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         invariant.accept(invariantPreAssignmentTranslator);
-        StringBuilder invariantPreAssignmentSB = new StringBuilder();
-        invariantPreAssignmentTranslator.result.forEach(invariantPreAssignmentSB::append);
-        String invariantPreAssignmentResult = "( " + invariantPreAssignmentSB.toString() + " in True )";
+        String invariantPreAssignmentResult = "( " + listToStringBuilderHelper(invariantPreAssignmentTranslator.result).toString() + " in True )";
 
+        // Translate variant pre assignment
         Translator variantPreAssignmentTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         variant.accept(variantPreAssignmentTranslator);
-        StringBuilder variantPreAssignmentSB = new StringBuilder();
-        variantPreAssignmentTranslator.result.forEach(variantPreAssignmentSB::append);
-        String variantPreAssignmentResult = variantPreAssignmentSB.toString();
+        String variantPreAssignmentResult = listToStringBuilderHelper(variantPreAssignmentTranslator.result).toString();
 
+        // Translate assignments translator
         Translator assignmentsTranslator = new Translator(preOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         exp.getAssignments().accept(assignmentsTranslator);
         updateToLargestMapping(this.resultMaxUsed, assignmentsTranslator.getResultMaxUsed());
@@ -767,78 +711,68 @@ public class Translator implements Visitor {
         String assignmentsTranslatedString = assignmentsSB.toString();
         postOriginalToAlloy = new HashMap<>(rhsOfUpdates);
 
+        // Translate variant post assignment
         Translator variantPostAssignmentTranslator = new Translator(postOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         variant.accept(variantPostAssignmentTranslator);
-        StringBuilder variantPostAssignmentSB = new StringBuilder();
-        variantPostAssignmentTranslator.result.forEach(variantPostAssignmentSB::append);
-        String variantPostAssignmentResult = variantPostAssignmentSB.toString();
+        String variantPostAssignmentResult = listToStringBuilderHelper(variantPostAssignmentTranslator.result).toString();
 
-
+        // Translate invariant post assignment
         Translator invariantPostAssignmentTranslator = new Translator(postOriginalToAlloy, functionsDefined, lhsOfUpdates, rhsOfUpdates);
         invariant.accept(invariantPostAssignmentTranslator);
-        StringBuilder invariantPostAssignmentSB = new StringBuilder();
-        invariantPostAssignmentTranslator.result.forEach(invariantPostAssignmentSB::append);
-        String invariantPostAssignmentResult = invariantPostAssignmentSB.toString() + " in True";
-
+        String invariantPostAssignmentResult = listToStringBuilderHelper(invariantPostAssignmentTranslator.result).toString() + " in True";
 
         StringBuilder predParamSB = new StringBuilder();
         StringBuilder forAllParamSB = new StringBuilder();
         StringBuilder forSomeParamSB = new StringBuilder();
         StringBuilder predInputParamSB = new StringBuilder();
-        alloyParametersCalculator(preOriginalToAlloy, this.resultMaxUsed, vars, predParamSB, forAllParamSB, forSomeParamSB, predInputParamSB);
+        alloyParametersCalculator(preOriginalToAlloy, this.resultMaxUsed, vars, predParamSB,
+                forAllParamSB, forSomeParamSB, predInputParamSB);
 
+        StringBuilder predSignatureSB = new StringBuilder();
+        predSignatureSB.append("pred ").append(predName);
+        predSignatureSB.append(" [").append(predParamSB).append("] {\n");
 
-        StringBuilder predSignitureSB = new StringBuilder();
-        predSignitureSB.append("pred ").append(predName);
-        predSignitureSB.append(" [").append(predParamSB).append("] {\n");
+        predSignatureSB.append("\t(");
+        predSignatureSB.append(initializationResult);
+        predSignatureSB.append("\n\t=> \n\t");
+        predSignatureSB.append(invariantPostInitResult);
+        predSignatureSB.append(") ");
 
-        predSignitureSB.append("\t(");
-        predSignitureSB.append(initializationResult);
-        predSignitureSB.append("\n\t=> \n\t");
-        predSignitureSB.append(invariantPostInitResult);
-        predSignitureSB.append(") ");
+        predSignatureSB.append("\n\n");
+        predSignatureSB.append("\t(");
+        predSignatureSB.append(invariantPreAssignmentResult);
+        predSignatureSB.append("\n\t and");
+        predSignatureSB.append(exitConditionResult);
+        predSignatureSB.append(")");
+        predSignatureSB.append("\n\t=> \n\t");
+        predSignatureSB.append(assignmentsTranslatedString);
+        predSignatureSB.append("\n\t=> \n\t");
+        predSignatureSB.append("(");
+        predSignatureSB.append(invariantPostAssignmentResult);
+        predSignatureSB.append(" and ");
+        predSignatureSB.append(" ( ");
+        predSignatureSB.append(variantPostAssignmentResult);
+        predSignatureSB.append(" >= 0 )");
+        predSignatureSB.append(" and ( ");
+        predSignatureSB.append(variantPreAssignmentResult);
+        predSignatureSB.append(" > ");
+        predSignatureSB.append(variantPostAssignmentResult);
+        predSignatureSB.append(")");
+        predSignatureSB.append(")");
 
-        predSignitureSB.append("\n\n");
-        predSignitureSB.append("\t(");
-        predSignitureSB.append(invariantPreAssignmentResult);
-        predSignitureSB.append("\n\t and");
-        predSignitureSB.append(exitConditionResult);
-        predSignitureSB.append(")");
-        predSignitureSB.append("\n\t=> \n\t");
-        predSignitureSB.append(assignmentsTranslatedString);
-        predSignitureSB.append("\n\t=> \n\t");
-        predSignitureSB.append("(");
-        predSignitureSB.append(invariantPostAssignmentResult);
-        predSignitureSB.append(" and ");
-        predSignitureSB.append(" ( ");
-        predSignitureSB.append(variantPostAssignmentResult);
-        predSignitureSB.append(" >= 0 )");
-        predSignitureSB.append(" and ( ");
-        predSignitureSB.append(variantPreAssignmentResult);
-        predSignitureSB.append(" > ");
-        predSignitureSB.append(variantPostAssignmentResult);
-        predSignitureSB.append(")");
-        predSignitureSB.append(")");
+        predSignatureSB.append("\n\n\t");
+        predSignatureSB.append("(");
+        predSignatureSB.append(invariantPreAssignmentResult);
+        predSignatureSB.append(" and ");
+        predSignatureSB.append("not(");
+        predSignatureSB.append(exitConditionResult);
+        predSignatureSB.append(")");
+        predSignatureSB.append("\n\t => \n\t");
+        predSignatureSB.append(postcondTranslatedString).append(") \t\t\t // post condition\n}\n\n");
 
-        predSignitureSB.append("\n\n\t");
-        predSignitureSB.append("(");
-        predSignitureSB.append(invariantPreAssignmentResult);
-        predSignitureSB.append(" and ");
-        predSignitureSB.append("not(");
-        predSignitureSB.append(exitConditionResult);
-        predSignitureSB.append(")");
-        predSignitureSB.append("\n\t => \n\t");
-        predSignitureSB.append(postcondTranslatedString).append(") \t\t\t // post condition\n}\n\n");
-
-        StringBuilder assertSB = new StringBuilder();
-        assertSB.append("check ").append(assertName).append(" {\n");
-        assertSB.append("\t { all ").append(forAllParamSB).append(" | ");
-        if (forSomeParamSB.length() > 0) {
-            assertSB.append("some ").append(forSomeParamSB).append(" | ");
-        }
-        assertSB.append(precondTranslatedString).append(" => ").append(predName).append("[");
-        assertSB.append(predInputParamSB).append("] }").append("\n}\n");
-        this.finalResult = predSignitureSB.append(assertSB).toString();
+        // Generate check block
+        StringBuilder assertSB = addCheckBlockHelper(predName, assertName, precondTranslatedString, forAllParamSB, forSomeParamSB, predInputParamSB);
+        this.finalResult = predSignatureSB.append(assertSB).toString();
         this.incrementLoopsTranslated();
     }
 
@@ -847,37 +781,7 @@ public class Translator implements Visitor {
         Translator tr = new Translator(this.originalToAlloy);
         Instruction inside = exp.getInside();
         inside.accept(tr);
-
-        StringBuilder insideTranslationSB = new StringBuilder();
-        insideTranslationSB.append("(");
-        tr.result.forEach(insideTranslationSB::append);
-        insideTranslationSB.append(" in True").append(")");
-        String insideTranslation = insideTranslationSB.toString();
-
-        Array array = (Array) exp.getArray();
-        String arrayNameOriginal = array.getID();
-        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
-        String lambdaType = values.getPrimitiveType(arrayNameOriginal);
-
-        result.add("(");
-        result.add("(");
-        result.add("all ");
-        result.add("arrayElems: ");
-        result.add(arrayNameInAlloy);
-        result.add(".elems ");
-        result.add("| ");
-        result.add("arrayElems ");
-        result.add(" in ");
-        result.add("{");
-        result.add("each: ");
-        result.add(lambdaType);
-        result.add(" | ");
-        result.add(insideTranslation);
-        result.add("}");
-        result.add(")");
-        result.add("=> True else False");
-        result.add(")");
-
+        quantificationHelper(tr.result, "all", (Array) exp.getArray());
     }
 
     @Override
@@ -885,80 +789,23 @@ public class Translator implements Visitor {
         Translator tr = new Translator(this.originalToAlloy);
         Instruction inside = exp.getInside();
         inside.accept(tr);
-
-        StringBuilder insideTranslationSB = new StringBuilder();
-        insideTranslationSB.append("(");
-        tr.result.forEach(insideTranslationSB::append);
-        insideTranslationSB.append(" in True").append(")");
-        String insideTranslation = insideTranslationSB.toString();
-
-        Array array = (Array) exp.getArray();
-        String arrayNameOriginal = array.getID();
-        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
-        String lambdaType = values.getPrimitiveType(arrayNameOriginal);
-
-        result.add("(");
-        result.add("(");
-        result.add("some ");
-        result.add("arrayElems: ");
-        result.add(arrayNameInAlloy);
-        result.add(".elems ");
-        result.add("| ");
-        result.add("arrayElems ");
-        result.add("in ");
-        result.add("{");
-        result.add("each: ");
-        result.add(lambdaType);
-        result.add(" | ");
-        result.add(insideTranslation);
-        result.add("}");
-        result.add(")");
-        result.add("=> True else False");
-        result.add(")");
-
+        quantificationHelper(tr.result, "some", (Array) exp.getArray());
     }
 
-    @Override //TODO
+    @Override
     public void visitAddToArray(AddToArray exp) {
         Translator tr = new Translator(this.originalToAlloy);
         Instruction inside = exp.getInside();
         inside.accept(tr);
-
-        StringBuilder insideTranslationSB = new StringBuilder();
-        tr.result.forEach(insideTranslationSB::append);
-        String insideTranslation = insideTranslationSB.toString();
-
-        Array array = (Array) exp.getArray();
-        String arrayNameOriginal = array.getID();
-        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
-
-        result.add(arrayNameInAlloy);
-        result.add(".add[");
-        result.add(insideTranslation);
-        result.add("]");
+        arrayOpHelper(tr.result, "add", (Array) exp.getArray());
     }
 
-    @Override //TODO
+    @Override
     public void visitRemoveFromArray(RemoveFromArray exp) {
         Translator tr = new Translator(this.originalToAlloy);
         Instruction inside = exp.getInside();
         inside.accept(tr);
-
-        StringBuilder insideTranslationSB = new StringBuilder();
-        tr.result.forEach(insideTranslationSB::append);
-        String insideTranslation = insideTranslationSB.toString();
-
-        Array array = (Array) exp.getArray();
-        String arrayNameOriginal = array.getID();
-        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
-
-        result.add(arrayNameInAlloy);
-        result.add(".delete[");
-        result.add(arrayNameInAlloy);
-        result.add(".idxOf[");
-        result.add(insideTranslation);
-        result.add("]");
-        result.add("]");
+        arrayOpHelper(tr.result, "delete", (Array) exp.getArray());
     }
 
     @Override
@@ -1014,9 +861,9 @@ public class Translator implements Visitor {
      * @param resultMaxUsed Map<String,String> the map to be updates
      * @param key           the key for which the value will be updated
      * @param newValue      the newValue
-     *                      <p>
-     *                      For Example: resultMaxUsed={"x":"arg1","y":"arg2"}, key="x", newValue="arg1'''"
-     *                      => (After updateMaxUsed is done) resultMaxUsed={"x":"arg1'''","y":"arg2"}
+     * <p>
+     * For Example: resultMaxUsed={"x":"arg1","y":"arg2"}, key="x", newValue="arg1'''"
+     * => (After updateMaxUsed is done) resultMaxUsed={"x":"arg1'''","y":"arg2"}
      **/
     private void updateMaxUsed(Map<String, String> resultMaxUsed, String key, String newValue) {
         if (resultMaxUsed.containsKey(key)) {
@@ -1055,9 +902,9 @@ public class Translator implements Visitor {
      * Map into the result array passed as an argument
      *
      * @param assignments Map that indicates assignments (i.e. key=value)
-     *                    <p>
-     *                    For Example: assignments{"arg1'":"arg2.add[2]","arg2'":"1"}
-     *                    result=result + ["arg1'", "=", "arg2.add[2]", " and ", "arg2'", "=", "1"]
+     * <p>
+     * For Example: assignments{"arg1'":"arg2.add[2]","arg2'":"1"}
+     * result=result + ["arg1'", "=", "arg2.add[2]", " and ", "arg2'", "=", "1"]
      **/
     private void assignmentsToString(List<String> result, Map<String, String> assignments) {
         for (String key : assignments.keySet()) {
@@ -1139,9 +986,9 @@ public class Translator implements Visitor {
      *
      * @param lhsResultMaxUsed Map<String,String> to be updated
      * @param rhsResultMaxUsed Map<String,String> to use the values for the update
-     *                         <p>
-     *                         For Example: lhsResultMaxUsed={"x":"arg1","y":"arg2'"}, rhsResultMaxUsed={"x":"arg1''","y":"arg2"}
-     *                         => (After updateMaxUsed is done) lhsResultMaxUsed={"x":"arg1''","y":"arg2'"}
+     * <p>
+     * For Example: lhsResultMaxUsed={"x":"arg1","y":"arg2'"}, rhsResultMaxUsed={"x":"arg1''","y":"arg2"}
+     * => (After updateMaxUsed is done) lhsResultMaxUsed={"x":"arg1''","y":"arg2'"}
      **/
     protected void updateToLargestMapping(Map<String, String> lhsResultMaxUsed, Map<String, String> rhsResultMaxUsed) {
         for (String key : lhsResultMaxUsed.keySet()) {
@@ -1159,9 +1006,9 @@ public class Translator implements Visitor {
      *
      * @param lhsResultMaxUsed Map<String,String> to be updated
      * @param rhsResultMaxUsed Map<String,String> to use the values for the update
-     *                         For Example: originalToAlloy={"x":"arg1","y":"arg2"}, alloyAssignments={"x":"arg1","y":"arg2'"}
-     *                         and originalToLargestAlloy = {"x":"arg1","y":"arg2''"}
-     *                         => result = {"arg2''","arg2'"}
+     * For Example: originalToAlloy={"x":"arg1","y":"arg2"}, alloyAssignments={"x":"arg1","y":"arg2'"}
+     * and originalToLargestAlloy = {"x":"arg1","y":"arg2''"}
+     * => result = {"arg2''","arg2'"}
      **/
     protected Map<String, String> largestValueMap(Map<String, String> lhsResultMaxUsed, Map<String, String> rhsResultMaxUsed) {
         Map<String, String> result = new HashMap<>();
@@ -1186,11 +1033,11 @@ public class Translator implements Visitor {
      *                      otherUpdates is only used as an argument to updateFunctionParameters
      * @param resultMaxUsed Map<String,String> that maps keys to their corresponding maximum new values
      *                      resultMaxUsed is only used as an argument to updateFunctionParameters
-     *                      <p>
-     *                      For Example: origOutput=["x","+","y","-","5"] updates={"x":"arg1'",y="arg2''"}
-     *                      result = "arg1'+arg2''-5"
-     *                      <p>
-     *                      Note: If origOutput contains a function call we handle it differently than regular variables
+     * <p>
+     * For Example: origOutput=["x","+","y","-","5"] updates={"x":"arg1'",y="arg2''"}
+     * result = "arg1'+arg2''-5"
+     * <p>
+     * Note: If origOutput contains a function call we handle it differently than regular variables
      **/
     protected String updateToString(List<String> origOutput, Map<String, String> updates, Map<String, String> otherUpdates, Map<String, String> resultMaxUsed) {
         StringBuilder result = new StringBuilder();
@@ -1387,6 +1234,157 @@ public class Translator implements Visitor {
         result.add("]");
     }
 
+    /**
+     * A helper method for generating check block to prevent having smelly code.Generates a check block given the inputs.
+     *
+     * @param predName
+     * @param assertName
+     * @param precondTranslatedString
+     * @param forAllParamSB
+     * @param forSomeParamSB
+     * @param predInputParamSB
+     * @return assertSB - Instance of StringBuilder that has the result
+     */
+    private StringBuilder addCheckBlockHelper(String predName, String assertName, String precondTranslatedString, StringBuilder forAllParamSB, StringBuilder forSomeParamSB, StringBuilder predInputParamSB) {
+        StringBuilder assertSB = new StringBuilder();
+        assertSB.append("check ").append(assertName).append(" {\n");
+        assertSB.append("\t { all ").append(forAllParamSB).append(" | ");
+        assertSB.append(forSomeParamSB.length() > 0 ? "some " + forSomeParamSB + " | " : "");
+        assertSB.append(precondTranslatedString).append(" => ").append(predName).append("[");
+        assertSB.append(predInputParamSB).append("] }").append("\n}\n");
+        return assertSB;
+    }
+
+    /**
+     * A helper method for generating pred block. Generates a pred block given the inputs.
+     *
+     * @param predName
+     * @param predParamSB
+     * @param translated
+     * @param postcondTranslatedString
+     * @return predSignatureSB - Instance of StringBuilder that has the result
+     */
+    private StringBuilder addPredBlockHelper(String predName, StringBuilder predParamSB, String translated, String postcondTranslatedString) {
+        StringBuilder predSignatureSB = new StringBuilder();
+        predSignatureSB.append("pred ").append(predName);
+        predSignatureSB.append(" [").append(predParamSB).append("] {\n");
+        predSignatureSB.append("\t").append(translated).append("\n\t");
+        predSignatureSB.append(postcondTranslatedString).append("\t\t\t // post condition\n}\n\n");
+        return predSignatureSB;
+    }
+
+    /**
+     * A helper method for generating postconditions. Generates a postcondition given the inputs.
+     *
+     * @param postcondTranslated
+     * @return StringBuilder - Instance of StringBuilder that has the result
+     */
+    private StringBuilder addPostcondHelper(List<String> postcondTranslated) {
+        return contractHelper(postcondTranslated);
+    }
+
+    /**
+     * A helper method for generating precondition. Generates a precondition given the inputs.
+     *
+     * @param precondTranslated
+     * @return StringBuilder - Instance of StringBuilder that has the result
+     */
+    private StringBuilder addPrecondHelper(List<String> precondTranslated) {
+        return contractHelper(precondTranslated);
+    }
+
+    /**
+     * A helper method for addPostcondHelper and addPrecondHelper to generate a contract.
+     *
+     * @param translated
+     * @return genericSB - Instance of StringBuilder that has the result
+     */
+    private StringBuilder contractHelper(List<String> translated) {
+        StringBuilder genericSB = new StringBuilder();
+        genericSB.append("((");
+        translated.forEach(genericSB::append);
+        genericSB.append(") in True) ");
+        return genericSB;
+    }
+
+    /**
+     * A helper method for visitForAll and visitForSome to generate a quantification operation.
+     *
+     * @param translated
+     * @param operationType i.e. all some
+     * @param array         Instance of Array
+     */
+    private void quantificationHelper(List<String> translated, String operationType, Array array) {
+        StringBuilder insideTranslationSB = new StringBuilder();
+        insideTranslationSB.append("(");
+        translated.forEach(insideTranslationSB::append);
+        insideTranslationSB.append(" in True").append(")");
+        String insideTranslation = insideTranslationSB.toString();
+
+        String arrayNameOriginal = array.getID();
+        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+        String lambdaType = values.getPrimitiveType(arrayNameOriginal);
+
+        result.add("(");
+        result.add("(");
+        result.add(operationType + " ");
+        result.add("arrayElems: ");
+        result.add(arrayNameInAlloy);
+        result.add(".elems ");
+        result.add("| ");
+        result.add("arrayElems ");
+        result.add(" in ");
+        result.add("{");
+        result.add("each: ");
+        result.add(lambdaType);
+        result.add(" | ");
+        result.add(insideTranslation);
+        result.add("}");
+        result.add(")");
+        result.add("=> True else False");
+        result.add(")");
+    }
+
+    /**
+     * A helper method for visifAddToArray and visitRemoveFromArray to translate array operations.
+     *
+     * @param translated
+     * @param opType     add/delete
+     * @param array
+     */
+    private void arrayOpHelper(List<String> translated, String opType, Array array) {
+        StringBuilder insideTranslationSB = new StringBuilder();
+        translated.forEach(insideTranslationSB::append);
+        String insideTranslation = insideTranslationSB.toString();
+
+        String arrayNameOriginal = array.getID();
+        String arrayNameInAlloy = this.getOriginalToAlloy().get(arrayNameOriginal);
+
+        result.add(arrayNameInAlloy);
+        String suffix = "";
+        switch (opType) {
+            case "add":
+                suffix = ".add[" + insideTranslation + "]";
+                break;
+            case "delete":
+                suffix = ".delete[" + arrayNameInAlloy + ".idxOf[" + insideTranslation + "]]";
+                break;
+            default:
+        }
+        result.add(suffix);
+    }
+
+    /**
+     * A helper method to convert a list of strings into an instance of StringBuilder.
+     *
+     * @param translatedList
+     * @return - Instance of StringBuilder that has the result
+     */
+    private StringBuilder listToStringBuilderHelper(List<String> translatedList) {
+        StringBuilder genericSB = new StringBuilder();
+        translatedList.forEach(genericSB::append);
+        return genericSB;
+    }
 
     // ************************************* GETTERS *******************************************************
     // ************************************* GETTERS *******************************************************

@@ -1,11 +1,11 @@
 package model.statement.assignment.expression.arithmetic;
 
+import model.Instruction;
+import model.statement.assignment.expression.Arithmetic;
+import model.values.Value;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import model.Instruction;
-import model.values.Value;
-import model.statement.assignment.expression.Arithmetic;
 
 
 public abstract class ArithmeticComposite extends Arithmetic {
@@ -16,7 +16,6 @@ public abstract class ArithmeticComposite extends Arithmetic {
      * Constructor
      *
      * @param left the left expression
-     *
      * @param right the right expression
      */
     public ArithmeticComposite(Instruction left, Instruction right) {
@@ -24,18 +23,14 @@ public abstract class ArithmeticComposite extends Arithmetic {
         this.right = right;
     }
 
-    /*
-     * getter for the left expression
-     *
+    /* Getter for left
      * @return Expression representing the left expression
      */
     public Instruction getLeftExpr() {
         return this.left;
     }
 
-    /*
-     * getter for the left expression
-     *
+    /* Getter for right
      * @return Expression representing the left expression
      */
     public Instruction getRightExpr() {

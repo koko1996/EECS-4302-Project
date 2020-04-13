@@ -1,13 +1,13 @@
 package model.declaration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import model.Declaration;
-import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.expression.arithmetic.IntegerConstant;
 import model.statement.assignment.expression.logical.BooleanConstant;
+import model.values.Value;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * VariableInitialization Class that represents initialization of a variable
@@ -17,15 +17,20 @@ public class VariableInitialization extends Declaration {
 	private Value value;
 	private String type;
 
-	
+	/**
+	 * Constructor
+	 *
+	 * @param id
+	 * @param type
+	 */
 	public VariableInitialization(String id, String type) {
 		this.id = id;
 		this.type = type;
-		if (type.equals("bool")){
-			this.value = new Value(new BooleanConstant(false),type);	
-		} else if (type.equals("int")){
-			this.value = new Value(new IntegerConstant(0),type);	
-		} 	
+		if (type.equals("bool")) {
+			this.value = new Value(new BooleanConstant(false), type);
+		} else if (type.equals("int")) {
+			this.value = new Value(new IntegerConstant(0), type);
+		}
 	}
 	
 	/*
@@ -42,34 +47,35 @@ public class VariableInitialization extends Declaration {
 		this.type = type;
 		this.value = value;
 	}
-	
-    public VariableInitialization(String id, String type, VariableInitialization other) {
-        this.id = other.id;
-        this.type = other.type;
-        this.value = other.value;
-    }
 
-	/*
-	 * retrieve the id of the variable
-	 * 
+	/**
+	 * Constructor
+	 *
+	 * @param id
+	 * @param type
+	 * @param other
+	 */
+	public VariableInitialization(String id, String type, VariableInitialization other) {
+		this.id = other.id;
+		this.type = other.type;
+		this.value = other.value;
+	}
+
+	/* Getter for id
 	 * @return retrieve the id of the variable
 	 */
 	public String getID() {
 		return this.id;
 	}
 
-	/*
-	 * retrieve the type of the variable
-	 * 
+	/* Getter for type
 	 * @return retrieve the type of the variable
 	 */
 	public String getType() {
 		return this.type;
 	}
 
-	/*
-	 * retrieve the value of the variable
-	 *
+	/* Getter for value
 	 * @return retrieve the value of the variable
 	 */
 	public Value getValue() {

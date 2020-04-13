@@ -14,7 +14,6 @@ public class Implication extends LogicalComposite {
      * Constructor
      *
      * @param left the left expression
-     *
      * @param right the left expression
      */
     public Implication(Instruction left, Instruction right) {

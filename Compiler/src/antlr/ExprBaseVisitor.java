@@ -477,7 +477,7 @@ public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements E
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override
-    public T visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
+    public T visitParenthesisArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
         return visitChildren(ctx);
     }
 
@@ -521,25 +521,35 @@ public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements E
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override
-    public T visitParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx) {
-        return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitLessRelational(ExprParser.LessRelationalContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitLessEqualRelational(ExprParser.LessEqualRelationalContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
+    public T visitParenthesisRelational(ExprParser.ParanthesesRelationalContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitLessRelational(ExprParser.LessRelationalContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitLessEqualRelational(ExprParser.LessEqualRelationalContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
@@ -675,7 +685,7 @@ public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements E
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override
-    public T visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx) {
+    public T visitParenthesisLogical(ExprParser.ParanthesesLogicalContext ctx) {
         return visitChildren(ctx);
     }
 

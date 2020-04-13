@@ -9,11 +9,7 @@ import model.statement.assignment.Expression;
 import model.statement.assignment.ExpressionAssignment;
 import model.statement.assignment.expression.*;
 import model.statement.assignment.expression.arithmetic.*;
-import model.statement.assignment.expression.array.AddToArray;
-import model.statement.assignment.expression.array.Array;
-import model.statement.assignment.expression.array.ForAll;
-import model.statement.assignment.expression.array.ForSome;
-import model.statement.assignment.expression.array.RemoveFromArray;
+import model.statement.assignment.expression.array.*;
 import model.statement.assignment.expression.logical.*;
 import model.statement.assignment.expression.relational.*;
 import model.statement.conditional.AssertedConditional;
@@ -29,20 +25,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A visitor class for traslating the input programming language into Instruction objects.
+ */
 public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
-	private Values values; // Symbol table for storing values of
-	// variables
-	private List<String> semanticErrors; // 1. duplicate declaration 2.
-	// reference to undeclared variable
-	// Note that semantic errors are different from syntax errors.
+	private Values values; // Symbol table for storing values of variables
 
-	private String oldSyntax;
+	private List<String> semanticErrors; // 1. duplicate declaration 2. reference to undeclared variable
 
-	private boolean isEnsure;
+	private String oldSyntax; // The oldSyntax!
 
-	private Token arrayToken;
+	private boolean isEnsure; // Flag that is raised while parsing ensure bodies.
 
-	/*
+	private Token arrayToken; // Used to pass an arrayToken to a child visitor.
+
+	/**
 	 * Constructor
 	 *
 	 * @param semanticErrors list of semantic errors observed in the input file
@@ -54,49 +51,8 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		this.isEnsure = false;
 	}
 
-	private boolean checkDefined(String id, int line, int column) {
-		if (!values.containsKey(id)) {
-			semanticErrors
-					.add("Error: variable or function with name " + id + " has not been declared (line:" + line + ", column:" + column + ")");
-			return false;
-		}
-		return true;
-	}
-
-	private boolean checkDefined(String id, String type, int line, int column) {
-		if (!values.containsKey(id) || !values.getValue(id).getType().equals(type)) {
-			semanticErrors.add("Error: variable or function with name " + id + " of type " + type + " has not been declared yet (line:" + line
-					+ ", column:" + column + ")");
-			return false;
-		}
-		return true;
-	}
-
-	private boolean checkNotDefined(String id, int line, int column) {
-		if (values.containsKey(id)) {
-			semanticErrors.add(
-					"Error: variable or function with name " + id + " has already been declared (line:" + line + ", column:" + column + ")");
-			return false;
-		}
-		return true;
-	}
-
-
-	private boolean checkNotOLD(String id, int line, int column) {
-		if (id.contains(this.oldSyntax)) {
-			semanticErrors.add("Error: variable name not allowed to have the substring " + this.oldSyntax + " (line:"
-					+ line + ", column:" + column + ")");
-			return false;
-		}
-		return true;
-	}
-
-	/*
-	 * getter function to retrieve list of variables defined in the input file
-	 *
-	 * @param list of strings representing the variable names in the input
-	 * program
-	 */
+	// ***************************** VISITOR IMPLEMENTATIONS FOR ANTLR *****************************************
+	// ***************************** VISITOR IMPLEMENTATIONS FOR ANTLR *****************************************
 	@Override
 	public Instruction visitStatement(ExprParser.StatementContext ctx) {
 		return super.visitStatement(ctx);
@@ -146,7 +102,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				if ((rhs instanceof Logical && !type.equals("Bool"))
 						| (rhs instanceof Arithmetic && !type.equals("Int"))) {
 					semanticErrors
-							.add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
+							.add("Error: The type of the right hand side of the expression does not match the type of the left hand side variable (line:"
 									+ line + ", column:" + column + ")");
 				} else {
 					if (type.equals("Bool")) {
@@ -268,7 +224,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 				values.put(id, newValue);
 			}
 		}
-
 		return new ExpressionAssignment(id, exp);
 	}
 
@@ -282,7 +237,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		if (checkDefined(id, line, column)) {
 			String lhsType = values.getType(id);
 			Expression expr = values.getValue(id).getValue();
-
 			if (lhsType.equals("Bool")) {
 				return new BooleanVariable(id, expr);
 			} else if (!lhsType.equals("Int")) {
@@ -688,19 +642,19 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	}
 
 	@Override
-	public Instruction visitParanthesesArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
-        return new ParanthesisExpression((Expression) visit(ctx.getChild(1)));
-    }
+	public Instruction visitParenthesisArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
+		return new ParenthesisExpression((Expression) visit(ctx.getChild(1)));
+	}
 
 	@Override
-	public Instruction visitParanthesesRelational(ExprParser.ParanthesesRelationalContext ctx) {
-        return new ParanthesisExpression((Expression) visit(ctx.getChild(1)));
-    }
+	public Instruction visitParenthesisRelational(ExprParser.ParanthesesRelationalContext ctx) {
+		return new ParenthesisExpression((Expression) visit(ctx.getChild(1)));
+	}
 
 	@Override
-	public Instruction visitParanthesesLogical(ExprParser.ParanthesesLogicalContext ctx) {
-        return new ParanthesisExpression((Expression) visit(ctx.getChild(1)));
-    }
+	public Instruction visitParenthesisLogical(ExprParser.ParanthesesLogicalContext ctx) {
+		return new ParenthesisExpression((Expression) visit(ctx.getChild(1)));
+	}
 
 	@Override
 	public Instruction visitLoopStatement(ExprParser.LoopStatementContext ctx) {
@@ -709,7 +663,6 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 		Instruction postcondition = visit(ctx.logicalOp(2));
 		this.isEnsure = false;
 		Instruction exitCondition = visit(ctx.logicalOp(1));
-
 
 		String loopVariantName = ctx.ID().getText();
 		Token idToken = ctx.ID().getSymbol();
@@ -727,6 +680,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 		Instruction loopInvariant = visit(ctx.expression());
 		List<Instruction> initAssignments = new ArrayList<>();
+		// Gets assignments in the loop
 		for (int i = 0; i < ctx.getChild(6).getChildCount(); i++) {
 			initAssignments.add(visit(ctx.getChild(6).getChild(i)));
 		}
@@ -879,6 +833,78 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 	@Override
 	public Instruction visitEachLogical(ExprParser.EachLogicalContext ctx) {
 		return new Each();
+	}
+
+	//****************************** CHECKERS **********************************************************
+	//****************************** CHECKERS **********************************************************
+
+	/**
+	 * Checks if id is defined and adds a semanticError if it is not.
+	 *
+	 * @param id     variable id.
+	 * @param line   variable token line.
+	 * @param column variable token column.
+	 * @return boolean true if id is defined else false
+	 */
+	private boolean checkDefined(String id, int line, int column) {
+		if (!values.containsKey(id)) {
+			semanticErrors
+					.add("Error: variable or function with name " + id + " has not been declared (line:" + line + ", column:" + column + ")");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Checks if id is defined and adds a semanticError if it is not. (with types!)
+	 *
+	 * @param id     variable id.
+	 * @param type   variable type.
+	 * @param line   variable token line.
+	 * @param column variable token column.
+	 * @return boolean true if id is defined else false
+	 */
+	private boolean checkDefined(String id, String type, int line, int column) {
+		if (!values.containsKey(id) || !values.getValue(id).getType().equals(type)) {
+			semanticErrors.add("Error: variable or function with name " + id + " of type " + type + " has not been declared yet (line:" + line
+					+ ", column:" + column + ")");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Checks if id is not defined and adds a semanticError if it is not.
+	 *
+	 * @param id     variable id.
+	 * @param line   variable token line.
+	 * @param column variable token column.
+	 * @return boolean false if id is not defined else true.
+	 */
+	private boolean checkNotDefined(String id, int line, int column) {
+		if (values.containsKey(id)) {
+			semanticErrors.add(
+					"Error: variable or function with name " + id + " has already been declared (line:" + line + ", column:" + column + ")");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Checks if variable id does not have "_old".
+	 *
+	 * @param id     variable id.
+	 * @param line   variable token line.
+	 * @param column variable token column.
+	 * @return boolean false if variable id does have "_old" else true
+	 */
+	private boolean checkNotOLD(String id, int line, int column) {
+		if (id.contains(this.oldSyntax)) {
+			semanticErrors.add("Error: variable name not allowed to have the substring " + this.oldSyntax + " (line:"
+					+ line + ", column:" + column + ")");
+			return false;
+		}
+		return true;
 	}
 
 }

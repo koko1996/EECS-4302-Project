@@ -1,15 +1,15 @@
 package model.statement.assignment.expression.array;
 
 import model.Instruction;
-import model.values.Value;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.ArrayOperations;
+import model.values.Value;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArrayComposite extends ArrayOperations {
+public abstract class ArrayComposite extends ArrayOperations {
     protected Instruction array;
     protected Instruction inside;
 
@@ -17,7 +17,6 @@ public class ArrayComposite extends ArrayOperations {
      * Constructor
      *
      * @param left the left expression
-     *
      * @param right the right expression
      */
     public ArrayComposite(Instruction array, Instruction inside) {
@@ -25,18 +24,14 @@ public class ArrayComposite extends ArrayOperations {
         this.inside = inside;
     }
 
-    /*
-     * getter for the left expression
-     *
+    /* Getter for array
      * @return Expression representing the left expression
      */
     public Instruction getArray() {
         return this.array;
     }
 
-    /*
-     * getter for the left expression
-     *
+    /* Getter for inside
      * @return Expression representing the left expression
      */
     public Instruction getInside() {
@@ -45,7 +40,7 @@ public class ArrayComposite extends ArrayOperations {
 
     @Override
     public void accept(Visitor visitor) {
-        //TODO
+        //No need to implement
     }
 
     @Override

@@ -4,9 +4,16 @@ import model.Instruction;
 import model.Visitor;
 import model.statement.assignment.Expression;
 import model.statement.assignment.expression.Relational;
-
+/**
+ * A class for >= operator
+ */
 public class GreaterThanOrEqual extends Relational {
-
+    /**
+     * Constructor
+     *
+     * @param left
+     * @param right
+     */
     public GreaterThanOrEqual(Instruction left, Instruction right) {
         super(left, right);
     }
