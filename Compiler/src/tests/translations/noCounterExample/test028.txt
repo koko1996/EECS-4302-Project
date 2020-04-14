@@ -1,4 +1,4 @@
-fun int add(int x, int y, int result){
+fun int adding(int x, int y, int result){
 	fun_require(true)
 			result = x+y;
 			return result;	
@@ -10,6 +10,6 @@ int y;
 int tmp;
 if_require(x>y)
 if(x>y){
-x = add(x,y,tmp);
+x = adding(x,y,tmp);
 }
 if_ensure(x == (x_old+y_old) )

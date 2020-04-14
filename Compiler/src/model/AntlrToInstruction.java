@@ -643,17 +643,17 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 
 	@Override
 	public Instruction visitParenthesisArithmetic(ExprParser.ParanthesesArithmeticContext ctx) {
-		return new ParenthesisExpression((Expression) visit(ctx.getChild(1)));
+		return visit(ctx.getChild(1));
 	}
 
 	@Override
 	public Instruction visitParenthesisRelational(ExprParser.ParanthesesRelationalContext ctx) {
-		return new ParenthesisExpression((Expression) visit(ctx.getChild(1)));
+		return  visit(ctx.getChild(1));
 	}
 
 	@Override
 	public Instruction visitParenthesisLogical(ExprParser.ParanthesesLogicalContext ctx) {
-		return new ParenthesisExpression((Expression) visit(ctx.getChild(1)));
+		return visit(ctx.getChild(1));
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 fun int min(int x, int y){
 	fun_require(true)
-		local : int z;
 			if (x>y){
 				x=y;
 			}

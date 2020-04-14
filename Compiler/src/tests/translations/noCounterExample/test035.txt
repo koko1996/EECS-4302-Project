@@ -13,9 +13,3 @@ current = current - 1;
 }
 loop_ensure(sum == 3)
 
-
-// Q => Initialization => (invariant <=> true)
-
-// ((invariant <=> true) && not(ExitCondtion) ) => assignments => ((invariant <=> true) && (x>0) && (x_old > x)) 
-
-//((invariant <=> true) && (ExitCondtion)) => R

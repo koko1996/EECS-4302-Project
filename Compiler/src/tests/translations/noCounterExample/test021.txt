@@ -11,4 +11,4 @@ if(x>0){
 	x;
 	y;
 }
-if_ensure(x>0 && x==2)
+if_ensure(y_old && x>0 && x==2)

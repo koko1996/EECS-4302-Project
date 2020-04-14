@@ -9,4 +9,4 @@ if(x>y){
     x=x*y;
 } else {
     b=false;
-} if_ensure( ((x_old>y_old) && x==-1) || ( (x_old<y_old) && (x_old>z_old) && (b<=>true) && (x==x_old*y_old) ) || (b<=>false))
+} if_ensure( ((x_old>y_old) && x==-1) || ( (x_old<=y_old) && (x_old>z_old) && (b<=>true) && (x==x_old*y_old) ) || (b<=>false))

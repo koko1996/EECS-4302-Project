@@ -7,13 +7,13 @@ fun int min(int x, int y){
 	fun_ensure( ((x==x_old) && (x_old <= y_old )) || ((x==y_old) && (x_old > y_old )) )
 }
 
-fun int max(int x, int y){
+fun int max(int y, int x){
 	fun_require(true)
-			if (x<y){
-				x=y;
+			if (y<x){
+				y=x;
 			}
-			return x;	
-	fun_ensure( ((x==x_old) && (x_old >= y_old )) || ((x==y_old) && (x_old < y_old )) )
+			return y;	
+	fun_ensure( ((y==y_old) && (y_old >= x_old )) || ((y==x_old) && (y_old < x_old )) )
 }
 
 int x;

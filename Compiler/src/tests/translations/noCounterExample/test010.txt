@@ -1,6 +1,5 @@
 // No counter examples
 
-
 int x = 1;
 int y=0;
 if_require(true)

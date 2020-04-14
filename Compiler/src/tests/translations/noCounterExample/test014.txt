@@ -1,8 +1,8 @@
-int x = 10;  
-int y = 9;
-if_require(x==10)
+int x = 1;  
+int y;
+if_require(x==1)
 if(x>0){
-	x=9;
+	x=2;
 	y=1;
 }
-if_ensure(x_old>0 && x==9 && y==1)
+if_ensure(x_old>0 && x==2 && y==1)

@@ -10,9 +10,9 @@ if(x>0){
 }  else if (x==0){
 	y= x+1;
 	y= y*x;
-	b= !(z||b)			// false
+	b= !(z||b);			// false
 }else {
 	z=!z;		// false
 	b=b||z;		// true
 }
-if_ensure( ( x_old >0  && b<=>false ) || ( x_old==0  && b<=>false )  || (x_old<0 && b && !z) )
+if_ensure( ( x_old >0  && (b<=>false) ) || ( x_old==0  && (b<=>false) )  || (x_old<0 && b && !z) )

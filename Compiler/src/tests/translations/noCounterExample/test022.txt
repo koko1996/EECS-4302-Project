@@ -1,4 +1,5 @@
-fun int add (int x, int y){
+fun int adding (int x, int y){
+
 	fun_require(true)
 			x = x + y;
 			return x;	

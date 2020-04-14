@@ -5,6 +5,6 @@ bool y = false;
 if_require(true)
 if(x>0){
 	x=2;
-	y=(3>2)&&true;
+	y=(3>2)&&y;
 }
 if_ensure(x>0 && x==2)
