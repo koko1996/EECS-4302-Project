@@ -1,0 +1,28 @@
+open logicFuncs
+
+pred predFunction0 [arg2,arg2':Int,arg3:Int,arg1:Int] {
+	((True) in True) and arg2'=arg2.sub[arg3]
+	((True) in True) 			 // post condition
+}
+
+fun funFunction0 [arg2,arg2':Int,arg3:Int,arg1:Int] : Int {
+	{ return : Int | ((True) in True) and arg2'=arg2.sub[arg3] and return = arg2'}
+}
+
+check assertFunction0 {
+	 { all arg2:Int,arg3:Int,arg1:Int | some arg2':Int | ((andGate[((arg3 <= arg1) => True else False), ((arg3 >= 0) => True else False)]) in True)  => predFunction0[arg2,arg2',arg3,arg1] }
+}
+
+pred predFunction1 [arg2,arg2',arg2'':Int,arg3:Int,arg1:Int] {
+	((True) in True) and arg2''=funFunction0[0,0,1,arg1]  and arg2'=arg1.add[arg3]
+	((True) in True) 			 // post condition
+}
+
+fun funFunction1 [arg2,arg2',arg2'':Int,arg3:Int,arg1:Int] : Int {
+	{ return : Int | ((True) in True) and arg2''=funFunction0[0,0,1,arg1]  and arg2'=arg1.add[arg3] and return = arg2''}
+}
+
+check assertFunction1 {
+	 { all arg2:Int,arg3:Int,arg1:Int | some arg2':Int,arg2'':Int | ((((arg3 > 1) => True else False)) in True)  => predFunction1[arg2,arg2',arg2'',arg3,arg1] }
+}
+

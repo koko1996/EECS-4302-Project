@@ -1,6 +1,6 @@
-/antlr/
 /docs/
-/tests/
+/utils/
+/antlr/
 /app/
 /model/
-/utils/
+/tests/

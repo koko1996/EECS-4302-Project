@@ -1,0 +1,61 @@
+// LCBO Stock Tracker Application
+
+int[] inStock; // 1 - Beer 2 - Wine 3- Liquor
+
+fun bool removeFromStock (int type, bool result) {
+    fun_require ((type >= 1) && (type <= 3))
+    if (type == 1) {
+        inStock.remove(1);
+    } else if (type == 2) {
+        inStock.remove(2);
+    } else {
+        inStock.remove(3);
+    }
+    return result;
+    fun_ensure(true)
+}
+
+fun bool addToStock (int type, bool result) {
+    fun_require ((type >= 1) && (type <= 3))
+        if (type == 1) {
+            inStock.add(1);
+        } else if (type == 2) {
+            inStock.add(2);
+        } else {
+            inStock.add(3);
+        }
+        return result;
+        fun_ensure(true)
+}
+
+fun bool stockChecker (bool result) {
+    fun_require(true)
+        result = inStock.some(each == 1) && inStock.some(each == 2) && inStock.some (each == 3);
+        return result;
+    fun_ensure(true)
+}
+
+fun bool replenishStocks (bool result) {
+    fun_require(true)
+        if (!inStock.some(each == 1)) {
+            inStock.add(1);
+        }
+        if (!inStock.some(each == 2)) {
+            inStock.add(2);
+        }
+        if (!inStock.some(each == 3)) {
+            inStock.add(3);
+        }
+        return result;
+    fun_ensure(true)
+}
+
+addtoStock(1);
+addtoStock(2);
+addtoStock(3);
+bool areAllInStock = stockChecker(false);
+bool noIllegalItems = inStock.all(each >= 1) && inStock.all(each <= 3);
+
+replenishStocks(false);
+
+
