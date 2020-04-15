@@ -1,0 +1,25 @@
+open logicFuncs
+
+pred predFunction0 [arg1,arg1',arg1'',arg1''':Int,arg2:Int] {
+	((True) in True) and  ( ((andGate[((arg2 >= 80) => True else False), ((arg2 <= 100) => True else False)]) in True) =>
+		 ((True) in True) and arg1'=1 and arg1'''=arg1'
+	else (( andGate[((arg2 >= 79) => True else False), ((arg2 <= 40) => True else False)] ) in True) =>
+		 ((True) in True) and arg1''=2 and arg1'''=arg1''
+	else
+		 ((True) in True) and arg1'''=3 )
+	((andGate[((arg1''' >= 1) => True else False), ((arg1''' <= 3) => True else False)]) in True) 			 // post condition
+}
+
+fun funFunction0 [arg1,arg1',arg1'',arg1''':Int,arg2:Int] : Int {
+	{ return : Int | ((True) in True) and  ( ((andGate[((arg2 >= 80) => True else False), ((arg2 <= 100) => True else False)]) in True) =>
+		 ((True) in True) and arg1'=1 and arg1'''=arg1'
+	else (( andGate[((arg2 >= 79) => True else False), ((arg2 <= 40) => True else False)] ) in True) =>
+		 ((True) in True) and arg1''=2 and arg1'''=arg1''
+	else
+		 ((True) in True) and arg1'''=3 )  and return = arg1'''}
+}
+
+check assertFunction0 {
+	 { all arg1:Int,arg2:Int | some arg1':Int,arg1'':Int,arg1''':Int | ((andGate[((arg2 >= 0) => True else False), ((arg2 <= 100) => True else False)]) in True)  => predFunction0[arg1,arg1',arg1'',arg1''',arg2] }
+}
+

@@ -1,0 +1,30 @@
+// Gregory writes an algorithm that counts the number of integers that are a multiple of 3 and lower than 100;
+
+int counter = 0;
+
+fun bool shouldIncrementCounter (int number, bool result) {
+    fun_require((number >= 0) && (number < 100))
+    result = false;
+    if ((number % 3) == 0) {
+        result = true;
+    }
+    return result;
+    fun_ensure(true)
+}
+
+int current;
+bool shouldIncrement;
+loop_require(true)
+loop_init {
+    current = 0;
+}
+loop(current < 100) {
+    loop_invariant((current >= 0) && (current < 100) )
+    loop_variant(current)
+    shouldIncrement = shouldIncrementCounter(current, false);
+    if (shouldIncrement <=> true) {
+        counter = counter + 1;
+    }
+    current = current + 1;
+}
+loop_ensure(true)

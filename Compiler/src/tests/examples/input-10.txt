@@ -1,0 +1,32 @@
+// Ege decided to write a simple list application to keep track of his marks at school.
+// Causes state explosion
+int[] myMarks;
+
+// Ege coincidentally got 70 on all his midterm tests, so he adds those first.
+int current;
+loop_require(true)
+loop_init {
+    current = 0;
+}
+loop(current < 4) {
+    loop_invariant((current >= 0) && (current < 3) )
+    loop_variant(current)
+    myMarks.add(70);
+    current = current + 1;
+}
+loop_ensure(true)
+
+// Then he gets 35 and 90 on two tests.
+myMarks.add(35);
+myMarks.add(90);
+
+// Then his prof says one of his quizzes can count for marks if he has any marks lower than 50 or greater than 90.
+// His prof also drops his lowest mark.
+// On this quiz Ege got 80.
+
+bool hasLowMark = (myMarks.some(each < 50) || myMarks.some(each > 90));
+if (hasLowMark <=> true) {
+    myMarks.add(80);
+    myMarks.remove(35);
+}
+

@@ -1,0 +1,18 @@
+open logicFuncs
+
+pred predIfStatement0 [arg1:Int,arg2,arg2':Int,arg3,arg3':Int,arg4,arg4',arg4'',arg4''',arg4'''':Int,arg5:Int,arg6,arg6':Int] {
+	((((arg6 > arg5) => True else False)) in True) =>
+		 ((True) in True) and  ( ((((arg3 > arg5) => True else False)) in True) =>
+		 ((True) in True) and  ( ((((arg2 > arg1) => True else False)) in True) =>
+		 ((True) in True) and arg4''=arg4'.add[arg1] and arg2'=arg2.sub[arg1] )  and arg4'=arg4.add[arg1] and arg3'=arg3.sub[arg5] and arg6'=arg6.sub[arg5] and arg4'''=arg4''
+	else
+		 ((True) in True) and arg4'''=arg4.add[arg1] and arg3'=arg3 and arg2'=arg2 and arg6'=arg6 )  and arg4''''=arg4'''
+	else
+		 ((True) in True) and arg4''''=arg4.add[arg1] and arg3'=arg3 and arg2'=arg2 and arg6'=arg6
+	((((arg4'''' >= arg4.add[arg1]) => True else False)) in True) 			 // post condition
+}
+
+check assertIfStatement0 {
+	 { all arg1:Int,arg2:Int,arg3:Int,arg4:Int,arg5:Int,arg6:Int | some arg2':Int,arg3':Int,arg4':Int,arg4'':Int,arg4''':Int,arg4'''':Int,arg6':Int | ((andGate[((arg6 > arg5) => True else False), ((arg3 > arg5) => True else False)]) in True)  => predIfStatement0[arg1,arg2,arg2',arg3,arg3',arg4,arg4',arg4'',arg4''',arg4'''',arg5,arg6,arg6'] }
+}
+

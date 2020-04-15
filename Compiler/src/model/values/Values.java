@@ -1,8 +1,9 @@
 package model.values;
 
+import model.statement.assignment.expression.FunctionConditional;
+
 import java.util.HashMap;
 import java.util.Map;
-import model.statement.assignment.expression.FunctionConditional;
 
 
 public abstract class Values {
@@ -39,8 +40,12 @@ public abstract class Values {
     public Map<String, Value> getDeclaredFunctions() {
         Map<String, Value> functions = new HashMap<>();
         for (String key : values.keySet()) {
-            if (values.get(key).getValue() instanceof FunctionConditional) {
-                functions.put(key, values.get(key));
+            try {
+                if (values.get(key).getValue() instanceof FunctionConditional) {
+                    functions.put(key, values.get(key));
+                }
+            } catch (IllegalStateException e) {
+                continue;
             }
         }
         return functions;

@@ -1,0 +1,21 @@
+// Alyx got 70 on her English test.
+// Marking Scheme 80-100 A 40-79 B 39-0 C
+// A -> 1
+// B -> 2
+// C -> 3
+
+fun int mark (int score, int result) {
+    fun_require((score >= 0) && (score <= 100))
+        if ((score >= 80) && (score <= 100)) {
+            result = 1;
+        } else if ((score >= 79) && (score <= 40)) {
+            result = 2;
+        } else {
+            result = 3;
+        }
+        return result;
+    fun_ensure((result >= 1) && (result <= 3))
+}
+
+int alyxScore = 70;
+int alyxMark = mark(alyxScore, 0);

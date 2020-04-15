@@ -1,0 +1,34 @@
+// Bank Transaction Application
+// One day, miracally, the bankers at the bank finally realize that
+// they can use functions instead of doing everything manually.
+
+// However government started taxing functional transaction for deposits. that's why now each deposit operation cause 1 dollar fee
+// Customer Accounts
+int cust1Balance = 100;
+int cust2Balance = 600;
+int cust3Balance = 300;
+
+fun int withdraw (int amount, int balance, int result) {
+    fun_require((amount <= balance) && (amount >= 0))
+        result = result - amount;
+        return result;
+    fun_ensure(true)
+}
+
+fun int deposit (int amount, int balance, int result) {
+    fun_require(amount > 1)
+    result = balance + amount;
+    result = withdraw (1, balance, 0); // Tax
+    return result;
+    fun_ensure(true)
+}
+
+// customer 3 transfers funds to customer 1
+cust3Balance = withdraw(200, cust3Balance, 0);
+cust1Balance = deposit(200, cust1Balance, 0);
+
+// cust3Balance deposits 300
+cust3Balance = deposit(300, cust3Balance, 0);
+
+// cust1Balance withdraws 200
+cust1Balance = withdraw(200, cust1Balance, 0);

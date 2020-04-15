@@ -1,0 +1,25 @@
+// Bank Transaction Application
+
+int cust1Balance = 100;
+int cust2Balance = 600;
+int cust3Balance = 300;
+
+// customer 3 transfers funds to customer 1
+cust3Balance = cust3Balance - 200;
+cust1Balance = cust1Balance + 200;
+
+// cust3Balance deposits 300
+cust3Balance = cust3Balance + 300;
+
+// cust1Balance withdraws 200
+cust1Balance = cust1Balance - 200;
+
+// cust3 asks cust1 for a loan of 200
+// this time since customer 1 does not know how much money he has, he says he will loan the money if he has enough.
+int borrowAmount = 200;
+if_require(cust1Balance > borrowAmount)
+if (cust1Balance > borrowAmount) {
+    cust1Balance = cust1Balance - borrowAmount;
+    cust3Balance = cust3Balance + borrowAmount;
+}
+if_ensure((cust1Balance == cust1Balance_old - borrowAmount) && (cust3Balance == cust3Balance_old + borrowAmount))

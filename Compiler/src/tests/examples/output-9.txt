@@ -1,0 +1,39 @@
+open logicFuncs
+
+pred predFunction0 [arg1,arg1',arg1'':Bool,arg2:Int] {
+	((True) in True) and arg1'=False and  ( ((((arg2.rem[3] = 0) => True else False)) in True) =>
+		 ((True) in True) and arg1''=True )
+	((True) in True) 			 // post condition
+}
+
+fun funFunction0 [arg1,arg1',arg1'':Bool,arg2:Int] : Bool {
+	{ return : Bool | ((True) in True) and arg1'=False and  ( ((((arg2.rem[3] = 0) => True else False)) in True) =>
+		 ((True) in True) and arg1''=True )  and return = arg1''}
+}
+
+check assertFunction0 {
+	 { all arg1:Bool,arg2:Int | some arg1':Bool,arg1'':Bool | ((andGate[((arg2 >= 0) => True else False), ((arg2 < 100) => True else False)]) in True)  => predFunction0[arg1,arg1',arg1'',arg2] }
+}
+
+pred predForStatement0 [arg1,arg1',arg1'':Int,arg2,arg2':Bool,arg3,arg3',arg3'':Bool,arg4,arg4':Int] {
+	(((True) in True) and arg1'=0 and arg3=False
+	=>
+	( andGate[((arg1' >= 0) => True else False), ((arg1' < 100) => True else False)] in True ))
+
+	(( andGate[((arg1 >= 0) => True else False), ((arg1 < 100) => True else False)] in True )
+	 and( ((arg1 < 100) => True else False) in True ))
+	=>
+	((True) in True) and arg3=False and  ( ((((arg2' in True) => True else False)) in True) =>
+		 ((True) in True) and arg3=False and arg4'=arg4.add[1] )  and arg2'=funFunction0[arg3,arg3',arg3'',arg1]  and arg1''=arg1.add[1]
+	=>
+	(andGate[((arg1'' >= 0) => True else False), ((arg1'' < 100) => True else False)] in True and  ( arg1'' >= 0 ) and ( arg1 > arg1''))
+
+	(( andGate[((arg1 >= 0) => True else False), ((arg1 < 100) => True else False)] in True ) and not(( ((arg1 < 100) => True else False) in True ))
+	 =>
+	((True) in True) ) 			 // post condition
+}
+
+check assertForStatement0 {
+	 { all arg1:Int,arg2:Bool,arg3:Bool,arg4:Int | some arg1':Int,arg1'':Int,arg2':Bool,arg3':Bool,arg3'':Bool,arg4':Int | ((True) in True)  => predForStatement0[arg1,arg1',arg1'',arg2,arg2',arg3,arg3',arg3'',arg4,arg4'] }
+}
+

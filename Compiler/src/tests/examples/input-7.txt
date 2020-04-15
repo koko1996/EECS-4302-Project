@@ -1,0 +1,25 @@
+// Lucienne is trying to demonstrate her friend Alienor that and'ing any number of falses will still yield false.
+// Since Lucienne is a coder she decides to use functions to make it look fancy. (We have no idea why Lucienne would ever want to do this using this compiler!)
+
+fun bool andFalse (bool input, bool result) {
+    fun_require(true)
+    result = input && false;
+    return result;
+    fun_ensure(result <=> false)
+}
+
+int current;
+int iterations = 100;
+bool result = true;
+
+loop_require(result <=> true)
+loop_init {
+    current = 0;
+}
+loop(current < iterations) {
+    loop_invariant((current >= 0) && (current < iterations) )
+    loop_variant(current)
+    result = andFalse(result, false);
+    current = current + 1;
+}
+loop_ensure(result <=> false)

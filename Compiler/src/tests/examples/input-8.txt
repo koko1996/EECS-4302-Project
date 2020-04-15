@@ -1,0 +1,24 @@
+// Bank Account Balance Monitor
+// A Multinational bank wants to figure out if there are any empty accounts, but they would like to know
+// if there are multiple ways of doing it.
+int[] accountBalances;
+accountBalances.add(400);
+accountBalances.add(30000);
+accountBalances.add(5000);
+accountBalances.add(10000000);
+accountBalances.add(0);
+
+// First way with the existential quantifier.
+bool check1 = false;
+if_require(true)
+if(accountBalances.some(each == 0)) {
+    check1 = true;
+}
+if_ensure(true)
+
+bool check2 = false;
+if_require(true)
+if(accountBalances.some(each == 0)) {
+    check2 = true;
+}
+if_ensure(true)

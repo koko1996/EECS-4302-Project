@@ -1,0 +1,48 @@
+// Bank Transaction Application
+// Takes forever to verify.
+int cust1Balance = 100;
+int cust2Balance = 600;
+int cust3Balance = 300;
+
+// customer 3 transfers funds to customer 1
+cust3Balance = cust3Balance - 200;
+cust1Balance = cust1Balance + 200;
+
+// cust3Balance deposits 300
+cust3Balance = cust3Balance + 300;
+
+// cust1Balance withdraws 200
+cust1Balance = cust1Balance - 200;
+
+cust2Balance = cust2Balance + 9999;
+cust1Balance = cust1Balance + 9999;
+int bank = 99999;
+
+// cust3 asks cust1 for a loan of 200
+// this time since cust1 knows that he received a hefty amount of money recently, he does not care about
+// the amount. though, he says that he will only pay half and on the condition that cust2 will pay the other half as well.
+// cust3 also makes contingency plans to get a loan from the bank in case he cannot borrow any money from the other customers.
+// bank also decides to make a gesture and says that they will give cust3 the full amount for free on the condition that
+// cust1 and cust2 pay their halves.
+
+int borrowAmount = 200;
+int borrowAmountHalf = borrowAmount / 2;
+if_require(cust1Balance > borrowAmountHalf && cust2Balance > borrowAmountHalf)
+if (cust1Balance > borrowAmountHalf) {
+    if (cust2Balance > borrowAmountHalf) {
+        cust1Balance = cust1Balance - borrowAmountHalf;
+        cust2Balance = cust2Balance - borrowAmountHalf;
+        cust3Balance = cust3Balance + borrowAmount;
+        if (bank > borrowAmount){
+            bank = bank - borrowAmount;
+            cust3Balance = cust3Balance + borrowAmount;
+        }
+    } else {
+        // cust3 gets a loan from the bank
+        cust3Balance = cust3Balance + borrowAmount;
+    }
+} else {
+    // cust3 gets a loan from the bank
+    cust3Balance = cust3Balance + borrowAmount;
+}
+if_ensure((cust3Balance >= (cust3Balance_old + borrowAmount)))
