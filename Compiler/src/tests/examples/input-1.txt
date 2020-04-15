@@ -19,7 +19,7 @@ cust1Balance = cust1Balance - 200;
 int borrowAmount = 200;
 if_require(cust1Balance > borrowAmount)
 if (cust1Balance > borrowAmount) {
-    cust1Balance = cust1Balance - borrowAmount;
-    cust3Balance = cust3Balance + borrowAmount;
+ cust1Balance = cust1Balance - borrowAmount;
+ cust3Balance = cust3Balance + borrowAmount;
 }
 if_ensure((cust1Balance == cust1Balance_old - borrowAmount) && (cust3Balance == cust3Balance_old + borrowAmount))
