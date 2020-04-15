@@ -1,0 +1,23 @@
+open logicFuncs
+
+pred predForStatement0 [arg1,arg1',arg1'':Int,arg2,arg2':seq Int] {
+	(((True) in True) and arg1'=0
+	=>
+	( andGate[((arg1' >= 0) => True else False), ((arg1' < 3) => True else False)] in True ))
+
+	(( andGate[((arg1 >= 0) => True else False), ((arg1 < 3) => True else False)] in True )
+	 and( ((arg1 < 4) => True else False) in True ))
+	=>
+	((True) in True) and arg2'=arg2.add[70] and arg1''=arg1.add[1]
+	=>
+	(andGate[((arg1'' >= 0) => True else False), ((arg1'' < 3) => True else False)] in True and  ( arg1'' >= 0 ) and ( arg1 > arg1''))
+
+	(( andGate[((arg1 >= 0) => True else False), ((arg1 < 3) => True else False)] in True ) and not(( ((arg1 < 4) => True else False) in True ))
+	 =>
+	((True) in True) ) 			 // post condition
+}
+
+check assertForStatement0 {
+	 { all arg1:Int,arg2:seq Int | some arg1':Int,arg1'':Int,arg2':seq Int | ((True) in True)  => predForStatement0[arg1,arg1',arg1'',arg2,arg2'] }
+}
+

@@ -1,0 +1,12 @@
+open logicFuncs
+
+pred predIfStatement0 [arg2:Int,arg1,arg1':Int,arg3,arg3':Int] {
+	((((arg3 > arg2) => True else False)) in True) =>
+		 ((True) in True) and arg1'=arg1.sub[arg2] and arg3'=arg3.add[arg2]
+	((andGate[((arg3' = arg3.sub[arg2]) => True else False), ((arg1' = arg1.add[arg2]) => True else False)]) in True) 			 // post condition
+}
+
+check assertIfStatement0 {
+	 { all arg2:Int,arg1:Int,arg3:Int | some arg1':Int,arg3':Int | ((((arg3 > arg2) => True else False)) in True)  => predIfStatement0[arg2,arg1,arg1',arg3,arg3'] }
+}
+

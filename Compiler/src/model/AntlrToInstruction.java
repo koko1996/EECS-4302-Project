@@ -727,7 +727,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			if ((inside instanceof Logical && !lhsType.equals("Bool"))
 					| (inside instanceof Arithmetic && !lhsType.equals("Int"))) {
 				semanticErrors
-						.add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
+						.add("Error: The type of the right hand side of the expression does not match the type of the left hand side variable (line:"
 								+ lhsIDLine + ", column:" + lhsColumnLine + ")");
 			}
 		}
@@ -750,7 +750,7 @@ public class AntlrToInstruction extends ExprBaseVisitor<Instruction> {
 			if ((inside instanceof Logical && !lhsType.equals("Bool"))
 					| (inside instanceof Arithmetic && !lhsType.equals("Int"))) {
 				semanticErrors
-						.add("Error: The type of the right hand side of the exprxpression does not match the type of the left hand side variable (line:"
+						.add("Error: The type of the right hand side of the expression does not match the type of the left hand side variable (line:"
 								+ lhsIDLine + ", column:" + lhsColumnLine + ")");
 			}
 		}

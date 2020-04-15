@@ -1,12 +1,12 @@
 open logicFuncs
 
 pred predFunction0 [arg1,arg1':Bool,arg2:Bool] {
-	((True) in True) and arg1'=andGate[arg2, False]
+	((True) in True) and arg1'=andGate[arg2, True]
 	((((arg1' in False) => True else False)) in True) 			 // post condition
 }
 
 fun funFunction0 [arg1,arg1':Bool,arg2:Bool] : Bool {
-	{ return : Bool | ((True) in True) and arg1'=andGate[arg2, False] and return = arg1'}
+	{ return : Bool | ((True) in True) and arg1'=andGate[arg2, True] and return = arg1'}
 }
 
 check assertFunction0 {

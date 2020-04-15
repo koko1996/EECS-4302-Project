@@ -18,4 +18,4 @@ fun int mark (int score, int result) {
 }
 
 int alyxScore = 70;
-int alyxMark = mark(alyxScore , 0);
+int alyxMark = mark(alyxScore, 0);
