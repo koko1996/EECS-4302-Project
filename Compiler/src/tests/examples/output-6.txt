@@ -1,20 +1,20 @@
 open logicFuncs
 
 pred predForStatement0 [arg2,arg2',arg2'':Int,arg1,arg1',arg1'':Int] {
-	(((True) in True) and arg1'=0 and arg2'=0
-	=>
-	( andGate[andGate[((arg1' = arg2'.mul[arg2'.add[1]].div[2]) => True else False), ((arg2' >= 0) => True else False)], ((arg2' < 10) => True else False)] in True ))
+	(((True) in True) and arg1'=0 and arg2'=3
+	=> 
+	( andGate[andGate[((arg1' = 3.sub[arg2'].mul[3.sub[arg2'].add[1]].div[2]) => True else False), ((arg2' >= 0) => True else False)], ((arg2' < 4) => True else False)] in True )) 
 
-	(( andGate[andGate[((arg1 = arg2.mul[arg2.add[1]].div[2]) => True else False), ((arg2 >= 0) => True else False)], ((arg2 < 10) => True else False)] in True )
-	 and( ((arg2 < 10) => True else False) in True ))
-	=>
-	((True) in True) and arg2''=arg2.add[1] and arg1''=arg1.add[arg2]
-	=>
-	(andGate[andGate[((arg1'' = arg2''.mul[arg2''.add[1]].div[2]) => True else False), ((arg2'' >= 0) => True else False)], ((arg2'' < 10) => True else False)] in True and  ( arg2'' >= 0 ) and ( arg2 > arg2''))
+	(( andGate[andGate[((arg1 = 3.sub[arg2].mul[3.sub[arg2].add[1]].div[2]) => True else False), ((arg2 >= 0) => True else False)], ((arg2 < 4) => True else False)] in True )
+	 and( ((arg2 > 0) => True else False) in True ))
+	=> 
+	((True) in True) and arg2''=arg2.sub[1] and arg1''=arg1.add[4.sub[arg2]]
+	=> 
+	(andGate[andGate[((arg1'' = 3.sub[arg2''].mul[3.sub[arg2''].add[1]].div[2]) => True else False), ((arg2'' >= 0) => True else False)], ((arg2'' < 4) => True else False)] in True and  ( arg2'' >= 0 ) and ( arg2 > arg2''))
 
-	(( andGate[andGate[((arg1 = arg2.mul[arg2.add[1]].div[2]) => True else False), ((arg2 >= 0) => True else False)], ((arg2 < 10) => True else False)] in True ) and not(( ((arg2 < 10) => True else False) in True ))
-	 =>
-	((((arg1 = 45) => True else False)) in True) ) 			 // post condition
+	(( andGate[andGate[((arg1 = 3.sub[arg2].mul[3.sub[arg2].add[1]].div[2]) => True else False), ((arg2 >= 0) => True else False)], ((arg2 < 4) => True else False)] in True ) and not(( ((arg2 > 0) => True else False) in True ))
+	 => 
+	((((arg1 = 6) => True else False)) in True) ) 			 // post condition
 }
 
 check assertForStatement0 {

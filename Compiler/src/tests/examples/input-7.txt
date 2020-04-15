@@ -9,17 +9,16 @@ fun bool andFalse (bool input, bool result) {
 }
 
 int current;
-int iterations = 100;
 bool result = true;
 
 loop_require(result <=> true)
 loop_init {
-    current = 0;
+    current = 3;
 }
-loop(current < iterations) {
-    loop_invariant((current >= 0) && (current < iterations) )
+loop(current > 0) {
+    loop_invariant((current >= 0) && ( (current<3) => (result <=> false) ))
     loop_variant(current)
     result = andFalse(result, false);
-    current = current + 1;
+    current = current - 1;
 }
 loop_ensure(result <=> false)

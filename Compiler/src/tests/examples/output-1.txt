@@ -3,7 +3,7 @@ open logicFuncs
 pred predIfStatement0 [arg2:Int,arg1,arg1':Int,arg3,arg3':Int] {
 	((((arg3 > arg2) => True else False)) in True) => 
 		 ((True) in True) and arg1'=arg1.add[arg2] and arg3'=arg3.sub[arg2]
-	((andGate[((arg3' = arg3.sub[arg2]) => True else False), ((arg1' = arg1.add[arg2]) => True else False)]) in True) // post condition
+	((andGate[((arg3' = arg3.sub[arg2]) => True else False), ((arg1' = arg1.add[arg2]) => True else False)]) in True) 			 // post condition
 }
 
 check assertIfStatement0 {

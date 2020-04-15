@@ -9,18 +9,18 @@ int cust2Balance = 600;
 int cust3Balance = 300;
 
 fun int withdraw (int amount, int balance, int result) {
-    fun_require((amount <= balance) && (amount >= 0))
-        result = result - amount;
+    fun_require((balance >= amount) && (amount >= 0))
+        result = balance - amount;
         return result;
-    fun_ensure(true)
+    fun_ensure(result == balance_old-amount_old && (result>=0))
 }
 
 fun int deposit (int amount, int balance, int result) {
     fun_require(amount > 1)
-    result = balance + amount;
-    result = withdraw (1, balance, 0); // Tax
+    balance = withdraw (1, balance, result); // Tax
+    result = balance + amount; 		  		 // new balance
     return result;
-    fun_ensure(true)
+    fun_ensure(result == balance_old + amount_old-1)
 }
 
 // customer 3 transfers funds to customer 1

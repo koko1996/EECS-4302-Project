@@ -1,20 +1,20 @@
 // Ege decided to write a simple list application to keep track of his marks at school.
-// Causes state explosion
+// Causes state explosion (Skolemize error as explained in the User Manual)
 int[] myMarks;
 
 // Ege coincidentally got 70 on all his midterm tests, so he adds those first.
 int current;
 loop_require(true)
 loop_init {
-    current = 0;
+    current = 3;
 }
-loop(current < 4) {
-    loop_invariant((current >= 0) && (current < 3) )
-    loop_variant(current)
+loop(current > 0) {
+loop_invariant((current >= 0) && (current < 4) )
+loop_variant(current)
     myMarks.add(70);
-    current = current + 1;
+    current = current - 1;
 }
-loop_ensure(true)
+loop_ensure(current == 0)
 
 // Then he gets 35 and 90 on two tests.
 myMarks.add(35);

@@ -1,12 +1,12 @@
 open logicFuncs
 
 pred predIfStatement0 [arg4:Int,arg1,arg1':Int,arg2,arg2',arg2'',arg2''':Int,arg3:Int,arg5,arg5':Int] {
-	((((arg5 > arg3) => True else False)) in True) =>
-		 ((True) in True) and  ( ((((arg1 > arg3) => True else False)) in True) =>
+	((((arg5 > arg3) => True else False)) in True) => 
+		 ((True) in True) and  ( ((((arg1 > arg3) => True else False)) in True) => 
 		 ((True) in True) and arg1'=arg1.sub[arg3] and arg5'=arg5.sub[arg3] and arg2'=arg2.add[arg4] and arg2''=arg2'
-	else
+	else 
 		 ((True) in True) and arg2''=arg2.add[arg4] and arg1'=arg1 and arg5'=arg5 )  and arg2'''=arg2''
-	else
+	else 
 		 ((True) in True) and arg2'''=arg2.add[arg4] and arg1'=arg1 and arg5'=arg5
 	((((arg2''' = arg2.add[arg4]) => True else False)) in True) 			 // post condition
 }

@@ -1,34 +1,36 @@
-// THIS IS ALMOST THE SAME FILE AS input-9.txt, BUT NOW HE WANTS ALL MULTIPLES OF 3 LOWER THAN 1000!
-// BUT HE FORGOT TO CHANGE THE PRECONDITION OF THE SHOULDINCREMENTCOUNTER FUNCTION!
-// THEREFORE THIS ONE SHOULD FAIL WITH A COUNTER EXAMPLE.
-// ALLOY DOES NOT FIND A COUNTER EXAMPLE!
-// Gregory writes an algorithm that counts the number of integers that are a multiple of 3 and lower than 100;
+// THIS IS ALMOST THE SAME FILE AS input-10.txt, BUT NOW loop_ensure CHECKS FOR current IS EQUAL TO 2 WHICH IS INCORRECT!
+// Line 16 is commented so that there won't be any skolemization issues with Alloy (as it is explained in the user manual)
+// ALLOY FINDS A COUNTER EXAMPLE!
+// Ege decided to write a simple list application to keep track of his marks at school.
+// Causes state explosion
 
-int counter = 0;
+int[] myMarks;
 
-fun bool shouldIncrementCounter (int number, bool result) {
-    fun_require((number >= 0) && (number < 100))
-    result = false;
-    if ((number % 3) == 0) {
-        result = true;
-    }
-    return result;
-    fun_ensure(true)
-}
-
+// Ege coincidentally got 70 on all his midterm tests, so he adds those first.
 int current;
-bool shouldIncrement;
 loop_require(true)
 loop_init {
-    current = 0;
+    current = 3;
 }
-loop(current < 1000) {
-    loop_invariant((current >= 0) && (current < 1000) )
-    loop_variant(current)
-    shouldIncrement = shouldIncrementCounter(current, false);
-    if (shouldIncrement <=> true) {
-        counter = counter + 1;
-    }
-    current = current + 1;
+loop(current > 0) {
+loop_invariant((current >= 0) && (current < 4) )
+loop_variant(current)
+//    myMarks.add(70);
+    current = current - 1;
 }
-loop_ensure(true)
+loop_ensure(current == 2)
+
+// Then he gets 35 and 90 on two tests.
+myMarks.add(35);
+myMarks.add(90);
+
+// Then his prof says one of his quizzes can count for marks if he has any marks lower than 50 or greater than 90.
+// His prof also drops his lowest mark.
+// On this quiz Ege got 80.
+
+bool hasLowMark = (myMarks.some(each < 50) || myMarks.some(each > 90));
+if (hasLowMark <=> true) {
+    myMarks.add(80);
+    myMarks.remove(35);
+}
+
