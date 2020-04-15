@@ -1,4 +1,4 @@
-package tests.unit;
+package sanity_tests.unit;
 
 import static org.junit.Assert.assertTrue;
 
